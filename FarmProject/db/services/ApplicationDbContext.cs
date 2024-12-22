@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace FarmProject.services;
+namespace FarmProject.db.services;
 
 public class ApplicationDbContext : DbContext
 {
