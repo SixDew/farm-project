@@ -10,4 +10,10 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="DewLib">
+      <HintPath>..\DewLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

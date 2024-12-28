@@ -1,4 +1,6 @@
-﻿namespace FarmProject.db.models
+﻿using DewLib.db;
+
+namespace FarmProject.db.models
 {
     public class PressureSensor : BaseModel
     {

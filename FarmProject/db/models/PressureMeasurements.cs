@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using DewLib.db;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FarmProject.db.models
 {
