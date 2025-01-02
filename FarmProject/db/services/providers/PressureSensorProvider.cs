@@ -6,4 +6,14 @@ namespace FarmProject.db.services.providers;
 
 public class PressureSensorProvider(DbContext db) : DbProvider<PressureSensor>(db)
 {
+    public async Task<PressureSensor?> GetByImeiAsync(string imei)
+    {
+        return await _dbSet.FirstOrDefaultAsync(s => s.IMEI == imei);
+    }
+    public async Task<List<PressureMeasurements>?> GetMeasurmentsByImeiAync(string imei)
+    {
+        var sensor = await _dbSet.Include(s => s.Measurements).FirstOrDefaultAsync(s => s.IMEI == imei);
+        return sensor?.Measurements;
+    }
+
 }
