@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FarmProject.db.services.providers;
 
-public class PressureSensorProvider(DbContext db) : DbProvider<PressureSensor>(db)
+public class PressureSensorProvider(ApplicationDbContext db) : DbProvider<PressureSensor>(db)
 {
     public async Task<PressureSensor?> GetByImeiAsync(string imei)
     {

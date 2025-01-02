@@ -9,7 +9,7 @@ namespace FarmProject.controllers;
 [Route("/sensors/pressure")]
 public class PressureMeasurmentsController(PressureSensorProvider sensorProvider) : ControllerBase
 {
-    [HttpGet("/measurements/{imei:string}")]
+    [HttpGet("/measurements/{imei}")]
     public async Task<IActionResult> GetPressureMeasurment([FromRoute] string imei,
         [FromServices] PressureMeasurmentsDtoConvertService dtoConverter)
     {

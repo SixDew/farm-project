@@ -15,7 +15,20 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<PressureSensor>().ToTable("PressureSensors");
-        modelBuilder.Entity<PressureMeasurements>().ToTable("PressureMeaserments");
+        modelBuilder.Entity<PressureSensor>().ToTable("PressureSensors").HasData(
+                new PressureSensor()
+                {
+                    GPS = "gps",
+                    IMEI = "1"
+                }
+            );
+        modelBuilder.Entity<PressureMeasurements>().ToTable("PressureMeaserments").HasData(
+                new PressureMeasurements()
+                {
+                    IMEI = "1",
+                    PRR1 = 25.3,
+                    PRR2 = 26,
+                }
+            );
     }
 }
