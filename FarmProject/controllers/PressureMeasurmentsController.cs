@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace FarmProject.controllers;
 
 [ApiController]
-[Route("/sensors/pressure")]
+[Route("sensors/pressure")]
 public class PressureMeasurmentsController(PressureSensorProvider sensorProvider) : ControllerBase
 {
-    [HttpGet("/measurements/{imei}")]
+    [HttpGet("measurements/{imei}")]
     public async Task<IActionResult> GetPressureMeasurment([FromRoute] string imei,
         [FromServices] PressureMeasurmentsDtoConvertService dtoConverter)
     {
@@ -18,6 +18,6 @@ public class PressureMeasurmentsController(PressureSensorProvider sensorProvider
 
         List<PressureMeasurmentsDto> measurmentsDtoList = measurments.Select(m => dtoConverter.Convert(m)).ToList();
 
-        return Ok(measurments);
+        return Ok(measurmentsDtoList);
     }
 }

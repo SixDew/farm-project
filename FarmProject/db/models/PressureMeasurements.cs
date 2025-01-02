@@ -1,5 +1,4 @@
 ﻿using DewLib.db;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FarmProject.db.models
 {
@@ -9,8 +8,6 @@ namespace FarmProject.db.models
         public double PRR2 { get; set; }
         public required string IMEI { get; set; }
         public DateTime MeasurementsTime { get; set; } = DateTime.UtcNow;
-
-        [ForeignKey("IMEI")]
         public PressureSensor PressureSensor { get; set; }
     }
 }

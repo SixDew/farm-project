@@ -5,19 +5,32 @@ namespace FarmProject.db.services;
 
 public class ApplicationDbContext : DbContext
 {
+    public ApplicationDbContext() : base()
+    {
+        Database.EnsureDeleted();
+        Database.EnsureCreated();
+    }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        Database.EnsureCreated();
+        var config = new ConfigurationBuilder()
+                        .AddJsonFile("appsettings.json")
+                        .SetBasePath(Directory.GetCurrentDirectory())
+                        .Build();
+
+        optionsBuilder.UseNpgsql(config.GetConnectionString("DefaultConnection"));
 
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<PressureSensor>().ToTable("PressureSensors").HasData(
+        modelBuilder.Entity<PressureSensor>().ToTable("PressureSensors").HasMany(s => s.Measurements).WithOne(m => m.PressureSensor)
+            .HasForeignKey(m => m.IMEI).HasPrincipalKey(s => s.IMEI);
+        modelBuilder.Entity<PressureSensor>().HasData(
                 new PressureSensor()
                 {
+                    Id = Guid.NewGuid(),
                     GPS = "gps",
                     IMEI = "1"
                 }
@@ -25,6 +38,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<PressureMeasurements>().ToTable("PressureMeaserments").HasData(
                 new PressureMeasurements()
                 {
+                    Id = Guid.NewGuid(),
                     IMEI = "1",
                     PRR1 = 25.3,
                     PRR2 = 26,
