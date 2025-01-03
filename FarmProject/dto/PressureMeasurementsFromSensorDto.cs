@@ -1,6 +1,6 @@
 ﻿namespace FarmProject.dto
 {
-    public class PressureMeasurmentsFromSensorDto
+    public class PressureMeasurementsFromSensorDto
     {
         public required string IMEI { get; set; }
         public required double PRR1 { get; set; }
