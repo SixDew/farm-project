@@ -16,7 +16,7 @@ public class PressureMeasurmentsController(PressureSensorProvider sensorProvider
         var measurments = await sensorProvider.GetMeasurmentsByImeiAync(imei);
         if (measurments is null) return NotFound(new { message = "Imei is incorrect" });
 
-        List<PressureMeasurmentsDto> measurmentsDtoList = measurments.Select(m => dtoConverter.Convert(m)).ToList();
+        List<PressureMeasurmentsToClientDto> measurmentsDtoList = measurments.Select(m => dtoConverter.Convert(m)).ToList();
 
         return Ok(measurmentsDtoList);
     }

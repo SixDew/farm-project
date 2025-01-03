@@ -1,6 +1,6 @@
 ﻿namespace FarmProject.dto
 {
-    public class PressureMeasurmentsDto
+    public class PressureMeasurmentsToClientDto
     {
         public required double Measurment1 { get; init; }
         public required double Measurment2 { get; init; }
