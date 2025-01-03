@@ -14,14 +14,13 @@ namespace FarmProject.dto.servisces
             };
         }
 
-        public PressureMeasurements ConvertToModel(PressureMeasurementsFromSensorDto measurments, Guid sensorId)
+        public PressureMeasurements ConvertToModel(PressureMeasurementsFromSensorDto measurments)
         {
             return new PressureMeasurements()
             {
                 IMEI = measurments.IMEI,
                 PRR1 = measurments.PRR1,
                 PRR2 = measurments.PRR2,
-                Id = sensorId
             };
         }
     }

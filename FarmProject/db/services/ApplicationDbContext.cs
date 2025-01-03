@@ -7,7 +7,6 @@ public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext() : base()
     {
-        Database.EnsureDeleted();
         Database.EnsureCreated();
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
