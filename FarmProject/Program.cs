@@ -8,8 +8,17 @@ builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<PressureSensorProvider>();
 builder.Services.AddTransient<PressureMeasurmentsDtoConvertService>();
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.MapControllers();
 
