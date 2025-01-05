@@ -15,4 +15,9 @@ public class PressureSensorProvider(ApplicationDbContext db) : DbProvider<Pressu
         var sensor = await _dbSet.Include(s => s.Measurements).FirstOrDefaultAsync(s => s.IMEI == imei);
         return sensor?.Measurements;
     }
+    public async Task<PressureSensorSettings?> GetSettingsByImeiAsync(string imei)
+    {
+        var sensor = await _dbSet.Include(s => s.Settings).FirstOrDefaultAsync(s => s.IMEI == imei);
+        return sensor?.Settings;
+    }
 }

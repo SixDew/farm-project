@@ -21,6 +21,7 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
 
         return Ok(measurmentsDtoList);
     }
+
     [HttpPost("measurements")]
     public async Task<IActionResult> PostPressureMeasurments([FromBody] PressureMeasurementsFromSensorDto measurements,
         [FromServices] PressureValidationService validationService)
@@ -33,5 +34,15 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
         await sensorProvider.SaveChangesAsync();
 
         return Created($"sensors/pressure/measurements/{measurements.IMEI}", dtoConverter.ConvertToClientDto(measurementsModel));
+    }
+
+    [HttpGet("settings/{imei}")]
+    public async Task<IActionResult> GetSettings([FromRoute] string imei,
+        [FromServices] PressureSettingsDtoConvertService settingsConverter)
+    {
+        var settings = await sensorProvider.GetSettingsByImeiAsync(imei);
+        if (settings is null) return NotFound(new { message = "Sensor is not exist" });
+
+        return Ok(settingsConverter.ConvertToClient(settings));
     }
 }
