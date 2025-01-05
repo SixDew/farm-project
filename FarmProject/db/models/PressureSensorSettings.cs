@@ -11,7 +11,7 @@ namespace FarmProject.db.models
         public bool SecondSensorIsActive { get; set; }
         public double DataSendingSpan { get; set; } = 10;
 
-        public string IMEI { get; set; }
+        public required string IMEI { get; set; }
 
     }
 }

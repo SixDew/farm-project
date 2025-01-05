@@ -36,6 +36,7 @@ public class ApplicationDbContext : DbContext
                     IMEI = "1"
                 }
             );
+
         modelBuilder.Entity<PressureMeasurements>().ToTable("PressureMeaserments").HasData(
                 new PressureMeasurements()
                 {
@@ -43,6 +44,14 @@ public class ApplicationDbContext : DbContext
                     IMEI = "1",
                     PRR1 = 25.3,
                     PRR2 = 26,
+                }
+            );
+
+        modelBuilder.Entity<PressureSensorSettings>().ToTable("PressureSensorSettings").HasData(
+                new PressureSensorSettings()
+                {
+                    Id = Guid.NewGuid(),
+                    IMEI = "1"
                 }
             );
     }

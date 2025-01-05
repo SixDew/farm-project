@@ -52,7 +52,8 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
         var settings = await sensorProvider.GetSettingsByImeiAsync(imei);
         if (settings is null) return NotFound(new { message = "Sensor is not exist" });
 
-        settings = settingsConverter.ConvertFromClient(settingsFromClient, imei);
+        settingsConverter.ConvertFromClient(settingsFromClient, settings);
+
         await sensorProvider.SaveChangesAsync();
 
         return Ok(settingsConverter.ConvertToClient(settings));
