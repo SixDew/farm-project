@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<PressureSensorProvider>();
 builder.Services.AddTransient<PressureMeasurmentsDtoConvertService>();
+builder.Services.AddTransient<PressureSettingsDtoConvertService>();
 builder.Services.AddScoped<PressureValidationService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
