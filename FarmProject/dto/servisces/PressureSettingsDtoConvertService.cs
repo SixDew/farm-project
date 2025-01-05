@@ -18,13 +18,13 @@ namespace FarmProject.dto.servisces
             };
         }
 
-        public PressureSensorSettings ConvertFromClient(PressureSensorSettingsFromClientDto settings)
+        public PressureSensorSettings ConvertFromClient(PressureSensorSettingsFromClientDto settings, string imei)
         {
             return new PressureSensorSettings
             {
                 Sensitivity = settings.Sensitivity,
                 SecondSensorIsActive = settings.SecondSensorIsActive,
-                IMEI = settings.IMEI,
+                IMEI = imei,
                 FirstSensorIsActive = settings.FirstSensorIsActive,
                 AlarmActivated = settings.AlarmActivated,
                 DataSendingSpan = settings.DataSendingSpan,
