@@ -1,4 +1,5 @@
-﻿using FarmProject.db.models;
+﻿using FarmProject.db.configs;
+using FarmProject.db.models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FarmProject.db.services;
@@ -24,8 +25,9 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<PressureSensor>().ToTable("PressureSensors").HasMany(s => s.Measurements).WithOne(m => m.PressureSensor)
-            .HasForeignKey(m => m.IMEI).HasPrincipalKey(s => s.IMEI);
+
+        modelBuilder.ApplyConfiguration(new PressureSensorConfiguration());
+
         modelBuilder.Entity<PressureSensor>().HasData(
                 new PressureSensor()
                 {
