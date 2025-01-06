@@ -9,7 +9,9 @@ builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<PressureSensorProvider>();
 builder.Services.AddTransient<PressureMeasurmentsDtoConvertService>();
 builder.Services.AddTransient<PressureSettingsDtoConvertService>();
+builder.Services.AddTransient<PressureSensorDtoConvertService>();
 builder.Services.AddScoped<PressureValidationService>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

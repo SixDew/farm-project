@@ -31,6 +31,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<PressureSensor>().HasData(
                 new PressureSensor()
                 {
+                    Id = 1,
                     GPS = "gps",
                     IMEI = "1"
                 }
@@ -39,6 +40,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<PressureMeasurements>().ToTable("PressureMeaserments").HasData(
                 new PressureMeasurements()
                 {
+                    Id = 1,
                     IMEI = "1",
                     PRR1 = 25.3,
                     PRR2 = 26,
@@ -48,6 +50,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<PressureSensorSettings>().ToTable("PressureSensorSettings").HasData(
                 new PressureSensorSettings()
                 {
+                    Id = 1,
                     IMEI = "1"
                 }
             );
