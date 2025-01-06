@@ -33,7 +33,7 @@ public class ApplicationDbContext : DbContext
                 {
                     Id = 1,
                     GPS = "gps",
-                    IMEI = "1"
+                    IMEI = "1",
                 }
             );
 

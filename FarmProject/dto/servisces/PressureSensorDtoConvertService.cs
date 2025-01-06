@@ -5,7 +5,7 @@ namespace FarmProject.dto.servisces
     public class PressureSensorDtoConvertService(PressureMeasurmentsDtoConvertService measurementsConverter,
             PressureSettingsDtoConvertService settingsConverter)
     {
-        public PressureSensor ConvertToMoodel(PressureSensorFromClientDto sensor)
+        public PressureSensor ConvertToModel(PressureSensorFromClientDto sensor)
         {
             return new PressureSensor()
             {
@@ -22,7 +22,7 @@ namespace FarmProject.dto.servisces
                 Gps = sensor.GPS,
                 Imei = sensor.IMEI,
                 Settings = settingsConverter.ConvertToClient(sensor.Settings),
-                Measurements = sensor.Measurements.Select(m => measurementsConverter.ConvertToClientDto(m)).ToList()
+                Measurements = sensor.Measurements.Select(measurementsConverter.ConvertToClientDto).ToList()
             };
         }
     }

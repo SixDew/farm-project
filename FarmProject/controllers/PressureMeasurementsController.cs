@@ -63,12 +63,23 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
     public async Task<IActionResult> AddSensor([FromBody] PressureSensorFromClientDto sensorData,
         [FromServices] PressureSensorDtoConvertService converter)
     {
-        var sensor = await sensorProvider.GetByImeiAsync(sensorData.Imei);
+        var sensor = await sensorProvider.GetByImeiWithMeasurementsAndSettingsAsync(sensorData.Imei);
         if (sensor is null)
         {
-            await sensorProvider.AddAsync(converter.ConvertToMoodel(sensorData));
+            sensor = converter.ConvertToModel(sensorData);
+            await sensorProvider.AddAsync(sensor);
             await sensorProvider.SaveChangesAsync();
         }
-        return Created();
+
+        return Created($"sensors/pressure/{sensorData.Imei}", converter.ConvertToClient(sensor));
+    }
+    [HttpGet("{imei}")]
+    public async Task<IActionResult> GetSensor([FromRoute] string imei,
+        [FromServices] PressureSensorDtoConvertService converter)
+    {
+        var sensor = await sensorProvider.GetByImeiWithMeasurementsAndSettingsAsync(imei);
+        if (sensor is null) return NotFound(new { message = "Sensor is not exist" });
+
+        return Ok(converter.ConvertToClient(sensor));
     }
 }
