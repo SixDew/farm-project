@@ -82,4 +82,14 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
 
         return Ok(converter.ConvertToClient(sensor));
     }
+    [HttpDelete("{imei}")]
+    public async Task<IActionResult> DeleteSensor([FromRoute] string imei)
+    {
+        var sensor = await sensorProvider.GetByImeiAsync(imei);
+
+        if (sensor is not null) sensorProvider.Delete(sensor);
+
+        await sensorProvider.SaveChangesAsync();
+        return Ok();
+    }
 }
