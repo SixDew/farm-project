@@ -5,7 +5,7 @@ namespace FarmProject.dto.servisces
     public class PressureSensorDtoConvertService(PressureMeasurmentsDtoConvertService measurementsConverter,
             PressureSettingsDtoConvertService settingsConverter)
     {
-        public PressureSensor ConvertToModel(PressureSensorFromClientDto sensor)
+        public PressureSensor ConvertToModel(AddSensorFromClientDto sensor)
         {
             return new PressureSensor()
             {

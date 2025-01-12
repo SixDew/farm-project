@@ -60,7 +60,7 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
 
     }
     [HttpPost]
-    public async Task<IActionResult> AddSensor([FromBody] PressureSensorFromClientDto sensorData,
+    public async Task<IActionResult> AddSensor([FromBody] AddSensorFromClientDto sensorData,
         [FromServices] PressureSensorDtoConvertService converter)
     {
         var sensor = await sensorProvider.GetByImeiWithMeasurementsAndSettingsAsync(sensorData.Imei);
@@ -82,6 +82,7 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
 
         return Ok(converter.ConvertToClient(sensor));
     }
+
     [HttpDelete("{imei}")]
     public async Task<IActionResult> DeleteSensor([FromRoute] string imei)
     {
