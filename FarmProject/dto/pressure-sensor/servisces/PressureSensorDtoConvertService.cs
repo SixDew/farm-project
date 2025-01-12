@@ -21,8 +21,8 @@ namespace FarmProject.dto.servisces
             {
                 Gps = sensor.GPS,
                 Imei = sensor.IMEI,
-                Settings = settingsConverter.ConvertToClient(sensor.Settings),
-                Measurements = sensor.Measurements.Select(measurementsConverter.ConvertToClientDto).ToList()
+                Settings = sensor.Settings is not null ? settingsConverter.ConvertToClient(sensor.Settings) : null,
+                Measurements = sensor.Measurements is not null ? sensor.Measurements.Select(measurementsConverter.ConvertToClientDto).ToList() : null
             };
         }
     }
