@@ -83,6 +83,15 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
         return Ok(converter.ConvertToClient(sensor));
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetSensors([FromServices] PressureSensorDtoConvertService converter)
+    {
+        var sensors = await sensorProvider.GetAllAsync();
+        if (sensors is null) return NotFound();
+
+        return Ok(sensors.Select(converter.ConvertToClient).ToList());
+    }
+
     [HttpDelete("{imei}")]
     public async Task<IActionResult> DeleteSensor([FromRoute] string imei)
     {
