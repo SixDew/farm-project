@@ -30,12 +30,12 @@ builder.Services.AddSingleton<MqttBrokerService>();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenAnyIP(1883, listenOptions =>
+    options.Listen(System.Net.IPAddress.Parse("188.225.44.185"), 1883, listenOptions =>
     {
         listenOptions.UseMqtt();
     });
 
-    options.ListenAnyIP(7061, op =>
+    options.Listen(System.Net.IPAddress.Parse("188.225.44.185"), 7061, op =>
     {
         op.UseHttps();
     });
