@@ -25,7 +25,7 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
     public async Task<IActionResult> PostPressureMeasurments([FromBody] PressureMeasurementsFromSensorDto measurements,
         [FromServices] PressureValidationService validationService)
     {
-        if (!await validationService.IsValidated(measurements.IMEI)) return NotFound(new { message = "Sensor is invalid" });
+        if (!await validationService.IsValidatedAsync(measurements.IMEI)) return NotFound(new { message = "Sensor is invalid" });
 
         var sensorMeasurementsList = await sensorProvider.GetMeasurmentsByImeiAync(measurements.IMEI);
         var measurementsModel = dtoConverter.ConvertToModel(measurements);
