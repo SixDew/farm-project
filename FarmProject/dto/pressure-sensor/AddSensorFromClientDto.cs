@@ -2,7 +2,8 @@
 {
     public class AddSensorFromClientDto
     {
-        public required string Gps { get; set; }
-        public required string Imei { get; set; }
+        public required string GPS { get; set; }
+        public required string IMEI { get; set; }
+        public required double RDEV { get; set; }
     }
 }

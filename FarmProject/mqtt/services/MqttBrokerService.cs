@@ -52,7 +52,7 @@ public class MqttBrokerService(IServiceProvider _serviceProvider)
 
                             var converter = scope.ServiceProvider.GetRequiredService<PressureSensorDtoConvertService>();
 
-                            var sensor = await sensorProvider.GetByImeiWithMeasurementsAndSettingsAsync(data.Imei);
+                            var sensor = await sensorProvider.GetByImeiWithMeasurementsAndSettingsAsync(data.IMEI);
                             if (sensor is null)
                             {
                                 sensor = converter.ConvertToModel(data);

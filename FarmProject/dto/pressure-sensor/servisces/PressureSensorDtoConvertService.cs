@@ -9,9 +9,9 @@ namespace FarmProject.dto.servisces
         {
             return new PressureSensor()
             {
-                GPS = sensor.Gps,
-                IMEI = sensor.Imei,
-                Settings = new() { IMEI = sensor.Imei }
+                GPS = sensor.GPS,
+                IMEI = sensor.IMEI,
+                Settings = new() { IMEI = sensor.IMEI, DeviationSpan = sensor.RDEV }
             };
         }
 
