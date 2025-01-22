@@ -15,6 +15,7 @@ public class MqttBrokerService(IServiceProvider _serviceProvider)
         using (var scope = _serviceProvider.CreateScope())
         {
             string topic = e.ApplicationMessage.Topic;
+            var sensorProvider = scope.ServiceProvider.GetRequiredService<PressureSensorProvider>();
 
             switch (topic)
             {
@@ -24,7 +25,6 @@ public class MqttBrokerService(IServiceProvider _serviceProvider)
                         {
                             var data = JsonSerializer.Deserialize<PressureMeasurementsFromSensorDto>(Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
 
-                            var sensorProvider = scope.ServiceProvider.GetRequiredService<PressureSensorProvider>();
                             var validationService = scope.ServiceProvider.GetRequiredService<PressureValidationService>();
                             var dtoConverter = scope.ServiceProvider.GetRequiredService<PressureMeasurmentsDtoConvertService>();
 
@@ -39,7 +39,30 @@ public class MqttBrokerService(IServiceProvider _serviceProvider)
                         }
                         catch (JsonException ex)
                         {
-                            Console.Error.WriteLine($"Sensor data deserialization error: {ex.Message}");
+                            Console.Error.WriteLine($"Sensor measurements deserialization error: {ex.Message}");
+                        }
+
+                        break;
+                    }
+                case "sensors/pressure/add":
+                    {
+                        try
+                        {
+                            var data = JsonSerializer.Deserialize<AddSensorFromClientDto>(Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
+
+                            var converter = scope.ServiceProvider.GetRequiredService<PressureSensorDtoConvertService>();
+
+                            var sensor = await sensorProvider.GetByImeiWithMeasurementsAndSettingsAsync(data.Imei);
+                            if (sensor is null)
+                            {
+                                sensor = converter.ConvertToModel(data);
+                                await sensorProvider.AddAsync(sensor);
+                                await sensorProvider.SaveChangesAsync();
+                            }
+                        }
+                        catch (JsonException ex)
+                        {
+                            Console.Error.WriteLine($"Sensor deserialization error: {ex.Message}");
                         }
 
                         break;
