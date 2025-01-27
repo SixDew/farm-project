@@ -22,4 +22,8 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="client-app\" />
+  </ItemGroup>
+
 </Project>
