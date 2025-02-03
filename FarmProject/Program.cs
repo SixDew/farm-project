@@ -30,12 +30,12 @@ builder.Services.AddSingleton<MqttBrokerService>();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Listen(System.Net.IPAddress.Parse("188.225.44.185"), 1883, listenOptions =>
+    options.ListenLocalhost(1883, listenOptions =>
     {
         listenOptions.UseMqtt();
     });
 
-    options.Listen(System.Net.IPAddress.Parse("188.225.44.185"), 7061, op =>
+    options.ListenLocalhost(7061, op =>
     {
         op.UseHttps();
     });
@@ -48,6 +48,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors(builder =>
+    builder.WithOrigins("http://localhost:5173")
+           .AllowAnyMethod()
+           .AllowAnyHeader());
 }
 
 app.MapControllers();
