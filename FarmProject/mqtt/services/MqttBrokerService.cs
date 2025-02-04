@@ -1,6 +1,7 @@
 ﻿using FarmProject.db.services.providers;
 using FarmProject.dto;
 using FarmProject.dto.servisces;
+using FarmProject.hubs.services;
 using FarmProject.validation.services;
 using MQTTnet.Server;
 using System.Text;
@@ -8,8 +9,10 @@ using System.Text.Json;
 
 namespace FarmProject.mqtt.services;
 
-public class MqttBrokerService(IServiceProvider _serviceProvider)
+public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHubService measurementsHubService)
 {
+    private readonly MeasurementsHubService _measurementsHubService = measurementsHubService;
+
     public async Task InterceptingPublishAsync(InterceptingPublishEventArgs e)
     {
         using (var scope = _serviceProvider.CreateScope())
@@ -35,6 +38,8 @@ public class MqttBrokerService(IServiceProvider _serviceProvider)
                                 var measurementsModel = dtoConverter.ConvertToModel(data);
                                 sensorMeasurementsList.Add(measurementsModel);
                                 await sensorProvider.SaveChangesAsync();
+
+                                await _measurementsHubService.SendMeasurementsToAllSync(new hubs.HubMeasurementsData { Measurement1 = data.PRR1, Measurement2 = data.PRR2 });
                             }
                         }
                         catch (JsonException ex)

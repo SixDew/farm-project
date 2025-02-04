@@ -1,6 +1,8 @@
 ﻿using FarmProject.db.services;
 using FarmProject.db.services.providers;
 using FarmProject.dto.servisces;
+using FarmProject.hubs;
+using FarmProject.hubs.services;
 using FarmProject.mqtt.services;
 using FarmProject.validation.services;
 using MQTTnet.AspNetCore;
@@ -15,6 +17,8 @@ builder.Services.AddTransient<PressureMeasurmentsDtoConvertService>();
 builder.Services.AddTransient<PressureSettingsDtoConvertService>();
 builder.Services.AddTransient<PressureSensorDtoConvertService>();
 builder.Services.AddScoped<PressureValidationService>();
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<MeasurementsHubService>();
 
 builder.Services.AddMqttConnectionHandler();
 builder.Services.AddHostedMqttServer(OptionsBuilder =>
@@ -51,10 +55,12 @@ if (app.Environment.IsDevelopment())
     app.UseCors(builder =>
     builder.WithOrigins("http://localhost:5173")
            .AllowAnyMethod()
-           .AllowAnyHeader());
+           .AllowAnyHeader()
+           .AllowCredentials());
 }
 
 app.MapControllers();
+app.MapHub<MeasurementsHub>("/sensors/measurements/hub");
 
 app.UseMqttServer(server =>
 {
