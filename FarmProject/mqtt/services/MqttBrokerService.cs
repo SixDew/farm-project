@@ -39,7 +39,7 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
                                 sensorMeasurementsList.Add(measurementsModel);
                                 await sensorProvider.SaveChangesAsync();
 
-                                await _measurementsHubService.SendMeasurementsToAllSync(new hubs.HubMeasurementsData { Measurement1 = data.PRR1, Measurement2 = data.PRR2 });
+                                await _measurementsHubService.SendMeasurementsAsync(new hubs.HubMeasurementsData { Measurement1 = data.PRR1, Measurement2 = data.PRR2 }, data.IMEI);
                             }
                         }
                         catch (JsonException ex)

@@ -1,19 +1,31 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using System.Text.Json;
 
 namespace FarmProject.hubs;
 
 public class MeasurementsHub : Hub
 {
-    public async Task SendPressureMeasurement(HubMeasurementsData data)
+    public async Task AddPressureClientToGroup(string imei)
     {
-        await Clients.All.SendAsync("ReciveMeasurements", JsonSerializer.Serialize(data));
+        await Groups.AddToGroupAsync(Context.ConnectionId, GroupNameComposer.GetPressureGroup(imei));
     }
-
+    public async Task RemovePressureClientFromGroup(string imei)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, GroupNameComposer.GetPressureGroup(imei));
+    }
 }
 
 public record HubMeasurementsData
 {
     public double Measurement1 { get; init; }
     public double Measurement2 { get; init; }
+}
+
+public class GroupNameComposer
+{
+    private static string PRESSURE_GROUP_PREFIX = "pressure:";
+
+    public static string GetPressureGroup(string imei)
+    {
+        return $"{PRESSURE_GROUP_PREFIX}{imei}";
+    }
 }

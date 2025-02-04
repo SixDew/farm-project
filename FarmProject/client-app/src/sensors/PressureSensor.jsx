@@ -10,15 +10,32 @@ export default function PressureSensor(){
     const [measurement2, setMeasurement2] = useState()
 
     useEffect(()=>{
-        connection.on("ReciveMeasurements",(message)=>{
-            let data = JSON.parse(message)
-            console.log(data)
-            setMeasurement1(data.Measurement1)
-            setMeasurement2(data.Measurement2)
-        },[])
+        async function setConnection() {
+            if(connection.state === 'Disconnected'){
+                await connection.start()
+                .then(()=>{console.log("StartConnection")})
+                .catch((err)=>{console.error("Connection Error", err)})
+            }
 
-        return ()=>connection.off("ReciveMeasurements")
-    })
+            if(connection.state === 'Connected'){
+                connection.invoke("AddPressureClientToGroup", imei).catch((err)=>console.error("add to group error", err))
+            }
+
+            connection.on('ReciveMeasurements',(data)=>{
+                setMeasurement1(data.measurement1)
+                setMeasurement2(data.measurement2)
+            })
+        }
+
+        setConnection()
+
+        return ()=>{
+            connection.off('ReciveMeasurements')
+            if(connection.state === 'Connected'){
+                connection.invoke('RemovePressureClientFromGroup', imei)
+            }
+        }
+    },[imei])
 
 
     return (
