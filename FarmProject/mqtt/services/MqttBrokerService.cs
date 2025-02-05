@@ -37,14 +37,14 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
 
                                 var measurementsModel = dtoConverter.ConvertToModel(data);
                                 sensorMeasurementsList.Add(measurementsModel);
-                                await sensorProvider.SaveChangesAsync();
 
+                                await sensorProvider.SaveChangesAsync();
                                 await _measurementsHubService.SendMeasurementsAsync(new hubs.HubMeasurementsData { Measurement1 = data.PRR1, Measurement2 = data.PRR2 }, data.IMEI);
                             }
                         }
-                        catch (JsonException ex)
+                        catch (Exception ex)
                         {
-                            Console.Error.WriteLine($"Sensor measurements deserialization error: {ex.Message}");
+                            Console.Error.WriteLine($"Measurements safe error: {ex.Message}");
                         }
 
                         break;
