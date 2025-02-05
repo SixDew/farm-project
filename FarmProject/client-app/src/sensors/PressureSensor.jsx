@@ -22,6 +22,7 @@ export default function PressureSensor(){
             }
 
             connection.on('ReciveMeasurements',(data)=>{
+                console.log(Date.now(), data)
                 setMeasurement1(data.measurement1)
                 setMeasurement2(data.measurement2)
             })
