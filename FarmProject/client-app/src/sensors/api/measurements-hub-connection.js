@@ -7,8 +7,4 @@ const connection = new signalR.HubConnectionBuilder()
 .withAutomaticReconnect()
 .build()
 
-// connection.start()
-// .then(()=>{console.log("StartConnection")})
-// .catch((err)=>{console.error("Connection Error", err)})
-
 export default connection

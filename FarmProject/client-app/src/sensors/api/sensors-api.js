@@ -4,3 +4,10 @@ export async function getAllPressureSensors(){
         return await response.json()
     }
 }
+
+export async function getPressureMeasurements(imei){
+    const response = await fetch(`https://localhost:7061/sensors/pressure/measurements/${imei}`)
+    if(response.ok){
+        return await response.json()
+    }
+}

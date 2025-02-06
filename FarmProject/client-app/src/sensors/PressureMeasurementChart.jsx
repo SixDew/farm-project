@@ -2,9 +2,10 @@ import ReactECharts from 'echarts-for-react'
 //импортировать только нужное в будущем
 import { useEffect, useState, useRef, useMemo } from 'react';
 
-export default function PressureMeasurementChart({measurement1, measurement2}){
+export default function PressureMeasurementChart({measurements, legacyMeasurements}){
     const [measurements1, setMeasurements1] = useState([])
     const [measurements2, setMeasurements2] = useState([])
+    const [dates, setDates] = useState([])
     const chart = useRef(null)
 
     const initOption = useMemo(()=>{
@@ -17,19 +18,19 @@ export default function PressureMeasurementChart({measurement1, measurement2}){
           data: ['Измерения 1', 'Измерения 2']
         },
         xAxis: {
-          data: [...Array(1000).keys()].map(i=>i+1)
+          data: []
         },
         yAxis: {},
         series: [
           {
             name: 'Измерения 1',
             type: 'line',
-            data: measurements1
+            data: []
           },
           {
             name: 'Измерения 2',
             type: 'line',
-            data: measurements2
+            data: []
           }
         ],
         dataZoom:[
@@ -48,27 +49,46 @@ export default function PressureMeasurementChart({measurement1, measurement2}){
     }, [])
 
     useEffect(()=>{
-        setMeasurements1((prev)=>[...prev, measurement1])
-        setMeasurements2((prev)=>[...prev, measurement2])
+      setMeasurements1(legacyMeasurements.map(data=>data.measurement1))
+      setMeasurements2(legacyMeasurements.map(data=>data.measurement2))
+      setDates(legacyMeasurements.map(data=>data.measurementsTime))
 
-        const option = {
-          series: [
-            {
-              name: 'Измерения 1',
-              type: 'line',
-              data: measurements1
-            },
-            {
-              name: 'Измерения 2',
-              type: 'line',
-              data: measurements2
-            }
-          ],
+      setOption(measurements1, measurements2, chart, dates)
+
+    },[legacyMeasurements])
+
+    useEffect(()=>{
+        if(measurements){
+          setMeasurements1((prev)=>[...prev, measurements.measurement1])
+          setMeasurements2((prev)=>[...prev, measurements.measurement2])
+          setDates((prev)=>[...prev, measurements.measurementsTime])
+
+          setOption(measurements1, measurements2, chart, dates)
         }
-
-        chart.current.getEchartsInstance().setOption(option)
-    },[measurement1,measurement2])
+    },[measurements])
     return (
         <ReactECharts option={initOption} ref={chart}></ReactECharts>
     )
+}
+
+function setOption(measurements1, measurements2, chart, dates){
+  const option = {
+    series: [
+      {
+        name: 'Измерения 1',
+        type: 'line',
+        data: measurements1
+      },
+      {
+        name: 'Измерения 2',
+        type: 'line',
+        data: measurements2
+      }
+    ],
+    xAxis:{
+      data: dates
+    }
+  }
+
+  chart.current.getEchartsInstance().setOption(option)
 }

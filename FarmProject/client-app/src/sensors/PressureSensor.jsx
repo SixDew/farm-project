@@ -3,12 +3,13 @@ import './PressureSensor.css'
 import { useNavigate, useParams } from "react-router-dom";
 import connection from "./api/measurements-hub-connection";
 import PressureMeasurementChart from "./PressureMeasurementChart";
+import { getPressureMeasurements } from './api/sensors-api'
 
 export default function PressureSensor(){
     const navigate = useNavigate()
     const {imei} = useParams()
-    const [measurement1, setMeasurement1] = useState()
-    const [measurement2, setMeasurement2] = useState()
+    const [measurementsData, setMeasurementsData] = useState()
+    const [legacyMeasurements, setLegacyMeasurements] = useState([])
 
     useEffect(()=>{
         async function setConnection() {
@@ -24,11 +25,19 @@ export default function PressureSensor(){
 
             connection.on('ReciveMeasurements',(data)=>{
                 console.log(Date.now(), data)
-                setMeasurement1(data.measurement1)
-                setMeasurement2(data.measurement2)
+                setMeasurementsData(data)
             })
         }
 
+        async function getLegacyMeasurements() {
+            getPressureMeasurements(imei)
+            .then((data)=>{
+                console.log('leg')
+                setLegacyMeasurements(data)
+            })
+        }
+
+        getLegacyMeasurements()
         setConnection()
 
         return ()=>{
@@ -44,9 +53,9 @@ export default function PressureSensor(){
         <Fragment>
             <h1>Imei:{imei}</h1>
             <button onClick={()=>navigate('/')}>Назад</button>
-            <h2>M1:{measurement1}</h2>
-            <h2>M2:{measurement2}</h2>
-            <PressureMeasurementChart measurement1={measurement1} measurement2={measurement2}/>
+            <h2>M1:{measurementsData?.measurement1}</h2>
+            <h2>M2:{measurementsData?.measurement2}</h2>
+            <PressureMeasurementChart measurements={measurementsData} legacyMeasurements={legacyMeasurements}/>
         </Fragment>
     )
 }
