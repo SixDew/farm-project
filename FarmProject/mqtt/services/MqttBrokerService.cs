@@ -1,5 +1,6 @@
 ﻿using FarmProject.db.services.providers;
 using FarmProject.dto;
+using FarmProject.dto.pressure_sensor.measurements;
 using FarmProject.dto.servisces;
 using FarmProject.hubs.services;
 using FarmProject.validation.services;
@@ -39,7 +40,12 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
                                 sensorMeasurementsList.Add(measurementsModel);
 
                                 await sensorProvider.SaveChangesAsync();
-                                await _measurementsHubService.SendMeasurementsAsync(new hubs.HubMeasurementsData { Measurement1 = data.PRR1, Measurement2 = data.PRR2 }, data.IMEI);
+                                await _measurementsHubService.SendMeasurementsAsync(new HubPressureMeasurementsToClientDto
+                                {
+                                    Measurement1 = measurementsModel.PRR1,
+                                    Measurement2 = measurementsModel.PRR2,
+                                    MeasurementsTime = measurementsModel.MeasurementsTime
+                                }, data.IMEI);
                             }
                         }
                         catch (Exception ex)

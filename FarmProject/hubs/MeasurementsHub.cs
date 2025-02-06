@@ -14,12 +14,6 @@ public class MeasurementsHub : Hub
     }
 }
 
-public record HubMeasurementsData
-{
-    public double Measurement1 { get; init; }
-    public double Measurement2 { get; init; }
-}
-
 public class GroupNameComposer
 {
     private static string PRESSURE_GROUP_PREFIX = "pressure:";
