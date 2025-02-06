@@ -8,9 +8,9 @@ namespace FarmProject.dto.servisces
         {
             return new PressureMeasurementsToClientDto()
             {
-                Measurment1 = measurments.PRR1,
-                Measurment2 = measurments.PRR2,
-                MeasurmentsTime = measurments.MeasurementsTime
+                Measurement1 = measurments.PRR1,
+                Measurement2 = measurments.PRR2,
+                MeasurementsTime = measurments.MeasurementsTime
             };
         }
 
