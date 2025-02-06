@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 import './PressureSensor.css'
 import { useNavigate, useParams } from "react-router-dom";
 import connection from "./api/measurements-hub-connection";
+import PressureMeasurementChart from "./PressureMeasurementChart";
 
 export default function PressureSensor(){
     const navigate = useNavigate()
@@ -45,6 +46,7 @@ export default function PressureSensor(){
             <button onClick={()=>navigate('/')}>Назад</button>
             <h2>M1:{measurement1}</h2>
             <h2>M2:{measurement2}</h2>
+            <PressureMeasurementChart measurement1={measurement1} measurement2={measurement2}/>
         </Fragment>
     )
 }
