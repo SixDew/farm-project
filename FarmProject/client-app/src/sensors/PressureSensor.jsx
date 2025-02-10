@@ -3,13 +3,15 @@ import './PressureSensor.css'
 import { useNavigate, useParams } from "react-router-dom";
 import connection from "./api/measurements-hub-connection";
 import PressureMeasurementChart from "./PressureMeasurementChart";
-import { getPressureMeasurements } from './api/sensors-api'
+import { getPressureSensorData } from './api/sensors-api'
+import PressureSensorSettings from "./PressureSensorSettings";
 
 export default function PressureSensor(){
     const navigate = useNavigate()
     const {imei} = useParams()
     const [measurementsData, setMeasurementsData] = useState()
     const [legacyMeasurements, setLegacyMeasurements] = useState([])
+    const [showSettings, setShowSettings] = useState(false)
 
     useEffect(()=>{
         async function setConnection() {
@@ -29,15 +31,12 @@ export default function PressureSensor(){
             })
         }
 
-        async function getLegacyMeasurements() {
-            getPressureMeasurements(imei)
-            .then((data)=>{
-                console.log('leg')
-                setLegacyMeasurements(data)
-            })
+        async function getSensorData() {
+            getPressureSensorData(imei)
+            .then((data)=>setLegacyMeasurements(data.measurements))
         }
 
-        getLegacyMeasurements()
+        getSensorData()
         setConnection()
 
         return ()=>{
@@ -51,10 +50,21 @@ export default function PressureSensor(){
 
     return (
         <Fragment>
+            <div id='main-info-container'>
+            <div id='base-info-container'>
             <h1>Imei:{imei}</h1>
             <button onClick={()=>navigate('/')}>Назад</button>
             <h2>M1:{measurementsData?.measurement1}</h2>
             <h2>M2:{measurementsData?.measurement2}</h2>
+            </div>
+            
+            <div id='settings-container'>
+                <button id='show-settings' onClick={()=>setShowSettings((prev)=>!prev)}>Настройки</button>
+                {showSettings? <PressureSensorSettings imei={imei}/> : null}
+            </div>
+
+            </div>
+
             <PressureMeasurementChart measurements={measurementsData} legacyMeasurements={legacyMeasurements}/>
         </Fragment>
     )

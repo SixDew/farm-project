@@ -1,0 +1,21 @@
+#main-container{
+    border: solid 5px red
+}
+
+#internal-settings-container{
+    display: flex;
+    flex-direction: column;
+
+    border: solid 5px yellowgreen;
+}
+
+.ok-message{
+    color: green;
+    text-shadow: 0 0 2px black;
+}
+
+.error-message{
+    color: red;
+    text-shadow: 0 0 1px black;
+
+}

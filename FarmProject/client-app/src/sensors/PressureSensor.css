@@ -3,3 +3,19 @@
 *{
     font-family: 'Poppins';
 }
+
+#main-info-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    border: solid 5px green;
+}
+
+#base-info-container{
+    border: solid 5px rgb(238, 255, 0);
+}
+
+#settings-container{
+    border: solid 5px blue;
+}
