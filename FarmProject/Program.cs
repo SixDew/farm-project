@@ -33,6 +33,7 @@ builder.Services.AddConnections();
 
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<PressureSensorProvider>();
+builder.Services.AddScoped<UserProvider>();
 builder.Services.AddTransient<PressureMeasurmentsDtoConvertService>();
 builder.Services.AddTransient<PressureSettingsDtoConvertService>();
 builder.Services.AddTransient<PressureSensorDtoConvertService>();

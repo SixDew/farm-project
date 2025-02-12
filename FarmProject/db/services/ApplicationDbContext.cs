@@ -27,6 +27,7 @@ public class ApplicationDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfiguration(new PressureSensorConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
 
         modelBuilder.Entity<PressureSensor>().HasData(
                 new PressureSensor()
@@ -53,6 +54,9 @@ public class ApplicationDbContext : DbContext
                     Id = 1,
                     IMEI = "1"
                 }
+            );
+        modelBuilder.Entity<User>().ToTable("Users").HasData(
+            new User() { Id = 1, Key = "test" }
             );
     }
 }
