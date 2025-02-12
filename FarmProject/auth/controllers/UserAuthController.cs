@@ -1,4 +1,5 @@
 ﻿using FarmProject.auth.claims;
+using FarmProject.db.services.providers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -15,8 +16,13 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions) :
     private readonly AuthenticationJwtOptions jwtOptions = jwtOptions.Value;
 
     [HttpPost]
-    public async Task<IActionResult> CreateAccessToken([FromBody] string key)
+    public async Task<IActionResult> CreateAccessToken([FromBody] string key, [FromServices] UserProvider users)
     {
+        if (await users.GetByKey(key) is null)
+        {
+            return BadRequest("Invalid key");
+        }
+
         var claims = new List<Claim> { new UserClaim(key) };
         var jwt = new JwtSecurityToken(
                 issuer: AuthenticationJwtOptions.ISSUER,
