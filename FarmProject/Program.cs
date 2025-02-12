@@ -1,14 +1,32 @@
-﻿using FarmProject.db.services;
+﻿using FarmProject.auth;
+using FarmProject.db.services;
 using FarmProject.db.services.providers;
 using FarmProject.dto.servisces;
 using FarmProject.hubs;
 using FarmProject.hubs.services;
 using FarmProject.mqtt.services;
 using FarmProject.validation.services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using MQTTnet.AspNetCore;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidIssuer = AuthenticationJwtOptions.ISSUER,
+        ValidAudience = AuthenticationJwtOptions.AUDIENCE,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]!))
+    };
+});
 builder.Services.AddConnections();
 
 builder.Services.AddDbContext<ApplicationDbContext>();
@@ -47,6 +65,9 @@ builder.WebHost.ConfigureKestrel(options =>
 
 
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
