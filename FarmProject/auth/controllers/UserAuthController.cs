@@ -20,7 +20,7 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions) :
     {
         if (await users.GetByKey(key) is null)
         {
-            return BadRequest("Invalid key");
+            return Unauthorized("Invalid key");
         }
 
         var claims = new List<Claim> { new UserClaim(key) };
