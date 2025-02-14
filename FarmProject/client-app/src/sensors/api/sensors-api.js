@@ -1,3 +1,5 @@
+import serverUrl from "../../server-url"
+
 export async function getAllPressureSensors(){
     return await getRequest(`${serverUrl}/sensors/pressure`)
 }
@@ -31,5 +33,3 @@ async function getRequest(url){
         return await response.json()
     }
 }
-
-const serverUrl = 'https://localhost:7061'

@@ -4,6 +4,7 @@ import './App.css'
 import SensorsMiniContainer from './SensorsMiniContainer.jsx'
 import {BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import PressureSensor from './PressureSensor.jsx'
+import LoginPage from '../LoginPage.jsx'
 
 export default function App(){
     let [sensors, setSensors] = useState([])
@@ -19,8 +20,9 @@ export default function App(){
         <div className='sensors-main-container'>
         <Router>
             <Routes>
-            <Route path='/' element={<SensorsMiniContainer sensors={sensors}/>}/>
-            <Route path='/sensors/pressure/:imei' element={<PressureSensor/>}/>
+                <Route path='/login' element={<LoginPage/>}/>
+                <Route path='/' element={<SensorsMiniContainer sensors={sensors}/>}/>
+                <Route path='/sensors/pressure/:imei' element={<PressureSensor/>}/>
             </Routes>
         </Router>
         </div>
