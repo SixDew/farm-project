@@ -23,7 +23,7 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions) :
             return Unauthorized("Invalid key");
         }
 
-        var claims = new List<Claim> { new UserClaim(key) };
+        var claims = new List<Claim> { new UserKeyClaim(key), new UserRoleClaim() };
         var jwt = new JwtSecurityToken(
                 issuer: AuthenticationJwtOptions.ISSUER,
                 audience: AuthenticationJwtOptions.AUDIENCE,

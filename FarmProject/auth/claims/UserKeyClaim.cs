@@ -2,7 +2,7 @@
 
 namespace FarmProject.auth.claims
 {
-    public class UserClaim(string key) : Claim("key", key)
+    public class UserKeyClaim(string key) : Claim("key", key)
     {
     }
 }
