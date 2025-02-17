@@ -49,12 +49,9 @@ export default function PressureMeasurementChart({measurements, legacyMeasuremen
     }, [])
 
     useEffect(()=>{
-      setMeasurements1(legacyMeasurements.map(data=>data.measurement1))
-      setMeasurements2(legacyMeasurements.map(data=>data.measurement2))
-      setDates(legacyMeasurements.map(data=>data.measurementsTime))
-
-      setOption(measurements1, measurements2, chart, dates)
-
+      setMeasurements1((prev)=>[...prev, ...legacyMeasurements.map(data=>data.measurement1)])
+      setMeasurements2((prev)=>[...prev, ...legacyMeasurements.map(data=>data.measurement2)])
+      setDates((prev)=>[...prev, legacyMeasurements.map(data=>data.measurementsTime)])
     },[legacyMeasurements])
 
     useEffect(()=>{
@@ -62,10 +59,12 @@ export default function PressureMeasurementChart({measurements, legacyMeasuremen
           setMeasurements1((prev)=>[...prev, measurements.measurement1])
           setMeasurements2((prev)=>[...prev, measurements.measurement2])
           setDates((prev)=>[...prev, measurements.measurementsTime])
-
-          setOption(measurements1, measurements2, chart, dates)
         }
     },[measurements])
+
+    useEffect(()=>{
+      setOption(measurements1, measurements2, chart, dates)
+    }, [measurements1, measurements2, dates])
     return (
         <ReactECharts option={initOption} ref={chart}></ReactECharts>
     )
