@@ -3,11 +3,13 @@ import './PressureSensorSettings.css'
 import { getPressureSettings, updatePressureSettings } from './api/sensors-api'
 import SettingsMenuNumElemet from './SettingsMenuNumElement'
 import SettingsMenuBoolElemet from './SettingsMenuBoolElemet'
+import { useNavigate } from 'react-router-dom'
  
 export default function PressureSensorSettings({imei}){
     const [settings, setSettings] = useState(null)
     const [showSaveOkMessage, setShowSaveOkMessage] = useState(false)
     const [showSaveErrorMessage, setShowSaveErrorMessage] = useState(false)
+    const nav = useNavigate()
 
     async function saveSettings(){
         const response = await updatePressureSettings(imei, settings)
@@ -26,8 +28,14 @@ export default function PressureSensorSettings({imei}){
     useEffect(()=>{
         async function getSettings(){
             if(!settings){
-                const settingsData = await getPressureSettings(imei)
-                setSettings(settingsData)
+                const response = await getPressureSettings(imei)
+                if(response.status === 401){
+                    nav('/login')
+                }
+                if(response.ok){
+                    const settingsData = await response.json()
+                    setSettings(settingsData)
+                }
             }
         }
 

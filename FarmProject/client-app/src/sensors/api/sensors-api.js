@@ -2,31 +2,35 @@ import serverUrl from "../../server-url"
 
 export async function getAllPressureSensors(){
     console.log(new Date().toUTCString())
-    return await getRequestWithAuthorize(`${serverUrl}/sensors/pressure`)
+    return await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure`)
 }
 
 export async function getPressureMeasurements(imei){
-    return await getRequest(`${serverUrl}/sensors/pressure/measurements/${imei}`)
+    return await sendRequest(`${serverUrl}/sensors/pressure/measurements/${imei}`)
 }
 
 export async function getPressureSensorData(imei){
-    return await getRequest(`${serverUrl}/sensors/pressure/${imei}`)
+    return await sendRequest(`${serverUrl}/sensors/pressure/${imei}`)
 }
 
 // export async function getPressureSettings(imei){
-//     return await getRequest(`${serverUrl}/sensors/pressure/settings/${imei}`)
+//     return await sendRequest(`${serverUrl}/sensors/pressure/settings/${imei}`)
+// }
+
+// export async function getPressureSettings(imei){
+//     const response = await fetch(`${serverUrl}/sensors/pressure/settings/${imei}`, {
+//         method: 'GET',
+//         headers: {
+//             'Authorization':AuthorizathionHeader
+//         }
+//     })
+//     if(response.ok){
+//         return await response.json()
+//     }
 // }
 
 export async function getPressureSettings(imei){
-    const response = await fetch(`${serverUrl}/sensors/pressure/settings/${imei}`, {
-        method: 'GET',
-        headers: {
-            'Authorization':AuthorizathionHeader
-        }
-    })
-    if(response.ok){
-        return await response.json()
-    }
+    return await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/settings/${imei}`)
 }
 
 export async function updatePressureSettings(imei, settings) {
@@ -40,14 +44,14 @@ export async function updatePressureSettings(imei, settings) {
     return response
 }
 
-async function getRequest(url){
+async function sendRequest(url){
     const response = await fetch(url)
     if(response.ok){
         return await response.json()
     }
 }
 
-async function getRequestWithAuthorize(url) {
+async function sendRequestWithAuthorize(url) {
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(url, {
         method: 'GET',
