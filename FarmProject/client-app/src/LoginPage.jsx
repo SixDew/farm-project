@@ -16,7 +16,12 @@ export default function LoginPage(){
             if(response.ok){
                 const key = await response.text()
                 localStorage.setItem('userKey', key)
-                navigate('/')
+                if(window.history.length > 0){
+                    navigate(-1)
+                }
+                else{
+                    navigate(true)
+                }
             }
         })
     }
