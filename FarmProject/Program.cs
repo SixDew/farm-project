@@ -69,9 +69,6 @@ builder.WebHost.ConfigureKestrel(options =>
 
 var app = builder.Build();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -82,6 +79,9 @@ if (app.Environment.IsDevelopment())
            .AllowAnyHeader()
            .AllowCredentials());
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<MeasurementsHub>("/sensors/measurements/hub");
