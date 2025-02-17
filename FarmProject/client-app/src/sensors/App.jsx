@@ -7,21 +7,12 @@ import PressureSensor from './PressureSensor.jsx'
 import LoginPage from '../LoginPage.jsx'
 
 export default function App(){
-    let [sensors, setSensors] = useState([])
-    useEffect(()=>{
-        async function getSensors() {
-            const data = await getAllPressureSensors()
-            setSensors(data)
-        }
-        getSensors()
-    },[])
-
     return (
         <div className='sensors-main-container'>
         <Router>
             <Routes>
                 <Route path='/login' element={<LoginPage/>}/>
-                <Route path='/' element={<SensorsMiniContainer sensors={sensors}/>}/>
+                <Route path='/' element={<SensorsMiniContainer/>}/>
                 <Route path='/sensors/pressure/:imei' element={<PressureSensor/>}/>
             </Routes>
         </Router>

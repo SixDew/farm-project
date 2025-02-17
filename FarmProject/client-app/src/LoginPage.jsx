@@ -9,11 +9,13 @@ export default function LoginPage(){
 
     function login(pass){
         sendLogin(pass)
-        .then(response=>{
+        .then(async response=>{
             if(response.status === 401){
                 setUnauthorizedError(true)
             }
             if(response.ok){
+                const key = await response.text()
+                localStorage.setItem('userKey', key)
                 navigate('/')
             }
         })

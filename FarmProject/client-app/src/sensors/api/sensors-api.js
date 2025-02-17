@@ -1,7 +1,8 @@
 import serverUrl from "../../server-url"
 
 export async function getAllPressureSensors(){
-    return await getRequest(`${serverUrl}/sensors/pressure`)
+    console.log(new Date().toUTCString())
+    return await getRequestWithAuthorize(`${serverUrl}/sensors/pressure`)
 }
 
 export async function getPressureMeasurements(imei){
@@ -12,8 +13,20 @@ export async function getPressureSensorData(imei){
     return await getRequest(`${serverUrl}/sensors/pressure/${imei}`)
 }
 
+// export async function getPressureSettings(imei){
+//     return await getRequest(`${serverUrl}/sensors/pressure/settings/${imei}`)
+// }
+
 export async function getPressureSettings(imei){
-    return await getRequest(`${serverUrl}/sensors/pressure/settings/${imei}`)
+    const response = await fetch(`${serverUrl}/sensors/pressure/settings/${imei}`, {
+        method: 'GET',
+        headers: {
+            'Authorization':AuthorizathionHeader
+        }
+    })
+    if(response.ok){
+        return await response.json()
+    }
 }
 
 export async function updatePressureSettings(imei, settings) {
@@ -32,4 +45,15 @@ async function getRequest(url){
     if(response.ok){
         return await response.json()
     }
+}
+
+async function getRequestWithAuthorize(url) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'Authorization':AuthorizathionHeader
+        }
+    })
+    return response
 }
