@@ -32,7 +32,7 @@ export default function PressureSensor(){
         }
 
         async function getSensorData() {
-            getPressureSensorData(imei)
+            getPressureSensorData(imei, ()=>{navigate('/login')})
             .then((data)=>setLegacyMeasurements(data.measurements))
         }
 

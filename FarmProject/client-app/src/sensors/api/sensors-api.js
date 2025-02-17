@@ -9,9 +9,9 @@ export async function getPressureMeasurements(imei){
     return await sendRequest(`${serverUrl}/sensors/pressure/measurements/${imei}`)
 }
 
-export async function getPressureSensorData(imei){
-    return await sendRequest(`${serverUrl}/sensors/pressure/${imei}`)
-}
+// export async function getPressureSensorData(imei){
+//     return await sendRequest(`${serverUrl}/sensors/pressure/${imei}`)
+// }
 
 // export async function getPressureSettings(imei){
 //     return await sendRequest(`${serverUrl}/sensors/pressure/settings/${imei}`)
@@ -28,6 +28,16 @@ export async function getPressureSensorData(imei){
 //         return await response.json()
 //     }
 // }
+
+export async function getPressureSensorData(imei, redirect){
+    const response = await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/${imei}`)
+    if(response.status === 401){
+        redirect()
+    }
+    if(response.ok){
+        return await response.json()
+    }
+}
 
 export async function getPressureSettings(imei){
     return await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/settings/${imei}`)
