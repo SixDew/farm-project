@@ -15,7 +15,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<AuthenticationJwtOptions>(builder.Configuration.GetSection("JWT"));
 
-builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new()
@@ -26,9 +25,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidAudience = AuthenticationJwtOptions.AUDIENCE,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]!))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]!)),
+        ClockSkew = TimeSpan.Zero
     };
 });
+builder.Services.AddAuthorization();
 builder.Services.AddConnections();
 
 builder.Services.AddDbContext<ApplicationDbContext>();
