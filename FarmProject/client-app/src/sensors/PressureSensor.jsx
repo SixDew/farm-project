@@ -52,8 +52,8 @@ export default function PressureSensor(){
         <Fragment>
             <div id='main-info-container'>
             <div id='base-info-container'>
+            <button onClick={()=>navigate('/')} id="back-button">Назад</button>
             <h1>Imei:{imei}</h1>
-            <button onClick={()=>navigate('/')}>Назад</button>
             <h2>M1:{measurementsData?.measurement1}</h2>
             <h2>M2:{measurementsData?.measurement2}</h2>
             </div>

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import SensorMini from "./SensorMini.jsx"
 import './SensorsMiniContainer.css'
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { getAllPressureSensors } from "./api/sensors-api.js"
 
 export default function SensorsMiniContainer(){
@@ -23,10 +23,18 @@ export default function SensorsMiniContainer(){
     },[])
 
     return (
-        <div className="sensors-mini-container">
+        <Fragment>
+            <div>
+                <button id="exit-button" onClick={()=>{
+                    localStorage.setItem('userKey', '')
+                    navigate('/login')
+                }}>Выйти</button>
+            </div>
+            <div className="sensors-mini-container">
             {
             sensors.map((sensor)=> <SensorMini key={sensor.imei} imei={sensor.imei} gps={sensor.gps}></SensorMini>)
         }
         </div>
+        </Fragment>
     )
 }
