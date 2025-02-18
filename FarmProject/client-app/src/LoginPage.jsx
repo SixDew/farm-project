@@ -1,6 +1,7 @@
 import { useRef, useState } from "react"
-import { login as sendLogin } from "./sensors/user-login"
+import { login as sendLogin, adminLogin as sendAdminLogin } from "./sensors/user-login"
 import { useNavigate } from "react-router-dom"
+import "./LoginPage.css"
 
 export default function LoginPage(){
     const passInput = useRef(null)
@@ -10,26 +11,38 @@ export default function LoginPage(){
     function login(pass){
         sendLogin(pass)
         .then(async response=>{
-            if(response.status === 401){
-                setUnauthorizedError(true)
-            }
-            if(response.ok){
-                const key = await response.text()
-                localStorage.setItem('userKey', key)
-                if(window.history.length > 0){
-                    navigate(-1)
-                }
-                else{
-                    navigate(true)
-                }
-            }
+            responseHandle(response)
         })
     }
 
+    function adminLogin(pass){
+        sendAdminLogin(pass)
+        .then(async response=>{
+            responseHandle(response)
+        })
+    }
+
+    async function responseHandle(response) {
+        if(response.status === 401){
+            setUnauthorizedError(true)
+        }
+        if(response.ok){
+            const key = await response.text()
+            localStorage.setItem('userKey', key)
+            if(window.history.length > 0){
+                navigate(-1)
+            }
+            else{
+                navigate(true)
+            }
+        }
+    }
+
     return (
-        <div>
+        <div id="login-main-container">
             <input type="password" ref={passInput}></input>
             <button onClick={()=>login(passInput.current.value)}>Войти</button>
+            <button onClick={()=>adminLogin(passInput.current.value)}>Войти как администратор</button>
             {unauthorizedError && <p>Неверный ключ</p>}
         </div>
     )

@@ -1,0 +1,16 @@
+#login-main-container{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    
+
+    margin: 50vh auto;
+    width: fit-content;
+    background-color: gray;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+#login-main-container > * {
+    margin: 5px auto;
+}

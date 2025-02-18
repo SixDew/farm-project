@@ -11,19 +11,38 @@ namespace FarmProject.auth.controllers;
 
 [ApiController]
 [Route("/login")]
-public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions) : ControllerBase
+public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, UserProvider users) : ControllerBase
 {
     private readonly AuthenticationJwtOptions jwtOptions = jwtOptions.Value;
+    private readonly UserProvider _users = users;
 
     [HttpPost]
-    public async Task<IActionResult> CreateAccessToken([FromBody] string key, [FromServices] UserProvider users)
+    public async Task<IActionResult> CreateAccessToken([FromBody] string key)
     {
-        if (await users.GetByKey(key) is null)
+        if (await _users.GetUserByKey(key) is null)
         {
             return Unauthorized("Invalid key");
         }
 
         var claims = new List<Claim> { new UserKeyClaim(key), new UserRoleClaim() };
+        var jwt = new JwtSecurityToken(
+                issuer: AuthenticationJwtOptions.ISSUER,
+                audience: AuthenticationJwtOptions.AUDIENCE,
+                claims: claims,
+                expires: AuthenticationJwtOptions.EXPIRES,
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)), SecurityAlgorithms.HmacSha256)
+            );
+        return Ok(new JwtSecurityTokenHandler().WriteToken(jwt));
+    }
+
+    [HttpPost("/login/admin")]
+    public async Task<IActionResult> CreateAdminAccessToken([FromBody] string key)
+    {
+        if (await _users.GetAdminByKey(key) is null)
+        {
+            return Unauthorized();
+        }
+        var claims = new List<Claim> { new UserKeyClaim(key), new AdminRoleClaim() };
         var jwt = new JwtSecurityToken(
                 issuer: AuthenticationJwtOptions.ISSUER,
                 audience: AuthenticationJwtOptions.AUDIENCE,

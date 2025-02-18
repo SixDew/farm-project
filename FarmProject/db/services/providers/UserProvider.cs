@@ -1,4 +1,5 @@
 ﻿using DewLib.db;
+using FarmProject.auth;
 using FarmProject.db.models;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,16 @@ namespace FarmProject.db.services.providers
         public async Task<User?> GetByKey(string key)
         {
             return await _dbSet.FirstOrDefaultAsync(x => x.Key == key);
+        }
+
+        public async Task<User?> GetAdminByKey(string key)
+        {
+            return await _dbSet.FirstOrDefaultAsync(x => x.Key == key && x.Role == UserRoles.ADMIN);
+        }
+
+        public async Task<User?> GetUserByKey(string key)
+        {
+            return await _dbSet.FirstOrDefaultAsync(x => x.Key == key && x.Role == UserRoles.USER);
         }
     }
 }

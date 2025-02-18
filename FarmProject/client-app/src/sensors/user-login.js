@@ -10,3 +10,14 @@ export async function login(key){
     })
     return response
 }
+
+export async function adminLogin(key) {
+    const response = await fetch(`${serverUrl}/login/admin`, {
+        method: 'POST',
+        headers:{
+            'Content-Type':'application/json'
+        },
+        body:JSON.stringify(key)
+    })
+    return response
+}
