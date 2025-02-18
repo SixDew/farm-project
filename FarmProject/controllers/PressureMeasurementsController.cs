@@ -1,4 +1,5 @@
-﻿using FarmProject.db.services.providers;
+﻿using FarmProject.auth;
+using FarmProject.db.services.providers;
 using FarmProject.dto;
 using FarmProject.dto.servisces;
 using FarmProject.validation.services;
@@ -37,7 +38,7 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
     }
 
     [HttpGet("settings/{imei}")]
-    [Authorize(Roles = "user")]
+    [Authorize(Roles = UserRoles.USER)]
     public async Task<IActionResult> GetSettings([FromRoute] string imei,
         [FromServices] PressureSettingsDtoConvertService settingsConverter)
     {
@@ -47,7 +48,7 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
         return Ok(settingsConverter.ConvertToClient(settings));
     }
     [HttpPut("settings/{imei}")]
-    [Authorize(Roles = "user")]
+    [Authorize(Roles = UserRoles.USER)]
     public async Task<IActionResult> UpdateSetting([FromRoute] string imei,
         [FromServices] PressureSettingsDtoConvertService settingsConverter,
         [FromBody] PressureSensorSettingsFromClientDto settingsFromClient)
@@ -77,7 +78,7 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
         return Created($"sensors/pressure/{sensorData.IMEI}", converter.ConvertToClient(sensor));
     }
     [HttpGet("{imei}")]
-    [Authorize(Roles = "user")]
+    [Authorize(Roles = UserRoles.USER)]
     public async Task<IActionResult> GetSensor([FromRoute] string imei,
         [FromServices] PressureSensorDtoConvertService converter)
     {
@@ -88,7 +89,7 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
     }
 
     [HttpGet]
-    [Authorize(Roles = "user")]
+    [Authorize(Roles = UserRoles.USER)]
     public async Task<IActionResult> GetSensors([FromServices] PressureSensorDtoConvertService converter)
     {
         var sensors = await sensorProvider.GetAllAsync();

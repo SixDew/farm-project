@@ -1,4 +1,5 @@
-﻿using FarmProject.db.configs;
+﻿using FarmProject.auth;
+using FarmProject.db.configs;
 using FarmProject.db.models;
 using Microsoft.EntityFrameworkCore;
 
@@ -56,7 +57,7 @@ public class ApplicationDbContext : DbContext
                 }
             );
         modelBuilder.Entity<User>().ToTable("Users").HasData(
-            new User() { Id = 1, Key = "test" }
+            new User() { Id = 1, Key = "test", Role = UserRoles.USER }
             );
     }
 }

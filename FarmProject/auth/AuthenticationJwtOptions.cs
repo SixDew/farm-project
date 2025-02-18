@@ -8,7 +8,7 @@
         {
             get
             {
-                return DateTime.UtcNow.AddSeconds(10);
+                return DateTime.UtcNow.AddMinutes(60);
             }
         }
         public string Key { get; set; }

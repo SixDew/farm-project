@@ -2,6 +2,6 @@
 
 namespace FarmProject.auth.claims;
 
-public class UserRoleClaim() : Claim(ClaimTypes.Role, "user")
+public class UserRoleClaim() : Claim(ClaimTypes.Role, UserRoles.USER)
 {
 }
