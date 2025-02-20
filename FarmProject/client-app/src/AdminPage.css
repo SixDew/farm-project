@@ -1,0 +1,9 @@
+#main-admin-container{
+    display: flex;
+    flex-direction: column;
+}
+
+#users-container{
+    display: flex;
+    flex-direction: column;
+}

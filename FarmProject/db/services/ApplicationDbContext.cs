@@ -57,8 +57,8 @@ public class ApplicationDbContext : DbContext
                 }
             );
         modelBuilder.Entity<User>().ToTable("Users").HasData(
-            [new User() { Id = 1, Key = "test", Role = UserRoles.USER },
-            new User(){ Id= 2, Key = "admintest", Role = UserRoles.ADMIN }
+            [new User() { Id = 1, Key = "test", Role = UserRoles.USER, Name="testName", Phone="88888888888" },
+            new User(){ Id= 2, Key = "admintest", Role = UserRoles.ADMIN, Name="testName", Phone="88888888888"}
         ]
             );
     }

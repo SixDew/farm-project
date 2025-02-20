@@ -2,6 +2,7 @@
 using FarmProject.db.services;
 using FarmProject.db.services.providers;
 using FarmProject.dto.servisces;
+using FarmProject.dto.users.services;
 using FarmProject.hubs;
 using FarmProject.hubs.services;
 using FarmProject.mqtt.services;
@@ -35,6 +36,7 @@ builder.Services.AddConnections();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<PressureSensorProvider>();
 builder.Services.AddScoped<UserProvider>();
+builder.Services.AddTransient<UserDtoConverter>();
 builder.Services.AddTransient<PressureMeasurmentsDtoConvertService>();
 builder.Services.AddTransient<PressureSettingsDtoConvertService>();
 builder.Services.AddTransient<PressureSensorDtoConvertService>();

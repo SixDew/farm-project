@@ -1,5 +1,5 @@
 import { useRef, useState } from "react"
-import { login as sendLogin, adminLogin as sendAdminLogin } from "./sensors/user-login"
+import { login as sendLogin, adminLogin as sendAdminLogin } from "./sensors/users-api"
 import { useNavigate } from "react-router-dom"
 import "./LoginPage.css"
 
@@ -18,22 +18,26 @@ export default function LoginPage(){
     function adminLogin(pass){
         sendAdminLogin(pass)
         .then(async response=>{
-            responseHandle(response)
+            responseHandle(response, '/admin')
         })
     }
 
-    async function responseHandle(response) {
+    async function responseHandle(response, nav) {
         if(response.status === 401){
             setUnauthorizedError(true)
         }
         if(response.ok){
             const key = await response.text()
             localStorage.setItem('userKey', key)
+            if(nav){
+                navigate(nav)
+                return
+            }
             if(window.history.length > 0){
                 navigate(-1)
             }
             else{
-                navigate(true)
+                navigate('/')
             }
         }
     }

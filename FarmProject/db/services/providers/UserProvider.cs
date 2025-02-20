@@ -21,5 +21,10 @@ namespace FarmProject.db.services.providers
         {
             return await _dbSet.FirstOrDefaultAsync(x => x.Key == key && x.Role == UserRoles.USER);
         }
+
+        public async Task<List<User>> GetUsers()
+        {
+            return await _dbSet.Where(x => x.Role == UserRoles.USER).ToListAsync();
+        }
     }
 }
