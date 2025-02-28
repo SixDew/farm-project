@@ -43,11 +43,30 @@ export async function getPressureSettings(imei){
     return await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/settings/${imei}`)
 }
 
+export async function getAdminPressureSettings(imei){
+    return await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/admin/settings/${imei}`)
+}
+
 export async function updatePressureSettings(imei, settings) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(`${serverUrl}/sensors/pressure/settings/${imei}`,{
         method:'PUT',
         headers:{
-            'Content-Type':'application/json'
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+        body: JSON.stringify(settings)
+    })
+    return response
+}
+
+export async function updateAdminPressureSettings(imei, settings) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/sensors/pressure/admin/settings/${imei}`,{
+        method:'PUT',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
         },
         body: JSON.stringify(settings)
     })

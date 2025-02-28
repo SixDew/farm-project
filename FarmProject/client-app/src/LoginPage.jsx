@@ -11,22 +11,23 @@ export default function LoginPage(){
     function login(pass){
         sendLogin(pass)
         .then(async response=>{
-            responseHandle(response)
+            responseHandle(response, 'user')
         })
     }
 
     function adminLogin(pass){
         sendAdminLogin(pass)
         .then(async response=>{
-            responseHandle(response, '/admin')
+            responseHandle(response, 'admin', '/admin')
         })
     }
 
-    async function responseHandle(response, nav) {
+    async function responseHandle(response, role, nav) {
         if(response.status === 401){
             setUnauthorizedError(true)
         }
         if(response.ok){
+            localStorage.setItem('role', role)
             const key = await response.text()
             localStorage.setItem('userKey', key)
             if(nav){

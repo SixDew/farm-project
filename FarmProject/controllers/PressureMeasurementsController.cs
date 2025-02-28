@@ -1,6 +1,7 @@
 ﻿using FarmProject.auth;
 using FarmProject.db.services.providers;
 using FarmProject.dto;
+using FarmProject.dto.pressure_sensor.settings;
 using FarmProject.dto.servisces;
 using FarmProject.validation.services;
 using Microsoft.AspNetCore.Authorization;
@@ -38,7 +39,7 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
     }
 
     [HttpGet("settings/{imei}")]
-    [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
+    [Authorize(Roles = UserRoles.USER)]
     public async Task<IActionResult> GetSettings([FromRoute] string imei,
         [FromServices] PressureSettingsDtoConvertService settingsConverter)
     {
@@ -63,6 +64,33 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
         return Ok(settingsConverter.ConvertToClient(settings));
 
     }
+    [HttpGet("admin/settings/{imei}")]
+    [Authorize(Roles = UserRoles.ADMIN)]
+    public async Task<IActionResult> GetAdminSettings([FromRoute] string imei,
+        [FromServices] PressureSettingsDtoConvertService settingsConverter)
+    {
+        var settings = await sensorProvider.GetSettingsByImeiAsync(imei);
+        if (settings is null) return NotFound(new { message = "Sensor is not exist" });
+
+        return Ok(settingsConverter.ConvertToAdminClient(settings));
+    }
+    [HttpPut("admin/settings/{imei}")]
+    [Authorize(Roles = UserRoles.ADMIN)]
+    public async Task<IActionResult> UpdateAdminSetting([FromRoute] string imei,
+        [FromServices] PressureSettingsDtoConvertService settingsConverter,
+        [FromBody] PressureSensorSettingsFromAdminClientDto settingsFromClient)
+    {
+        var settings = await sensorProvider.GetSettingsByImeiAsync(imei);
+        if (settings is null) return NotFound(new { message = "Sensor is not exist" });
+
+        settingsConverter.ConvertFromAdminClient(settingsFromClient, settings);
+
+        await sensorProvider.SaveChangesAsync();
+
+        return Ok(settingsConverter.ConvertToAdminClient(settings));
+
+    }
+
     [HttpPost]
     public async Task<IActionResult> AddSensor([FromBody] AddSensorFromClientDto sensorData,
         [FromServices] PressureSensorDtoConvertService converter)

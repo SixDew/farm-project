@@ -60,7 +60,7 @@ export default function PressureSensor(){
             
             <div id='settings-container'>
                 <button id='show-settings' onClick={()=>setShowSettings((prev)=>!prev)}>Настройки</button>
-                {showSettings? <PressureSensorSettings imei={imei}/> : null}
+                {showSettings? <PressureSensorSettings imei={imei} role={localStorage.getItem('role')}/> : null}
             </div>
 
             </div>
