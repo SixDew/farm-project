@@ -55,6 +55,7 @@ export default function AdminPage(){
                     <button onClick={()=>setAddMode(false)}>Отмена</button>
                 </div>
             </div> : <button onClick={()=>setAddMode(true)}>Добавить оператора</button>}
+            <button onClick={()=>nav("/")}>Мониторинг</button>
         </div>
     )
 }
