@@ -15,7 +15,7 @@ export default function AdminPage(){
     
     async function getUsersData(){
         const response = await getUsers()
-        if(response.status === 401){
+        if(response.status === 401 || response.status == 403){
             nav('/login')
         }
         if(response.ok){
