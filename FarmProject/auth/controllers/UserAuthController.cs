@@ -16,12 +16,11 @@ namespace FarmProject.auth.controllers;
 public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, UserProvider users) : ControllerBase
 {
     private readonly AuthenticationJwtOptions jwtOptions = jwtOptions.Value;
-    private readonly UserProvider _users = users;
 
     [HttpPost("login")]
     public async Task<IActionResult> CreateAccessToken([FromBody] string key)
     {
-        if (await _users.GetUserByKey(key) is null)
+        if (await users.GetUserByKeyAsync(key) is null)
         {
             return Unauthorized("Invalid key");
         }
@@ -40,7 +39,7 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
     [HttpPost("/login/admin")]
     public async Task<IActionResult> CreateAdminAccessToken([FromBody] string key)
     {
-        if (await _users.GetAdminByKey(key) is null)
+        if (await users.GetAdminByKeyAsync(key) is null)
         {
             return Unauthorized();
         }
@@ -58,14 +57,14 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
     [Authorize(Roles = UserRoles.ADMIN)]
     public async Task<IActionResult> GetUsers([FromServices] UserDtoConverter converter)
     {
-        var userList = await users.GetUsers();
+        var userList = await users.GetUsersAsync();
         return Ok(userList.Select(converter.ConvertToAdminClientDto));
     }
     [HttpPut("users")]
     [Authorize(Roles = UserRoles.ADMIN)]
     public async Task<IActionResult> UpdateUser([FromBody] UserFromAdminClientDto userData, [FromServices] UserDtoConverter converter)
     {
-        var user = await users.GetByKey(userData.Key);
+        var user = await users.GetByIdAsync(userData.Id);
         if (user is null)
         {
             return BadRequest("Invalid key");
@@ -79,7 +78,7 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
     [Authorize(Roles = UserRoles.ADMIN)]
     public async Task<IActionResult> CreateUser([FromBody] UserFromAdminClientDto userData, [FromServices] UserDtoConverter converter)
     {
-        var user = await users.GetByKey(userData.Key);
+        var user = await users.GetByKeyAsync(userData.Key);
         if (user is not null)
         {
             return BadRequest("User already exist");
@@ -92,9 +91,9 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
     }
     [HttpDelete("users")]
     [Authorize(Roles = UserRoles.ADMIN)]
-    public async Task<IActionResult> DeleteUser([FromBody] string key, [FromServices] UserProvider users)
+    public async Task<IActionResult> DeleteUser([FromBody] int id)
     {
-        var user = await users.GetByKey(key);
+        var user = await users.GetByIdAsync(id);
         if (user is null)
         {
             return Ok();

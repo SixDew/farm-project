@@ -3,7 +3,7 @@ import "./UserElement.css"
 import UserElementField from "./UserElementField"
 import { updateUserData, removeUser } from "./sensors/users-api"
 
-export default function UserElement({pass, name, phone, role}){
+export default function UserElement({pass, name, phone, role, userId}){
     const [isReadonly, setIsReadonly] = useState(true)
     const [password, setPass] = useState(pass)
     const [userName, setName] = useState(name)
@@ -25,7 +25,8 @@ export default function UserElement({pass, name, phone, role}){
             Key:password,
             Name:userName,
             Phone:phoneNum,
-            Role:role
+            Role:role,
+            Id:userId
         })
         if(response.ok){
             setChanging(false)
@@ -34,7 +35,7 @@ export default function UserElement({pass, name, phone, role}){
     }
 
     async function deleteUser() {
-        const response = await removeUser(password)
+        const response = await removeUser(userId)
         if(response.ok){
             setIsDeleted(true)
         }

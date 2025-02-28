@@ -27,7 +27,7 @@ export default function AdminPage(){
         getUsersData()
     }, [])
 
-    async function addUser(userData) {
+    async function addUser() {
         const response = await createUser({
             Key:passInput.current.value,
             Name:nameInput.current.value,
@@ -44,7 +44,7 @@ export default function AdminPage(){
         <div id="main-admin-container">
             <h1>Панель администратора</h1>
             <div id="users-container">
-                {users && users.map((user, index)=><UserElement key={index} pass={user.key} name={user.name} phone={user.phone} role={user.role}/>)}
+                {users && users.map((user, index)=><UserElement key={index} pass={user.key} name={user.name} phone={user.phone} role={user.role} userId={user.id}/>)}
             </div>
             {addMode ? <div>
                 <input type="text" ref={passInput}></input>

@@ -6,7 +6,7 @@ public class UserDtoConverter
 {
     public UserToAdminClientDto ConvertToAdminClientDto(User user)
     {
-        return new() { Key = user.Key, Role = user.Role, Name = user.Name, Phone = user.Phone };
+        return new() { Key = user.Key, Role = user.Role, Name = user.Name, Phone = user.Phone, Id = user.Id };
     }
 
     public User ConvertFromAdminClientDto(UserFromAdminClientDto userDto)

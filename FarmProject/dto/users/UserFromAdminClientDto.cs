@@ -6,4 +6,5 @@ public class UserFromAdminClientDto
     public string Phone { get; set; }
     public string Key { get; set; }
     public string Role { get; set; }
+    public int Id { get; set; }
 }

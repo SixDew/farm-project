@@ -59,7 +59,7 @@ export async function createUser(userData) {
     return response
 }
 
-export async function removeUser(key) {
+export async function removeUser(id) {
     const AuthorizathionHeader = getAuthHeader()
     const response = await fetch(`${serverUrl}/users`, {
         method: 'DELETE',
@@ -67,7 +67,7 @@ export async function removeUser(key) {
             Authorization: AuthorizathionHeader,
             'Content-Type':'application/json'
         },
-        body: JSON.stringify(key)
+        body: JSON.stringify(id)
     })
     return response
 }
