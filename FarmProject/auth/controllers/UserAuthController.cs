@@ -90,4 +90,17 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
         await users.SaveChangesAsync();
         return Created("admin/users", converter.ConvertToAdminClientDto(user));
     }
+    [HttpDelete("users")]
+    [Authorize(Roles = UserRoles.ADMIN)]
+    public async Task<IActionResult> DeleteUser([FromBody] string key, [FromServices] UserProvider users)
+    {
+        var user = await users.GetByKey(key);
+        if (user is null)
+        {
+            return Ok();
+        }
+        users.Delete(user);
+        await users.SaveChangesAsync();
+        return Ok(user);
+    }
 }

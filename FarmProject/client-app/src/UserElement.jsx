@@ -1,13 +1,14 @@
 import { useRef, useState } from "react"
 import "./UserElement.css"
 import UserElementField from "./UserElementField"
-import { updateUserData } from "./sensors/users-api"
+import { updateUserData, removeUser } from "./sensors/users-api"
 
 export default function UserElement({pass, name, phone, role}){
     const [isReadonly, setIsReadonly] = useState(true)
     const [password, setPass] = useState(pass)
     const [userName, setName] = useState(name)
     const [phoneNum, setPhone] = useState(phone)
+    const [isDeleted, setIsDeleted] = useState(false)
 
     const [isChanging, setChanging] = useState(false)
 
@@ -32,18 +33,32 @@ export default function UserElement({pass, name, phone, role}){
         }
     }
 
+    async function deleteUser() {
+        const response = await removeUser(password)
+        if(response.ok){
+            setIsDeleted(true)
+        }
+    }
+
     return(
-        <div className="user-element">
-            <UserElementField type="text" value={password} isReadonly={isReadonly} onChange={(event)=>setPass(event.target.value)}/>
-            <UserElementField type="text" value={userName} isReadonly={isReadonly} onChange={(event)=>setName(event.target.value)}/>
-            <UserElementField type="text" value={phoneNum} isReadonly={isReadonly} onChange={(event)=>setPhone(event.target.value)}/>
+        <>
+        {
+            !isDeleted && <div className="user-element">
+            <label>Пароль <UserElementField type="text" value={password} isReadonly={isReadonly} onChange={(event)=>setPass(event.target.value)}/></label>
+            <label>Имя <UserElementField type="text" value={userName} isReadonly={isReadonly} onChange={(event)=>setName(event.target.value)}/></label>
+            <label>Телефон <UserElementField type="text" value={phoneNum} isReadonly={isReadonly} onChange={(event)=>setPhone(event.target.value)}/></label>
             {isChanging ? <div>
                 <button onClick={saveUserData}>Сохранить</button>
                 <button onClick={resetValues}>Отменить</button>
-            </div> : <button onClick={()=>{
+            </div> : <>
+            <button onClick={()=>{
                 setIsReadonly(false)
                 setChanging(true)
-            }}>Изменить</button>}
+            }}>Изменить</button>
+            <button onClick={deleteUser}>Удалить</button>
+            </>}
         </div>
+        }
+        </>
     )
 }

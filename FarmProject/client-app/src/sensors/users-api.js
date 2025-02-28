@@ -23,7 +23,7 @@ export async function adminLogin(key) {
 }
 
 export async function getUsers() {
-    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const AuthorizathionHeader = getAuthHeader()
     const response = await fetch(`${serverUrl}/admin/users`, {
         method: 'GET',
         headers: {
@@ -34,7 +34,7 @@ export async function getUsers() {
 }
 
 export async function updateUserData(userData) {
-    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const AuthorizathionHeader = getAuthHeader()
     const response = await fetch(`${serverUrl}/users`, {
         method: 'PUT',
         headers: {
@@ -47,7 +47,7 @@ export async function updateUserData(userData) {
 }
 
 export async function createUser(userData) {
-    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const AuthorizathionHeader = getAuthHeader()
     const response = await fetch(`${serverUrl}/users`, {
         method: 'POST',
         headers: {
@@ -57,4 +57,21 @@ export async function createUser(userData) {
         body:JSON.stringify(userData)
     })
     return response
+}
+
+export async function removeUser(key) {
+    const AuthorizathionHeader = getAuthHeader()
+    const response = await fetch(`${serverUrl}/users`, {
+        method: 'DELETE',
+        headers:{
+            Authorization: AuthorizathionHeader,
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify(key)
+    })
+    return response
+}
+
+function getAuthHeader(){
+    return `Bearer ${localStorage.getItem('userKey')}`
 }
