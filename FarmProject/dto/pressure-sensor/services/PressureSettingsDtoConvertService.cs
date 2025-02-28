@@ -1,12 +1,13 @@
 ﻿using FarmProject.db.models;
+using FarmProject.dto.pressure_sensor.settings;
 
 namespace FarmProject.dto.servisces
 {
     public class PressureSettingsDtoConvertService
     {
-        public PressureSensorSettingsToClientDto ConvertToClient(PressureSensorSettings settings)
+        public PressureSensorSettingsToAdminClientDto ConvertToAdminClient(PressureSensorSettings settings)
         {
-            return new PressureSensorSettingsToClientDto()
+            return new PressureSensorSettingsToAdminClientDto()
             {
                 AlarmActivated = settings.AlarmActivated,
                 DataSendingSpan = settings.DataSendingSpan,
@@ -18,7 +19,26 @@ namespace FarmProject.dto.servisces
             };
         }
 
+        public PressureSensorSettingsToClientDto ConvertToClient(PressureSensorSettings settings)
+        {
+            return new PressureSensorSettingsToClientDto()
+            {
+                AlarmActivated = settings.AlarmActivated,
+                IMEI = settings.IMEI,
+            };
+        }
+
+
         public PressureSensorSettings ConvertFromClient(PressureSensorSettingsFromClientDto settings, string imei)
+        {
+            return new PressureSensorSettings
+            {
+                IMEI = imei,
+                AlarmActivated = settings.AlarmActivated,
+            };
+        }
+
+        public PressureSensorSettings ConvertFromAdminClient(PressureSensorSettingsFromAdminClientDto settings, string imei)
         {
             return new PressureSensorSettings
             {
@@ -33,6 +53,13 @@ namespace FarmProject.dto.servisces
         }
 
         public PressureSensorSettings ConvertFromClient(PressureSensorSettingsFromClientDto settingsFromClient,
+            PressureSensorSettings settingsToUpdate)
+        {
+            settingsToUpdate.AlarmActivated = settingsFromClient.AlarmActivated;
+            return settingsToUpdate;
+        }
+
+        public PressureSensorSettings ConvertFromAdminClient(PressureSensorSettingsFromAdminClientDto settingsFromClient,
             PressureSensorSettings settingsToUpdate)
         {
             settingsToUpdate.Sensitivity = settingsFromClient.Sensitivity;

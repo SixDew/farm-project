@@ -44,10 +44,12 @@ export async function getPressureSettings(imei){
 }
 
 export async function updatePressureSettings(imei, settings) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(`${serverUrl}/sensors/pressure/settings/${imei}`,{
         method:'PUT',
         headers:{
-            'Content-Type':'application/json'
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
         },
         body: JSON.stringify(settings)
     })
