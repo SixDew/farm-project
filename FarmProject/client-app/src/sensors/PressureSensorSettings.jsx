@@ -87,8 +87,12 @@ export default function PressureSensorSettings({imei, role}){
                     {
                         role === 'admin' && (
                             <div id='internal-settings-container'>
-                                <SettingsMenuNumElemet title='Отклонение' value={settings.deviationSpan} changeEvent={(event)=>{setSettings((prev)=>{
-                                        prev.deviationSpan=event.target.value
+                                <SettingsMenuNumElemet title='Позитивное отклонение' value={settings.deviationSpanPositive} changeEvent={(event)=>{setSettings((prev)=>{
+                                        prev.deviationSpanPositive=event.target.value
+                                        return {...prev}
+                                })}}/>
+                                <SettingsMenuNumElemet title='Негативное отклонение' value={settings.deviationSpanNegative} changeEvent={(event)=>{setSettings((prev)=>{
+                                        prev.deviationSpanNegative=event.target.value
                                         return {...prev}
                                 })}}/>
                                 <SettingsMenuNumElemet title='Чувствительность' value={settings.sensitivity} changeEvent={(event)=>{setSettings((prev)=>{

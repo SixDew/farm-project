@@ -11,7 +11,8 @@ namespace FarmProject.dto.servisces
             {
                 AlarmActivated = settings.AlarmActivated,
                 DataSendingSpan = settings.DataSendingSpan,
-                DeviationSpan = settings.DeviationSpan,
+                DeviationSpanPositive = settings.DeviationSpanPositive,
+                DeviationSpanNegative = settings.DeviationSpanNegative,
                 FirstSensorIsActive = settings.FirstSensorIsActive,
                 IMEI = settings.IMEI,
                 SecondSensorIsActive = settings.SecondSensorIsActive,
@@ -48,7 +49,8 @@ namespace FarmProject.dto.servisces
                 FirstSensorIsActive = settings.FirstSensorIsActive,
                 AlarmActivated = settings.AlarmActivated,
                 DataSendingSpan = settings.DataSendingSpan,
-                DeviationSpan = settings.DeviationSpan
+                DeviationSpanPositive = settings.DeviationSpanPositive,
+                DeviationSpanNegative = settings.DeviationSpanNegative,
             };
         }
 
@@ -66,7 +68,8 @@ namespace FarmProject.dto.servisces
             settingsToUpdate.SecondSensorIsActive = settingsFromClient.SecondSensorIsActive;
             settingsToUpdate.FirstSensorIsActive = settingsFromClient.FirstSensorIsActive;
             settingsToUpdate.AlarmActivated = settingsFromClient.AlarmActivated;
-            settingsToUpdate.DeviationSpan = settingsFromClient.DeviationSpan;
+            settingsToUpdate.DeviationSpanPositive = settingsFromClient.DeviationSpanPositive;
+            settingsToUpdate.DeviationSpanNegative = settingsFromClient.DeviationSpanNegative;
             settingsToUpdate.DataSendingSpan = settingsFromClient.DataSendingSpan;
 
             return settingsToUpdate;

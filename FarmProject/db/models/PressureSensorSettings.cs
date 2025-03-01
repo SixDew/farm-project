@@ -4,7 +4,8 @@ namespace FarmProject.db.models
 {
     public class PressureSensorSettings : BaseModel
     {
-        public double DeviationSpan { get; set; }
+        public double DeviationSpanPositive { get; set; }
+        public double DeviationSpanNegative { get; set; }
         public double Sensitivity { get; set; }
         public bool AlarmActivated { get; set; } = true;
         public bool FirstSensorIsActive { get; set; }

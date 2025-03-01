@@ -11,7 +11,7 @@ namespace FarmProject.dto.servisces
             {
                 GPS = sensor.GPS,
                 IMEI = sensor.IMEI,
-                Settings = new() { IMEI = sensor.IMEI, DeviationSpan = sensor.RDEV }
+                Settings = new() { IMEI = sensor.IMEI }
             };
         }
 
