@@ -74,5 +74,19 @@ namespace FarmProject.dto.servisces
 
             return settingsToUpdate;
         }
+
+        public PressureSettingsToSensorDto ConvertToSensor(PressureSensorSettings settings)
+        {
+            return new()
+            {
+                AlarmActivated = settings.AlarmActivated,
+                DataSendingSpan = settings.DataSendingSpan,
+                DeviationSpanNegative = settings.DeviationSpanNegative,
+                DeviationSpanPositive = settings.DeviationSpanPositive,
+                FirstSensorIsActive = settings.FirstSensorIsActive,
+                SecondSensorIsActive = settings.SecondSensorIsActive,
+                Sensitivity = settings.Sensitivity
+            };
+        }
     }
 }

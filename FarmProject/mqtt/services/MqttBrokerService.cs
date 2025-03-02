@@ -1,16 +1,19 @@
 ﻿using FarmProject.db.services.providers;
 using FarmProject.dto;
 using FarmProject.dto.pressure_sensor.measurements;
+using FarmProject.dto.pressure_sensor.settings;
 using FarmProject.dto.servisces;
 using FarmProject.hubs.services;
 using FarmProject.validation.services;
+using MQTTnet;
+using MQTTnet.Protocol;
 using MQTTnet.Server;
 using System.Text;
 using System.Text.Json;
 
 namespace FarmProject.mqtt.services;
 
-public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHubService measurementsHubService)
+public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHubService measurementsHubService, MqttServer _mqttServer)
 {
     private readonly MeasurementsHubService _measurementsHubService = measurementsHubService;
 
@@ -80,5 +83,55 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
                     }
             }
         }
+    }
+
+    public async Task ValidateEvent(ValidatingConnectionEventArgs e)
+    {
+        using (var scope = _serviceProvider.CreateScope())
+        {
+            var sensors = scope.ServiceProvider.GetRequiredService<PressureSensorProvider>();
+
+            string? imei = e.UserProperties?.FirstOrDefault(x => x.Name == "imei")?.Value;
+            if (imei is null)
+            {
+                e.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
+                return;
+            }
+
+            var sensor = await sensors.GetByImeiAsync(imei);
+            if (sensor is null)
+            {
+                e.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
+                return;
+            }
+
+            e.ReasonCode = MqttConnectReasonCode.Success;
+        }
+    }
+
+    public async Task ConnectedEvent(ClientConnectedEventArgs e)
+    {
+        string? imei = e.UserProperties?.FirstOrDefault(x => x.Name == "imei")?.Value;
+        if (imei is null)
+        {
+            return;
+        }
+        else
+        {
+            await _mqttServer.SubscribeAsync(e.ClientId, $"sensors/pressure/settings/get/{imei}");
+        }
+
+    }
+
+    public async Task SendPressureSettingsToSensorAsync(PressureSettingsToSensorDto settings, string imei)
+    {
+        var message = new MqttApplicationMessageBuilder().WithTopic($"sensors/pressure/settings/get/{imei}")
+            .WithPayload(JsonSerializer.Serialize(settings))
+            .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+            .Build();
+        await _mqttServer.InjectApplicationMessage(new InjectedMqttApplicationMessage(message)
+        {
+            SenderClientId = "server"
+        });
     }
 }

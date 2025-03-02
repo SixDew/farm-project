@@ -3,6 +3,7 @@ using FarmProject.db.services.providers;
 using FarmProject.dto;
 using FarmProject.dto.pressure_sensor.settings;
 using FarmProject.dto.servisces;
+using FarmProject.mqtt.services;
 using FarmProject.validation.services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ namespace FarmProject.controllers;
 [ApiController]
 [Route("sensors/pressure")]
 public class PressureMeasurementsController(PressureSensorProvider sensorProvider,
-    PressureMeasurmentsDtoConvertService dtoConverter) : ControllerBase
+    PressureMeasurmentsDtoConvertService dtoConverter, MqttBrokerService sensorsBroker) : ControllerBase
 {
     [HttpGet("measurements/{imei}")]
     public async Task<IActionResult> GetPressureMeasurment([FromRoute] string imei)
@@ -61,6 +62,8 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
 
         await sensorProvider.SaveChangesAsync();
 
+        await sensorsBroker.SendPressureSettingsToSensorAsync(settingsConverter.ConvertToSensor(settings), imei);
+
         return Ok(settingsConverter.ConvertToClient(settings));
 
     }
@@ -86,6 +89,8 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
         settingsConverter.ConvertFromAdminClient(settingsFromClient, settings);
 
         await sensorProvider.SaveChangesAsync();
+
+        await sensorsBroker.SendPressureSettingsToSensorAsync(settingsConverter.ConvertToSensor(settings), imei);
 
         return Ok(settingsConverter.ConvertToAdminClient(settings));
 
