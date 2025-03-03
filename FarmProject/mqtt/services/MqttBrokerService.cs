@@ -89,17 +89,10 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
     {
         using (var scope = _serviceProvider.CreateScope())
         {
-            var sensors = scope.ServiceProvider.GetRequiredService<PressureSensorProvider>();
+            var validationService = scope.ServiceProvider.GetRequiredService<PressureValidationService>();
 
             string? imei = e.UserProperties?.FirstOrDefault(x => x.Name == "imei")?.Value;
-            if (imei is null)
-            {
-                e.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
-                return;
-            }
-
-            var sensor = await sensors.GetByImeiAsync(imei);
-            if (sensor is null)
+            if (imei is null || !await validationService.IsValidatedAsync(imei))
             {
                 e.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
                 return;
