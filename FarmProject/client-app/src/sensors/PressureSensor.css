@@ -26,6 +26,17 @@
     flex-direction: column;
 
     align-items: center;
+
+    max-height: 30vh;
+}
+
+#notifucations-info-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: auto;
+
+    max-height: 30vh;
 }
 
 #settings-container{

@@ -5,6 +5,7 @@ import connection from "./api/measurements-hub-connection";
 import PressureMeasurementChart from "./PressureMeasurementChart";
 import { getPressureSensorData } from './api/sensors-api'
 import PressureSensorSettings from "./PressureSensorSettings";
+import AlarmNotification from "./AlarmNotification";
 
 export default function PressureSensor(){
     const navigate = useNavigate()
@@ -12,6 +13,7 @@ export default function PressureSensor(){
     const [measurementsData, setMeasurementsData] = useState()
     const [legacyMeasurements, setLegacyMeasurements] = useState([])
     const [showSettings, setShowSettings] = useState(false)
+    const [notifications, setNotifications] = useState([])
 
     useEffect(()=>{
         async function setConnection() {
@@ -28,6 +30,11 @@ export default function PressureSensor(){
             connection.on('ReciveMeasurements',(data)=>{
                 console.log(Date.now(), data)
                 setMeasurementsData(data)
+            })
+
+            connection.on('ReciveAlarmNotify', (data)=>{
+                console.log("ОПАСНЫЕ ДАННЫЕ", data)
+                setNotifications((prev)=>{return [...prev, data]})
             })
         }
 
@@ -56,6 +63,10 @@ export default function PressureSensor(){
             <h1>Imei:{imei}</h1>
             <h2>M1:{measurementsData?.measurement1}</h2>
             <h2>M2:{measurementsData?.measurement2}</h2>
+            </div>
+
+            <div id="notifucations-info-container">
+                {notifications.map((n, index)=><AlarmNotification measurement1={n.measurement1} measurement2={n.measurement2} date={n.measurementsTime} key={index}/>)}
             </div>
             
             <div id='settings-container'>
