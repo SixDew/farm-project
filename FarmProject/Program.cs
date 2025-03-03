@@ -1,6 +1,8 @@
-﻿using FarmProject.auth;
+﻿using FarmProject.alarm.services;
+using FarmProject.auth;
 using FarmProject.db.services;
 using FarmProject.db.services.providers;
+using FarmProject.dto.pressure_sensor.services;
 using FarmProject.dto.servisces;
 using FarmProject.dto.users.services;
 using FarmProject.hubs;
@@ -43,6 +45,8 @@ builder.Services.AddTransient<PressureSensorDtoConvertService>();
 builder.Services.AddScoped<PressureValidationService>();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<MeasurementsHubService>();
+builder.Services.AddScoped<AlarmPressureMeasurementsChecker>();
+builder.Services.AddTransient<PressureAlarmDtoConvertService>();
 
 builder.Services.AddMqttConnectionHandler();
 builder.Services.AddHostedMqttServer(OptionsBuilder =>

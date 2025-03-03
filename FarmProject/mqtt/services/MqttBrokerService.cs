@@ -1,6 +1,8 @@
-﻿using FarmProject.db.services.providers;
+﻿using FarmProject.alarm.services;
+using FarmProject.db.services.providers;
 using FarmProject.dto;
 using FarmProject.dto.pressure_sensor.measurements;
+using FarmProject.dto.pressure_sensor.services;
 using FarmProject.dto.pressure_sensor.settings;
 using FarmProject.dto.servisces;
 using FarmProject.hubs.services;
@@ -13,7 +15,8 @@ using System.Text.Json;
 
 namespace FarmProject.mqtt.services;
 
-public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHubService measurementsHubService, MqttServer _mqttServer)
+public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHubService measurementsHubService,
+    MqttServer _mqttServer)
 {
     private readonly MeasurementsHubService _measurementsHubService = measurementsHubService;
 
@@ -34,6 +37,7 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
 
                             var validationService = scope.ServiceProvider.GetRequiredService<PressureValidationService>();
                             var dtoConverter = scope.ServiceProvider.GetRequiredService<PressureMeasurmentsDtoConvertService>();
+                            var alarmChecker = scope.ServiceProvider.GetRequiredService<AlarmPressureMeasurementsChecker>();
 
                             if (await validationService.IsValidatedAsync(data.IMEI))
                             {
@@ -49,6 +53,13 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
                                     Measurement2 = measurementsModel.PRR2,
                                     MeasurementsTime = measurementsModel.MeasurementsTime
                                 }, data.IMEI);
+
+                                if (await alarmChecker.isAlarmRequredAsync(measurementsModel))
+                                {
+                                    var alarmConverter = scope.ServiceProvider.GetRequiredService<PressureAlarmDtoConvertService>();
+                                    await _measurementsHubService.SendAlarmNotifyAsync(alarmConverter.ConvertToHubAlarmToClientDto(measurementsModel),
+                                        measurementsModel.IMEI);
+                                }
                             }
                         }
                         catch (Exception ex)
