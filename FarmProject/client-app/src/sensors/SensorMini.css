@@ -25,3 +25,6 @@
 .sensor-mini:hover{
     transform: scale(1.1);
 }
+.alarmed{
+    background-color: rgb(150, 40, 40);
+}

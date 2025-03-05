@@ -36,6 +36,12 @@ public class ApplicationDbContext : DbContext
                     Id = 1,
                     GPS = "gps",
                     IMEI = "1",
+                },
+                new PressureSensor()
+                {
+                    Id = 2,
+                    GPS = "gps",
+                    IMEI = "2",
                 }
             );
 
@@ -54,6 +60,11 @@ public class ApplicationDbContext : DbContext
                 {
                     Id = 1,
                     IMEI = "1"
+                },
+                new PressureSensorSettings()
+                {
+                    Id = 2,
+                    IMEI = "2"
                 }
             );
         modelBuilder.Entity<User>().ToTable("Users").HasData(

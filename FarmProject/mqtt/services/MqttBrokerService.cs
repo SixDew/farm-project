@@ -51,7 +51,8 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
                                 {
                                     Measurement1 = measurementsModel.PRR1,
                                     Measurement2 = measurementsModel.PRR2,
-                                    MeasurementsTime = measurementsModel.MeasurementsTime
+                                    MeasurementsTime = measurementsModel.MeasurementsTime,
+                                    Imei = data.IMEI,
                                 }, data.IMEI);
 
                                 if (await alarmChecker.isAlarmRequredAsync(measurementsModel))

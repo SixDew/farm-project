@@ -10,7 +10,8 @@ namespace FarmProject.dto.servisces
             {
                 Measurement1 = measurments.PRR1,
                 Measurement2 = measurments.PRR2,
-                MeasurementsTime = measurments.MeasurementsTime
+                MeasurementsTime = measurments.MeasurementsTime,
+                Imei = measurments.IMEI
             };
         }
 

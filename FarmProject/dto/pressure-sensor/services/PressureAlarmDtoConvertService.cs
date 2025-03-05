@@ -11,7 +11,8 @@ namespace FarmProject.dto.pressure_sensor.services
             {
                 Measurement1 = measurements.PRR1,
                 Measurement2 = measurements.PRR2,
-                MeasurementsTime = measurements.MeasurementsTime
+                MeasurementsTime = measurements.MeasurementsTime,
+                Imei = measurements.IMEI
             };
         }
     }
