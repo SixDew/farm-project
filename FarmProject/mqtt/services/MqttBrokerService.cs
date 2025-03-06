@@ -2,7 +2,6 @@
 using FarmProject.db.services.providers;
 using FarmProject.dto;
 using FarmProject.dto.pressure_sensor.measurements;
-using FarmProject.dto.pressure_sensor.services;
 using FarmProject.dto.pressure_sensor.settings;
 using FarmProject.dto.servisces;
 using FarmProject.hubs.services;
@@ -57,9 +56,8 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
 
                                 if (await alarmChecker.isAlarmRequredAsync(measurementsModel))
                                 {
-                                    var alarmConverter = scope.ServiceProvider.GetRequiredService<PressureAlarmDtoConvertService>();
-                                    await _measurementsHubService.SendAlarmNotifyAsync(alarmConverter.ConvertToHubAlarmToClientDto(measurementsModel),
-                                        measurementsModel.IMEI);
+                                    var alarmService = scope.ServiceProvider.GetRequiredService<AlarmPressureSensorService>();
+                                    await alarmService.SendAlarmNotifyAsync(measurementsModel);
                                 }
                             }
                         }

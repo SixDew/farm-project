@@ -29,6 +29,7 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new PressureSensorConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new PressureAlarmMeasurementsConfiguration());
 
         modelBuilder.Entity<PressureSensor>().HasData(
                 new PressureSensor()

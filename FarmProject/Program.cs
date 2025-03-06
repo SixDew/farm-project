@@ -47,6 +47,7 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<MeasurementsHubService>();
 builder.Services.AddScoped<AlarmPressureMeasurementsChecker>();
 builder.Services.AddTransient<PressureAlarmDtoConvertService>();
+builder.Services.AddScoped<AlarmPressureSensorService>();
 
 builder.Services.AddMqttConnectionHandler();
 builder.Services.AddHostedMqttServer(OptionsBuilder =>

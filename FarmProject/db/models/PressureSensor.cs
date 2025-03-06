@@ -9,6 +9,7 @@ namespace FarmProject.db.models
         public required string IMEI { get; set; }
 
         public List<PressureMeasurements> Measurements { get; set; } = new();
+        public List<AlarmedPressureMeasurements> AlarmedMeasurements { get; set; } = new();
         [Required]
         public PressureSensorSettings Settings { get; set; }
     }

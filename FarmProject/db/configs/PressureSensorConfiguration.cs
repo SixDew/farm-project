@@ -13,5 +13,7 @@ public class PressureSensorConfiguration : IEntityTypeConfiguration<PressureSens
 
         builder.HasOne(s => s.Settings).WithOne().HasForeignKey<PressureSensorSettings>(settings => settings.IMEI)
             .HasPrincipalKey<PressureSensor>(s => s.IMEI);
+
+        builder.HasMany(s => s.AlarmedMeasurements).WithOne(m => m.Sensor).HasForeignKey(m => m.Imei).HasPrincipalKey(s => s.IMEI);
     }
 }
