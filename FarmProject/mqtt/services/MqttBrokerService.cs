@@ -57,7 +57,11 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
                                 if (await alarmChecker.isAlarmRequredAsync(measurementsModel))
                                 {
                                     var alarmService = scope.ServiceProvider.GetRequiredService<AlarmPressureSensorService>();
-                                    await alarmService.SendAlarmNotifyAsync(measurementsModel);
+                                    var alarmedMeasurements = await alarmService.AddAlarmMeasurementAsync(measurementsModel);
+                                    if (alarmedMeasurements is not null)
+                                    {
+                                        await alarmService.SendAlarmNotifyAsync(alarmedMeasurements);
+                                    }
                                 }
                             }
                         }
