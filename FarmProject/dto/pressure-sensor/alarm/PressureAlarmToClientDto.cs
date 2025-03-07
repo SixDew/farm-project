@@ -1,7 +1,8 @@
 ﻿namespace FarmProject.dto.pressure_sensor.alarm
 {
-    public class HubPressureAlarmToClientDto
+    public class PressureAlarmToClientDto
     {
+        public required int Id { get; set; }
         public double Measurement1 { get; init; }
         public double Measurement2 { get; init; }
         public DateTime MeasurementsTime { get; init; }

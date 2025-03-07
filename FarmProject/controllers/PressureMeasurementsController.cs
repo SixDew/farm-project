@@ -1,6 +1,7 @@
 ﻿using FarmProject.auth;
 using FarmProject.db.services.providers;
 using FarmProject.dto;
+using FarmProject.dto.pressure_sensor.services;
 using FarmProject.dto.pressure_sensor.settings;
 using FarmProject.dto.servisces;
 using FarmProject.mqtt.services;
@@ -140,5 +141,18 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
 
         await sensorProvider.SaveChangesAsync();
         return Ok();
+    }
+
+    [HttpGet("measurements/alarms/{imei}")]
+    [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
+    public async Task<IActionResult> GetAlarmedMeasurements([FromRoute] string imei, PressureAlarmDtoConvertService converter)
+    {
+        var alarmedMeasurementsList = await sensorProvider.GetAlarmedMeasurementsAsync(imei);
+        if (alarmedMeasurementsList is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(alarmedMeasurementsList.Select(converter.ConvertToHubAlarmToClientDto));
     }
 }

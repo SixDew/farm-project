@@ -13,7 +13,7 @@ public class MeasurementsHubService(IHubContext<MeasurementsHub> hubContext)
         await _hubContext.Clients.Group(GroupNameComposer.GetPressureGroup(imei)).SendAsync("ReciveMeasurements", data);
     }
 
-    public async Task SendAlarmNotifyAsync(HubPressureAlarmToClientDto data, string imei)
+    public async Task SendAlarmNotifyAsync(PressureAlarmToClientDto data, string imei)
     {
         await _hubContext.Clients.Group(GroupNameComposer.GetPressureGroup(imei)).SendAsync("ReciveAlarmNotify", data);
     }
