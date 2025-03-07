@@ -29,6 +29,10 @@ export async function getPressureMeasurements(imei){
 //     }
 // }
 
+export async function getAlarmedMeasurements(imei) {
+    return await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/measurements/alarms/${imei}`)
+}
+
 export async function getPressureSensorData(imei, redirect){
     const response = await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/${imei}`)
     if(response.status === 401){
@@ -41,6 +45,17 @@ export async function getPressureSensorData(imei, redirect){
 
 export async function getPressureSettings(imei){
     return await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/settings/${imei}`)
+}
+
+export async function sendAlarmedMeasurementChecked(id, imei) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/sensors/pressure/measurements/alarms/${imei}/check/${id}`, {
+        method: 'POST',
+        headers: {
+            'Authorization':AuthorizathionHeader
+        }
+    })
+    return response
 }
 
 export async function getAdminPressureSettings(imei){

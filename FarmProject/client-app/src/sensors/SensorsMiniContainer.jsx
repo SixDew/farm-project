@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom"
 import SensorMini from "./SensorMini.jsx"
 import './SensorsMiniContainer.css'
 import { Fragment, useEffect, useState } from "react"
-import { getAllPressureSensors } from "./api/sensors-api.js"
+import { getAlarmedMeasurements, getAllPressureSensors } from "./api/sensors-api.js"
 import connection from "./api/measurements-hub-connection.js"
 
 export default function SensorsMiniContainer(){
@@ -16,7 +16,6 @@ export default function SensorsMiniContainer(){
             if(response.ok){
                 const data = await response.json()
                 setSensors(getSensorsFromServerData(data))
-                console.log(getSensorsFromServerData(data))
             }
             if(response.status === 401){
                 navigate('/login')
@@ -24,6 +23,26 @@ export default function SensorsMiniContainer(){
         }
         getSensors()
     },[])
+
+    useEffect(()=>{
+        async function getAlarmedMeasurementsAsync() {
+            for(const sensor of sensors){
+                var response = await getAlarmedMeasurements(sensor.imei)
+                if(response.ok){
+                    var alarmedMeasurementsList = await response.json()
+                    for(const measurement of alarmedMeasurementsList){
+                        if(!sensor.alarmedMeasurements.find(m=>m.id == measurement.id)){
+                            if(!measurement.isChecked){
+                                sensor.alarmedMeasurements.push(measurement)
+                                addSensorToAlarm(sensor, alarmedSensors, setAlarmedSensors)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        getAlarmedMeasurementsAsync()
+    }, [sensors])
 
     useEffect(()=>{
         async function setConnection() {
@@ -103,10 +122,14 @@ function alarmEvent(sensors, alarmedSensors, data, setAlarmedSensors){
     const sensor = sensors.find(s=>s.imei == data.imei)
     if(sensor){
         sensor.alarmedMeasurements.push(data)
-        if(!alarmedSensors.find(s=>s.imei==sensor.imei)){
-            sensor.isAlarmed = true
-            alarmedSensors.push(sensor)
-            setAlarmedSensors([...alarmedSensors])
-        }
+        addSensorToAlarm(sensor, alarmedSensors, setAlarmedSensors)
+    }
+}
+
+function addSensorToAlarm(sensor, alarmedSensors, setAlarmedSensors){
+    if(!alarmedSensors.find(s=>s.imei==sensor.imei)){
+        sensor.isAlarmed = true
+        alarmedSensors.push(sensor)
+        setAlarmedSensors([...alarmedSensors])
     }
 }

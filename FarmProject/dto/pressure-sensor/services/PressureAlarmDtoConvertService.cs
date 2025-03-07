@@ -13,7 +13,8 @@ namespace FarmProject.dto.pressure_sensor.services
                 Measurement2 = measurements.PRR2,
                 MeasurementsTime = measurements.MeasurementsTime,
                 Imei = measurements.IMEI,
-                Id = measurements.Id
+                Id = measurements.Id,
+                IsChecked = false,
             };
         }
 
@@ -25,7 +26,8 @@ namespace FarmProject.dto.pressure_sensor.services
                 Measurement1 = measurements.Measurements.PRR1,
                 Measurement2 = measurements.Measurements.PRR2,
                 MeasurementsTime = measurements.Measurements.MeasurementsTime,
-                Id = measurements.Id
+                Id = measurements.Id,
+                IsChecked = measurements.isChecked
             };
         }
     }

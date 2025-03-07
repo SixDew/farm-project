@@ -155,4 +155,25 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
 
         return Ok(alarmedMeasurementsList.Select(converter.ConvertToHubAlarmToClientDto));
     }
+
+    [HttpPost("measurements/alarms/{imei}/check/{id}")]
+    [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
+    public async Task<IActionResult> CheckAlarmedMeasurement([FromRoute] int id, [FromRoute] string imei)
+    {
+        var alarmedMeasurementsList = await sensorProvider.GetAlarmedMeasurementsAsync(imei);
+        if (alarmedMeasurementsList is null)
+        {
+            return NotFound();
+        }
+
+        var alarmedMeasurement = alarmedMeasurementsList.FirstOrDefault(am => am.Id == id);
+        if (alarmedMeasurement is null)
+        {
+            return NotFound();
+        }
+
+        alarmedMeasurement.isChecked = true;
+        await sensorProvider.SaveChangesAsync();
+        return Ok();
+    }
 }
