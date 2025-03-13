@@ -27,8 +27,9 @@ public class MqttBrokerService(IServiceProvider _serviceProvider)
                         {
                             Console.WriteLine("Добавление измерения");
 
-                            var data = JsonSerializer.Deserialize<PressureMeasurementsFromSensorDto>(Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
                             Console.WriteLine($"Нагрузка: {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
+
+                            var data = JsonSerializer.Deserialize<PressureMeasurementsFromSensorDto>(Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
 
                             Console.WriteLine($"""
                                 IMEI: {data.IMEI},
