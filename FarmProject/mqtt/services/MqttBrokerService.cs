@@ -64,8 +64,10 @@ public class MqttBrokerService(IServiceProvider _serviceProvider)
                     }
                 case "sensors/pressure/add":
                     {
+                        Console.WriteLine("Добавление датчика");
                         try
                         {
+                            Console.WriteLine($"Нагрузка: {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
                             var data = JsonSerializer.Deserialize<AddSensorFromClientDto>(Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
 
                             var converter = scope.ServiceProvider.GetRequiredService<PressureSensorDtoConvertService>();
