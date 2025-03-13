@@ -86,4 +86,9 @@ public class MqttBrokerService(IServiceProvider _serviceProvider)
             }
         }
     }
+
+    public async Task ClientConnected(ClientConnectedEventArgs e)
+    {
+        Console.WriteLine($"Подключение установлено: {e.ClientId}");
+    }
 }

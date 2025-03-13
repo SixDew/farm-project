@@ -56,6 +56,7 @@ app.UseMqttServer(server =>
 {
     var mqttBroker = app.Services.GetRequiredService<MqttBrokerService>();
     server.InterceptingPublishAsync += mqttBroker.InterceptingPublishAsync;
+    server.ClientConnectedAsync += mqttBroker.ClientConnected;
 });
 
 app.Run();
