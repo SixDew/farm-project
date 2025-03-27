@@ -12,6 +12,7 @@ export default function PressureSensor(){
     const {imei} = useParams()
     const [measurementsData, setMeasurementsData] = useState()
     const [legacyMeasurements, setLegacyMeasurements] = useState([])
+    const [alarmedMeasurements, setAlarmedMeasurements] = useState([])
     const [showSettings, setShowSettings] = useState(false)
     const [notifications, setNotifications] = useState([])
 
@@ -33,6 +34,7 @@ export default function PressureSensor(){
 
             connection.on('ReciveAlarmNotify', (data)=>{
                 setNotifications((prev)=>{return [...prev, data]})
+                setAlarmedMeasurements((prev)=>{return [...prev, data]})
             })
         }
 
@@ -45,12 +47,15 @@ export default function PressureSensor(){
             var response = await getAlarmedMeasurements(imei)
             if(response.ok){
                 var alarmedMeasurementsList = await response.json()
+                var notCheckedAlarmedMeasurementsList = []
                 for(const measurement of alarmedMeasurementsList){
                         if(!measurement.isChecked){
+                            notCheckedAlarmedMeasurementsList.push(measurement)
                             setNotifications((prev)=>{return [...prev, measurement]})
                         }
                     }
                 }
+                setAlarmedMeasurements(notCheckedAlarmedMeasurementsList)
             }
 
         getSensorData()
@@ -78,7 +83,7 @@ export default function PressureSensor(){
 
             <div id="notifucations-info-container">
                 {notifications.map((n, index)=><AlarmNotification measurement1={n.measurement1} measurement2={n.measurement2} date={n.measurementsTime} key={index}
-                onCheck={()=>onNotificationCheck(n.id, imei, setNotifications)}/>)}
+                onCheck={()=>onNotificationCheck(n.id, imei, setNotifications, setAlarmedMeasurements)}/>)}
             </div>
             
             <div id='settings-container'>
@@ -88,14 +93,16 @@ export default function PressureSensor(){
 
             </div>
 
-            <PressureMeasurementChart measurements={measurementsData} legacyMeasurements={legacyMeasurements}/>
+            <PressureMeasurementChart measurements={measurementsData} legacyMeasurements={legacyMeasurements} alarmedMeasurements={alarmedMeasurements} 
+            alarmCheckedEvent={(id)=>onNotificationCheck(id, imei, setNotifications, setAlarmedMeasurements)}/>
         </Fragment>
     )
 }
 
-async function onNotificationCheck(id, imei, setNotifications){
+async function onNotificationCheck(id, imei, setNotifications, setAlarmedMeasurements){
     const response = await sendAlarmedMeasurementChecked(id, imei)
     if(response.ok){
+        setAlarmedMeasurements(prev=>prev.filter(m=>m.id !== id))
         setNotifications(prev=>prev.filter(n=>n.id !== id))
     }
 }

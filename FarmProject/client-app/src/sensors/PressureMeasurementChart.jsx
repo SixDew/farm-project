@@ -2,10 +2,11 @@ import ReactECharts from 'echarts-for-react'
 //импортировать только нужное в будущем
 import { useEffect, useState, useRef, useMemo } from 'react';
 
-export default function PressureMeasurementChart({measurements, legacyMeasurements}){
+export default function PressureMeasurementChart({measurements, legacyMeasurements, alarmedMeasurements, alarmCheckedEvent}){
     const [measurements1, setMeasurements1] = useState([])
     const [measurements2, setMeasurements2] = useState([])
     const [dates, setDates] = useState([])
+    const [markPointsData, setMarkPointsData] = useState([])
     const chart = useRef(null)
 
     const initOption = useMemo(()=>{
@@ -15,7 +16,7 @@ export default function PressureMeasurementChart({measurements, legacyMeasuremen
         },
         tooltip: {},
         legend: {
-          data: ['Измерения 1', 'Измерения 2']
+          data: ['Измерения 1', 'Измерения 2', 'Предупреждения']
         },
         xAxis: {
           data: []
@@ -63,14 +64,27 @@ export default function PressureMeasurementChart({measurements, legacyMeasuremen
     },[measurements])
 
     useEffect(()=>{
-      setOption(measurements1, measurements2, chart, dates)
-    }, [measurements1, measurements2, dates])
+      setMarkPointsData(alarmedMeasurements.map(d=>{
+        return { coord:[d.measurementsTime, 0], y:'20%', alarmMeasurementId:d.id }
+      }))
+    }, [alarmedMeasurements])
+
+    useEffect(()=>{
+      setOption(measurements1, measurements2, chart, dates, markPointsData)
+    }, [measurements1, measurements2, dates, markPointsData])
+
+    useEffect(()=>{
+      chart.current.getEchartsInstance().on('click', {seriesName: 'Предупреждения', componentType:'markPoint'}, (params)=>{
+        alarmCheckedEvent(params.data.alarmMeasurementId)
+      })
+    }, [])
+
     return (
         <ReactECharts option={initOption} ref={chart}></ReactECharts>
     )
 }
 
-function setOption(measurements1, measurements2, chart, dates){
+function setOption(measurements1, measurements2, chart, dates, markPointsData){
   const option = {
     series: [
       {
@@ -82,6 +96,15 @@ function setOption(measurements1, measurements2, chart, dates){
         name: 'Измерения 2',
         type: 'line',
         data: measurements2
+      },
+      {
+        name:'Предупреждения',
+        type: 'scatter',
+        data:[],
+        markPoint:{
+          data: markPointsData,
+          symbolSize: 30
+        }
       }
     ],
     xAxis:{
