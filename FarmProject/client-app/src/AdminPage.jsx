@@ -3,6 +3,7 @@ import "./AdminPage.css"
 import { getUsers, createUser } from "./sensors/users-api"
 import { useNavigate } from "react-router-dom"
 import UserElement from "./UserElement"
+import { addGroup, addToGroup, getGroups } from "./sensors/api/sensors-api"
 
 export default function AdminPage(){
     const [users, setUsers] = useState()
@@ -56,6 +57,7 @@ export default function AdminPage(){
                 </div>
             </div> : <button onClick={()=>setAddMode(true)}>Добавить оператора</button>}
             <button onClick={()=>nav("/")}>Мониторинг</button>
+            <button onClick={()=>nav("/groups")}>Группы</button>
         </div>
     )
 }

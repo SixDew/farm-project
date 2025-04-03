@@ -88,6 +88,61 @@ export async function updateAdminPressureSettings(imei, settings) {
     return response
 }
 
+export async function getGroups() {
+    return await sendRequestWithAuthorize(`${serverUrl}/groups`)
+}
+
+export async function getSections() {
+    return await sendRequestWithAuthorize(`${serverUrl}/sections`)
+}
+
+export async function addSection(name) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/sections`,{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+        body: JSON.stringify({
+            name:name
+        })
+    })
+    return response
+}
+
+export async function addGroup(name, description, id) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/groups/${id}`,{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+        body: JSON.stringify({
+            name:name,
+            description:description
+        })
+    })
+    return response
+}
+
+export async function addToGroup(groupId, sensorImei) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/groups/add/${groupId}`,{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+        body: JSON.stringify(
+            sensorImei
+        )
+    })
+    return response
+}
+
+
 async function sendRequest(url){
     const response = await fetch(url)
     if(response.ok){

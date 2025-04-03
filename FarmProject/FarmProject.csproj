@@ -27,8 +27,6 @@
 
   <ItemGroup>
     <Folder Include="client-app\" />
-    <Folder Include="group-feature\group\" />
-    <Folder Include="group-feature\section\" />
   </ItemGroup>
 
 </Project>

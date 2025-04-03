@@ -2,12 +2,13 @@ import { useNavigate } from "react-router-dom"
 import SensorMini from "./SensorMini.jsx"
 import './SensorsMiniContainer.css'
 import { Fragment, useEffect, useState } from "react"
-import { getAlarmedMeasurements, getAllPressureSensors } from "./api/sensors-api.js"
+import { getAlarmedMeasurements, getAllPressureSensors, getSections } from "./api/sensors-api.js"
 import connection from "./api/measurements-hub-connection.js"
 
 export default function SensorsMiniContainer(){
     const navigate = useNavigate()
     let [sensors, setSensors] = useState([])
+    let [sections, setSections] = useState([])
     const [alarmedSensors, setAlarmedSensors] = useState([])
     
     useEffect(()=>{
@@ -21,6 +22,24 @@ export default function SensorsMiniContainer(){
                 navigate('/login')
             }
         }
+
+        async function getAllSections(){
+            const response = await getSections()
+            if(response.ok){
+                const data = await response.json();
+                console.log(data)
+                const transformedData = data.map(s=>
+                    {return {
+                        id:s.id, metadata:s.metadata, 
+                        groups:s.groups.map(g=>{
+                            return {...g, sensors:getSensorsFromServerData(g.sensors)}}
+                        )
+                    }
+                });
+                setSections(transformedData);
+            }
+        }
+        getAllSections()
         getSensors()
     },[])
 
@@ -92,12 +111,33 @@ export default function SensorsMiniContainer(){
                          measurement1={sensor.measurement1} measurement2={sensor.measurement2} isAlarmed={sensor.isAlarmed}></SensorMini>)
                 }
             </div>
+            <div className="sections-mini-container">
+                {
+                    sections.map((s)=> <div>
+                        <h3>{s.metadata.name}</h3>
+                        {
+                            s.groups.map(g=><div className="groups-mini-container">
+                                <h4>{g.metadata.name}</h4>
+                                {
+                                    g.sensors.map(sensor=>{
+                                        const s = sensors.find(s=>s.imei == sensor.imei)
+                                        if(s){
+                                            return <SensorMini key={s.imei} imei={s.imei} gps={s.gps}
+                                            measurement1={s.measurement1} measurement2={s.measurement2} isAlarmed={s.isAlarmed}></SensorMini>
+                                        }
+                                    })
+                                }
+                            </div>)
+                        }
+                    </div>)
+                }
+            </div>
             <div className="sensors-mini-container">
                 {
                     sensors.map((sensor)=> <SensorMini key={sensor.imei} imei={sensor.imei} gps={sensor.gps}
                      measurement1={sensor.measurement1} measurement2={sensor.measurement2} isAlarmed={sensor.isAlarmed}></SensorMini>)
                 }
-        </div>
+            </div>
         </Fragment>
     )
 }

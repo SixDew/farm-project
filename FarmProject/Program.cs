@@ -2,6 +2,7 @@
 using FarmProject.auth;
 using FarmProject.db.services;
 using FarmProject.db.services.providers;
+using FarmProject.dto.groups.services;
 using FarmProject.dto.pressure_sensor.services;
 using FarmProject.dto.servisces;
 using FarmProject.dto.users.services;
@@ -37,6 +38,7 @@ builder.Services.AddConnections();
 
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<PressureSensorProvider>();
+builder.Services.AddScoped<SensorGroupsProvider>();
 builder.Services.AddScoped<UserProvider>();
 builder.Services.AddTransient<UserDtoConverter>();
 builder.Services.AddTransient<AlarmMeasurementsConverter>();
@@ -49,6 +51,9 @@ builder.Services.AddSingleton<MeasurementsHubService>();
 builder.Services.AddScoped<AlarmPressureMeasurementsChecker>();
 builder.Services.AddTransient<PressureAlarmDtoConvertService>();
 builder.Services.AddScoped<AlarmPressureSensorService>();
+builder.Services.AddScoped<SectionsProvider>();
+builder.Services.AddTransient<GroupConverter>();
+builder.Services.AddTransient<SectionConverter>();
 
 builder.Services.AddMqttConnectionHandler();
 builder.Services.AddHostedMqttServer(OptionsBuilder =>

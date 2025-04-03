@@ -30,21 +30,21 @@ public class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new PressureSensorConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new PressureAlarmMeasurementsConfiguration());
-
-        modelBuilder.Entity<PressureSensor>().HasData(
-                new PressureSensor()
-                {
-                    Id = 1,
-                    GPS = "gps",
-                    IMEI = "1",
-                },
-                new PressureSensor()
-                {
-                    Id = 2,
-                    GPS = "gps",
-                    IMEI = "2",
-                }
-            );
+        modelBuilder.ApplyConfiguration(new SensorGroupsConfiguration());
+        modelBuilder.ApplyConfiguration(new SectionConfiguration());
+        PressureSensor s1 = new PressureSensor()
+        {
+            Id = 1,
+            GPS = "gps",
+            IMEI = "1",
+        };
+        PressureSensor s2 = new PressureSensor()
+        {
+            Id = 2,
+            GPS = "gps",
+            IMEI = "2",
+        };
+        modelBuilder.Entity<PressureSensor>().HasData([s1, s2]);
 
         modelBuilder.Entity<PressureMeasurements>().ToTable("PressureMeaserments").HasData(
                 new PressureMeasurements()

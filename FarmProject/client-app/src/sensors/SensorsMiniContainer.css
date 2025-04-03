@@ -9,3 +9,27 @@
 
     margin: 10px;
 }
+.sections-mini-container{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    padding: 10px;
+
+    background-color: rgb(116, 160, 168);
+    border-radius: 5px;
+    box-shadow: 5px 5px 20px gray;
+
+    margin: 10px;
+}
+
+.groups-mini-container{
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px;
+
+    background-color: rgb(147, 213, 224);
+    border-radius: 5px;
+    box-shadow: 5px 5px 20px gray;
+
+    margin: 10px;
+}
