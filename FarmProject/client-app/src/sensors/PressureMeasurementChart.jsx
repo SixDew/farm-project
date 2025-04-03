@@ -59,13 +59,13 @@ export default function PressureMeasurementChart({measurements, legacyMeasuremen
         if(measurements){
           setMeasurements1((prev)=>[...prev, measurements.measurement1])
           setMeasurements2((prev)=>[...prev, measurements.measurement2])
-          setDates((prev)=>[...prev, measurements.measurementsTime])
+          setDates((prev)=>[...prev, new Date(data.measurementsTime).toLocaleString()])
         }
     },[measurements])
 
     useEffect(()=>{
       setMarkPointsData(alarmedMeasurements.map(d=>{
-        return { coord:[d.measurementsTime, 0], y:'20%', alarmMeasurementId:d.id }
+        return { coord:[new Date(d.measurementsTime).toLocaleString(), 0], y:'20%', alarmMeasurementId:d.id }
       }))
     }, [alarmedMeasurements])
 
