@@ -142,6 +142,21 @@ export async function addToGroup(groupId, sensorImei) {
     return response
 }
 
+export async function getDisabledSensors() {
+    return await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/disabled`)
+}
+
+export async function setSensorActive(isActive, imei) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/sensors/pressure/${imei}/set-active?isActive=${isActive}`, {
+        method: 'PUT',
+        headers: {
+            'Authorization':AuthorizathionHeader
+        }
+    })
+    return response
+}
+
 
 async function sendRequest(url){
     const response = await fetch(url)

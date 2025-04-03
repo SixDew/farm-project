@@ -58,6 +58,7 @@ export default function AdminPage(){
             </div> : <button onClick={()=>setAddMode(true)}>Добавить оператора</button>}
             <button onClick={()=>nav("/")}>Мониторинг</button>
             <button onClick={()=>nav("/groups")}>Группы</button>
+            <button onClick={()=>nav("/disabled")}>Датчики на добавление</button>
         </div>
     )
 }

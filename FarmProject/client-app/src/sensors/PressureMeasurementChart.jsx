@@ -68,7 +68,7 @@ export default function PressureMeasurementChart({measurements, legacyMeasuremen
         if(measurements){
           setMeasurements1((prev)=>[...prev, measurements.measurement1])
           setMeasurements2((prev)=>[...prev, measurements.measurement2])
-          setDates((prev)=>[...prev, new Date(data.measurementsTime).toLocaleString()])
+          setDates((prev)=>[...prev, new Date(measurements.measurementsTime).toLocaleString()])
         }
     },[measurements])
 

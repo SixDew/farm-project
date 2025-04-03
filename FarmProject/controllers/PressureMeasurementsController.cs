@@ -178,10 +178,23 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
     }
 
     [HttpGet("disabled")]
-    [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
+    [Authorize(Roles = $"{UserRoles.ADMIN}")]
     public async Task<IActionResult> GetDisabledSensors([FromServices] PressureSensorDtoConvertService converter)
     {
         var disabledSensors = await sensorProvider.GetDisabled();
         return Ok(disabledSensors.Select(converter.ConvertToClient));
+    }
+    [HttpPut("{imei}/set-active")]
+    [Authorize(Roles = $"{UserRoles.ADMIN}")]
+    public async Task<IActionResult> SetActive([FromQuery] bool isActive, [FromRoute] string imei)
+    {
+        var sensor = await sensorProvider.GetByImeiAsync(imei);
+        if (sensor is null)
+        {
+            return NotFound();
+        }
+        sensor.IsActive = isActive;
+        await sensorProvider.SaveChangesAsync();
+        return Ok();
     }
 }

@@ -7,6 +7,7 @@ import PressureSensor from './PressureSensor.jsx'
 import LoginPage from '../LoginPage.jsx'
 import AdminPage from '../AdminPage.jsx'
 import GroupPage from '../admin-panels/GroupPage.jsx'
+import SensorsToAddPage from '../admin-panels/SensorsToAddPage.jsx'
 
 export default function App(){
     return (
@@ -18,6 +19,7 @@ export default function App(){
                 <Route path='/sensors/pressure/:imei' element={<PressureSensor/>}/>
                 <Route path='/admin' element={<AdminPage/>}/>
                 <Route path='/groups' element={<GroupPage/>}/>
+                <Route path='/disabled' element={<SensorsToAddPage/>}/>
             </Routes>
         </Router>
         </div>
