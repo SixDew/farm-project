@@ -52,7 +52,7 @@ export default function PressureMeasurementChart({measurements, legacyMeasuremen
     useEffect(()=>{
       setMeasurements1((prev)=>[...prev, ...legacyMeasurements.map(data=>data.measurement1)])
       setMeasurements2((prev)=>[...prev, ...legacyMeasurements.map(data=>data.measurement2)])
-      setDates((prev)=>[...prev, ...legacyMeasurements.map(data=>data.measurementsTime)])
+      setDates((prev)=>[...prev, ...legacyMeasurements.map(data=>new Date(data.measurementsTime).toLocaleString())])
     },[legacyMeasurements])
 
     useEffect(()=>{
