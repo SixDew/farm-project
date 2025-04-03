@@ -32,6 +32,15 @@ export default function PressureMeasurementChart({measurements, legacyMeasuremen
             name: 'Измерения 2',
             type: 'line',
             data: []
+          },
+          {
+            name:'Предупреждения',
+            type: 'scatter',
+            data:[],
+            markPoint:{
+              data: markPointsData,
+              symbolSize: 30
+            }
           }
         ],
         dataZoom:[
