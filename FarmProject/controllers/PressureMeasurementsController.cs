@@ -176,4 +176,12 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
         await sensorProvider.SaveChangesAsync();
         return Ok();
     }
+
+    [HttpGet("disabled")]
+    [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
+    public async Task<IActionResult> GetDisabledSensors([FromServices] PressureSensorDtoConvertService converter)
+    {
+        var disabledSensors = await sensorProvider.GetDisabled();
+        return Ok(disabledSensors.Select(converter.ConvertToClient));
+    }
 }

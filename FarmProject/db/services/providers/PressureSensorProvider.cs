@@ -36,6 +36,11 @@ public class PressureSensorProvider(ApplicationDbContext db) : DbProvider<Pressu
         return await _dbSet.ToListAsync();
     }
 
+    public async Task<List<PressureSensor>> GetDisabled()
+    {
+        return await _dbSet.Where(s => s.IsActive == false).ToListAsync();
+    }
+
     public async Task<List<AlarmedPressureMeasurements>?> GetAlarmedMeasurementsAsync(string imei)
     {
         var sensor = await _dbSet.Include(s => s.AlarmedMeasurements).ThenInclude(am => am.Measurements).FirstOrDefaultAsync(x => x.IMEI == imei);
