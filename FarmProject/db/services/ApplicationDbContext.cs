@@ -37,12 +37,14 @@ public class ApplicationDbContext : DbContext
             Id = 1,
             GPS = "gps",
             IMEI = "1",
+            IsActive = true,
         };
         PressureSensor s2 = new PressureSensor()
         {
             Id = 2,
             GPS = "gps",
             IMEI = "2",
+            IsActive = true,
         };
         modelBuilder.Entity<PressureSensor>().HasData([s1, s2]);
 

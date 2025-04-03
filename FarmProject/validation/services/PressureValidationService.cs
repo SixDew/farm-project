@@ -7,13 +7,13 @@ namespace FarmProject.validation.services
         public async Task<bool> IsValidatedAsync(string imei)
         {
             var sensor = await sensorProvider.GetByImeiAsync(imei);
-            return sensor is not null;
+            return sensor is not null && sensor.IsActive;
         }
 
         public bool IsValidated(string imei)
         {
             var sensor = sensorProvider.GetByImei(imei);
-            return sensor is not null;
+            return sensor is not null && sensor.IsActive;
         }
     }
 }

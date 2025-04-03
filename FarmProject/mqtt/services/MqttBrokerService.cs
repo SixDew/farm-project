@@ -101,19 +101,14 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
 
     public async Task ValidateEvent(ValidatingConnectionEventArgs e)
     {
-        using (var scope = _serviceProvider.CreateScope())
+        string? imei = e.UserProperties?.FirstOrDefault(x => x.Name == "imei")?.Value;
+        if (imei is null)
         {
-            var validationService = scope.ServiceProvider.GetRequiredService<PressureValidationService>();
-
-            string? imei = e.UserProperties?.FirstOrDefault(x => x.Name == "imei")?.Value;
-            if (imei is null || !await validationService.IsValidatedAsync(imei))
-            {
-                e.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
-                return;
-            }
-
-            e.ReasonCode = MqttConnectReasonCode.Success;
+            e.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
+            return;
         }
+
+        e.ReasonCode = MqttConnectReasonCode.Success;
     }
 
     public async Task ConnectedEvent(ClientConnectedEventArgs e)
