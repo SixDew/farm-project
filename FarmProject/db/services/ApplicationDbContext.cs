@@ -19,7 +19,7 @@ public class ApplicationDbContext : DbContext
                         .SetBasePath(Directory.GetCurrentDirectory())
                         .Build();
 
-        optionsBuilder.UseNpgsql(config.GetConnectionString("DefaultConnection"));
+        optionsBuilder.UseNpgsql(config.GetConnectionString("DefaultConnection"), o => o.UseNetTopologySuite());
 
     }
 
@@ -32,6 +32,9 @@ public class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new PressureAlarmMeasurementsConfiguration());
         modelBuilder.ApplyConfiguration(new SensorGroupsConfiguration());
         modelBuilder.ApplyConfiguration(new SectionConfiguration());
+
+        modelBuilder.Entity<MapZone>().ToTable("MapZones");
+
         PressureSensor s1 = new PressureSensor()
         {
             Id = 1,
