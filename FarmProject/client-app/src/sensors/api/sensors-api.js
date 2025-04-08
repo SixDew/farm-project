@@ -157,6 +157,29 @@ export async function setSensorActive(isActive, imei) {
     return response
 }
 
+export async function getSectionsDeepMetadata() {
+    return await sendRequestWithAuthorize(`${serverUrl}/sections/deepmeta`)
+}
+
+export async function getGroupsMetadata(imei) {
+    return await sendRequestWithAuthorize(`${serverUrl}/groups/sensor/${imei}`)
+}
+
+export async function removeFromGroup(groupId, sensorImei) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/groups/remove/${groupId}`,{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+        body: JSON.stringify(
+            sensorImei
+        )
+    })
+    return response
+}
+
 
 async function sendRequest(url){
     const response = await fetch(url)

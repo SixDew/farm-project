@@ -14,4 +14,13 @@ public class GroupConverter(PressureSensorDtoConvertService _sensorConverter)
             Id = group.Id
         };
     }
+
+    public GroupMetadataToClientDto ConvertToMetadata(SensorGroup group)
+    {
+        return new()
+        {
+            Metadata = group.Metadata,
+            Id = group.Id
+        };
+    }
 }

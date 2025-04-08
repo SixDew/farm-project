@@ -13,4 +13,14 @@ public class SectionConverter(GroupConverter _groupConverter)
             Id = section.Id
         };
     }
+
+    public SectionDeepMetadataToClientDto ConvertToDeepMetadata(Section section)
+    {
+        return new()
+        {
+            Id = section.Id,
+            Metadata = section.Metadata,
+            GroupsMetadata = section.sensorGroups.Select(_groupConverter.ConvertToMetadata).ToList()
+        };
+    }
 }

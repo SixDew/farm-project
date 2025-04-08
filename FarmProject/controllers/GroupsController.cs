@@ -54,5 +54,46 @@ namespace FarmProject.controllers
             }
             return Ok(_converter.ConvertToClient(group));
         }
+
+        [HttpGet("meta")]
+        [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
+        public async Task<IActionResult> GetGroupsMetadata()
+        {
+            var groups = await _groups.GetAllOnlyMetadataAsync();
+            return Ok(groups.Select(_converter.ConvertToMetadata));
+        }
+
+        [HttpGet("sensor/{imei}")]
+        [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
+        public async Task<IActionResult> GetSensorGroupsMetadata([FromRoute] string imei)
+        {
+            var groups = await _sensorProvider.GetGroupsAsync(imei);
+            if (groups is null)
+            {
+                return BadRequest("Sensor is not exist");
+            }
+            return Ok(groups.Select(_converter.ConvertToMetadata));
+        }
+
+        [HttpPost("remove/{id}")]
+        [Authorize(Roles = $"{UserRoles.ADMIN}")]
+        public async Task<IActionResult> RemoveFromGroup([FromBody] string sensorImei, [FromRoute] int id)
+        {
+            var groups = await _sensorProvider.GetGroupsAsync(sensorImei);
+
+            if (groups is null)
+            {
+                return BadRequest();
+            }
+            var group = groups.Find(g => g.Id == id);
+            if (group is null)
+            {
+                return Ok();
+            }
+
+            groups.Remove(group);
+            await _sensorProvider.SaveChangesAsync();
+            return Ok();
+        }
     }
 }

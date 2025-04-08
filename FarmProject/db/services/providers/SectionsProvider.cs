@@ -10,5 +10,10 @@ namespace FarmProject.db.services.providers
         {
             return await _dbSet.Include(s => s.sensorGroups).ThenInclude(g => g.Sensors).ToListAsync();
         }
+
+        public async Task<List<Section>> GetAllWithDeepMetaAsync()
+        {
+            return await _dbSet.Include(s => s.sensorGroups).ToListAsync();
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DewLib.db;
 using FarmProject.db.models;
+using FarmProject.group_feature.group;
 using Microsoft.EntityFrameworkCore;
 
 namespace FarmProject.db.services.providers;
@@ -45,5 +46,15 @@ public class PressureSensorProvider(ApplicationDbContext db) : DbProvider<Pressu
     {
         var sensor = await _dbSet.Include(s => s.AlarmedMeasurements).ThenInclude(am => am.Measurements).FirstOrDefaultAsync(x => x.IMEI == imei);
         return sensor?.AlarmedMeasurements;
+    }
+
+    public async Task<List<SensorGroup>?> GetGroupsAsync(string imei)
+    {
+        var sensor = await _dbSet.Include(s => s.Groups).FirstOrDefaultAsync(s => s.IMEI == imei);
+        if (sensor is null)
+        {
+            return null;
+        }
+        return sensor.Groups;
     }
 }

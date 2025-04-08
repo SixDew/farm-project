@@ -19,6 +19,7 @@ namespace FarmProject.controllers
             var sectionsList = await _sections.GetAllAsync();
             return Ok(sectionsList.Select(_converter.ConvertToClientDto));
         }
+
         [HttpPost]
         [Authorize(Roles = $"{UserRoles.ADMIN}")]
         public async Task<IActionResult> AddSection([FromBody] SectionMetadata metadata)
@@ -28,6 +29,7 @@ namespace FarmProject.controllers
             await _sections.SaveChangesAsync();
             return Created($"/sections/{section.Id}", _converter.ConvertToClientDto(section));
         }
+
         [HttpGet("{id}")]
         [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
         public async Task<IActionResult> GetSection([FromRoute] int id)
@@ -38,6 +40,14 @@ namespace FarmProject.controllers
                 return BadRequest("Section is not exist");
             }
             return Ok(section);
+        }
+
+        [HttpGet("deepmeta")]
+        [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
+        public async Task<IActionResult> GetSectionWithDeepMeta()
+        {
+            var sections = await _sections.GetAllWithDeepMetaAsync();
+            return Ok(sections.Select(_converter.ConvertToDeepMetadata));
         }
     }
 }
