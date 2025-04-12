@@ -59,6 +59,7 @@ export default function AdminPage(){
             <button onClick={()=>nav("/")}>Мониторинг</button>
             <button onClick={()=>nav("/groups")}>Группы</button>
             <button onClick={()=>nav("/disabled")}>Датчики на добавление</button>
+            <button onClick={()=>nav("/map")}>Карта</button>
         </div>
     )
 }

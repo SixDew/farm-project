@@ -8,6 +8,7 @@ import LoginPage from '../LoginPage.jsx'
 import AdminPage from '../AdminPage.jsx'
 import GroupPage from '../admin-panels/GroupPage.jsx'
 import SensorsToAddPage from '../admin-panels/SensorsToAddPage.jsx'
+import MapPage from '../admin-panels/MapPage.jsx'
 
 export default function App(){
     return (
@@ -20,6 +21,7 @@ export default function App(){
                 <Route path='/admin' element={<AdminPage/>}/>
                 <Route path='/groups' element={<GroupPage/>}/>
                 <Route path='/disabled' element={<SensorsToAddPage/>}/>
+                <Route path='/map' element={<MapPage/>}/>
             </Routes>
         </Router>
         </div>

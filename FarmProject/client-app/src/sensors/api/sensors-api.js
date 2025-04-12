@@ -180,6 +180,34 @@ export async function removeFromGroup(groupId, sensorImei) {
     return response
 }
 
+export async function getZones() {
+    return await sendRequestWithAuthorize(`${serverUrl}/map/zones`)
+}
+
+export async function sendZone(zone) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/map/zones`,{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+        body: JSON.stringify(zone)
+    })
+    return response
+}
+
+export async function deleteZone(id) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/map/zones/${id}`,{
+        method:'Delete',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+    })
+    return response
+}
 
 async function sendRequest(url){
     const response = await fetch(url)

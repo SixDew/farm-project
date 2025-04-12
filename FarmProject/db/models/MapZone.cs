@@ -1,10 +1,10 @@
-﻿using NetTopologySuite.Geometries;
+﻿using DewLib.db;
+using NetTopologySuite.Geometries;
 
 namespace FarmProject.db.models
 {
-    public class MapZone
+    public class MapZone : BaseModel
     {
-        public int Id { get; set; }
         public string Name { get; set; } = "";
         public required Geometry Geometry { get; set; }
     }

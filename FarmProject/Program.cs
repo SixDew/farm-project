@@ -3,6 +3,7 @@ using FarmProject.auth;
 using FarmProject.db.services;
 using FarmProject.db.services.providers;
 using FarmProject.dto.groups.services;
+using FarmProject.dto.map.services;
 using FarmProject.dto.pressure_sensor.services;
 using FarmProject.dto.servisces;
 using FarmProject.dto.users.services;
@@ -13,6 +14,7 @@ using FarmProject.validation.services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using MQTTnet.AspNetCore;
+using NetTopologySuite.IO.Converters;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,6 +56,8 @@ builder.Services.AddScoped<AlarmPressureSensorService>();
 builder.Services.AddScoped<SectionsProvider>();
 builder.Services.AddTransient<GroupConverter>();
 builder.Services.AddTransient<SectionConverter>();
+builder.Services.AddScoped<MapZonesProvider>();
+builder.Services.AddTransient<MapZoneConverter>();
 
 builder.Services.AddMqttConnectionHandler();
 builder.Services.AddHostedMqttServer(OptionsBuilder =>
@@ -61,7 +65,10 @@ builder.Services.AddHostedMqttServer(OptionsBuilder =>
     OptionsBuilder.WithDefaultEndpoint();
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new GeoJsonConverterFactory());
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -9,7 +9,7 @@ namespace FarmProject.db.models
         public required string GPS { get; set; }
         public required string IMEI { get; set; }
         public bool IsActive { get; set; } = false;
-
+        //----------------------------------------------------------
         public List<PressureMeasurements> Measurements { get; set; } = new();
         public List<AlarmedPressureMeasurements> AlarmedMeasurements { get; set; } = new();
         [Required]
