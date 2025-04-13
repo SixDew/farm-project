@@ -6,5 +6,6 @@ namespace FarmProject.dto.map
     {
         public string Name { get; set; } = "";
         public required Geometry Geometry { get; set; }
+        public required int SectionId { get; set; }
     }
 }

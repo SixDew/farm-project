@@ -16,7 +16,7 @@ namespace FarmProject.dto.map.services
 
         public MapZone ConvertToModel(MapZoneFromClientDto zone)
         {
-            return new() { Geometry = zone.Geometry, Name = zone.Name };
+            return new() { Geometry = zone.Geometry, Name = zone.Name, SectionId = zone.SectionId };
         }
     }
 }
