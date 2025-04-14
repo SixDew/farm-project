@@ -1,9 +1,17 @@
-import { useRef, useState } from "react"
+import {useState } from "react"
 import "./UserElement.css"
 import UserElementField from "./UserElementField"
 import { updateUserData, removeUser } from "./sensors/users-api"
 
-export default function UserElement({pass, name, phone, role, userId}){
+interface UserElementProps{
+    pass:string,
+    name:string,
+    phone:string,
+    role:string,
+    userId:number
+}
+
+export default function UserElement({pass, name, phone, role, userId}:UserElementProps){
     const [isReadonly, setIsReadonly] = useState(true)
     const [password, setPass] = useState(pass)
     const [userName, setName] = useState(name)

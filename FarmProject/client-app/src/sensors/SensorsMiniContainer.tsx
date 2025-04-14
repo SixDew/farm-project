@@ -1,21 +1,39 @@
 import { useNavigate } from "react-router-dom"
-import SensorMini from "./SensorMini.jsx"
+import SensorMini from "./SensorMini"
 import './SensorsMiniContainer.css'
 import { Fragment, useEffect, useState } from "react"
 import { getAlarmedMeasurements, getAllPressureSensors, getSections } from "./api/sensors-api.js"
 import connection from "./api/measurements-hub-connection.js"
+import { PressureAlarmDto, PressureMeasurements, PressureSensorDto, SensorGroupDto, SensorSectionDto } from "../interfaces/DtoInterfaces"
+
+interface ConvertedPressureSensor{
+    imei:string,
+    gps:string,
+    measurement1:number,
+    measurement2:number,
+    isAlarmed:boolean,
+    alarmedMeasurements:PressureAlarmDto[]
+}
+
+interface ConvertedSensorSection extends Omit<SensorSectionDto, 'groups'>{
+    groups:ConvertedGroup[]
+}
+
+interface ConvertedGroup extends Omit<SensorGroupDto, 'sensors'>{
+    sensors?:ConvertedPressureSensor[]
+}
 
 export default function SensorsMiniContainer(){
     const navigate = useNavigate()
-    let [sensors, setSensors] = useState([])
-    let [sections, setSections] = useState([])
-    const [alarmedSensors, setAlarmedSensors] = useState([])
+    let [sensors, setSensors] = useState<ConvertedPressureSensor[]>([])
+    let [sections, setSections] = useState<ConvertedSensorSection[]>([])
+    const [alarmedSensors, setAlarmedSensors] = useState<ConvertedPressureSensor[]>([])
     
     useEffect(()=>{
         async function getSensors() {
             const response = await getAllPressureSensors()
             if(response.ok){
-                const data = await response.json()
+                const data:PressureSensorDto[] = await response.json()
                 setSensors(getSensorsFromServerData(data))
             }
             if(response.status === 401){
@@ -26,13 +44,14 @@ export default function SensorsMiniContainer(){
         async function getAllSections(){
             const response = await getSections()
             if(response.ok){
-                const data = await response.json();
+                const data: SensorSectionDto[] = await response.json();
                 console.log(data)
-                const transformedData = data.map(s=>
+                const transformedData:ConvertedSensorSection[] = data.map(s=>
                     {return {
                         id:s.id, metadata:s.metadata, 
-                        groups:s.groups.map(g=>{
-                            return {...g, sensors:getSensorsFromServerData(g.sensors)}}
+                        groups:s.groups!.map(g=>{
+                                return {...g, sensors:getSensorsFromServerData(g.sensors)}
+                            }
                         )
                     }
                 });
@@ -48,7 +67,7 @@ export default function SensorsMiniContainer(){
             for(const sensor of sensors){
                 var response = await getAlarmedMeasurements(sensor.imei)
                 if(response.ok){
-                    var alarmedMeasurementsList = await response.json()
+                    var alarmedMeasurementsList:PressureAlarmDto[] = await response.json()
                     for(const measurement of alarmedMeasurementsList){
                         if(!sensor.alarmedMeasurements.find(m=>m.id == measurement.id)){
                             if(!measurement.isChecked){
@@ -77,13 +96,13 @@ export default function SensorsMiniContainer(){
                 })
             }
 
-            connection.on('ReciveMeasurements',(data)=>{
+            connection.on('ReciveMeasurements',(data:PressureMeasurements)=>{
                 const updateSensors = [...sensors]
                 setMeasurementsData(data, updateSensors)
                 setSensors(updateSensors)
             })
 
-            connection.on('ReciveAlarmNotify', (data)=>{
+            connection.on('ReciveAlarmNotify', (data:PressureAlarmDto)=>{
                 alarmEvent(sensors, alarmedSensors, data, setAlarmedSensors)
             })
         }
@@ -119,13 +138,15 @@ export default function SensorsMiniContainer(){
                             s.groups.map(g=><div className="groups-mini-container">
                                 <h4>{g.metadata.name}</h4>
                                 {
-                                    g.sensors.map(sensor=>{
-                                        const s = sensors.find(s=>s.imei == sensor.imei)
-                                        if(s){
-                                            return <SensorMini key={s.imei} imei={s.imei} gps={s.gps}
-                                            measurement1={s.measurement1} measurement2={s.measurement2} isAlarmed={s.isAlarmed}></SensorMini>
-                                        }
-                                    })
+                                    g.sensors && (
+                                        g.sensors.map(sensor=>{
+                                            const s = sensors.find(s=>s.imei == sensor.imei)
+                                            if(s){
+                                                return <SensorMini key={s.imei} imei={s.imei} gps={s.gps}
+                                                measurement1={s.measurement1} measurement2={s.measurement2} isAlarmed={s.isAlarmed}></SensorMini>
+                                            }
+                                        })
+                                    )
                                 }
                             </div>)
                         }
@@ -142,13 +163,18 @@ export default function SensorsMiniContainer(){
     )
 }
 
-function getSensorsFromServerData(data){
-    return data.map(sensor=>{
-        return {imei:sensor.imei, gps:sensor.gps, measurement1:0, measurement2:0, isAlarmed:false, alarmedMeasurements:[]}
-    })
+function getSensorsFromServerData(data:PressureSensorDto[] | undefined):ConvertedPressureSensor[]{
+    if(data){
+        return data.map(sensor=>{
+            return {imei:sensor.imei, gps:sensor.gps, measurement1:0, measurement2:0, isAlarmed:false, alarmedMeasurements:[]}
+        })
+    }
+    else{
+        return []
+    }
 }
 
-function setMeasurementsData(data, sensors){
+function setMeasurementsData(data:PressureMeasurements, sensors:ConvertedPressureSensor[]){
     for(const sensor of sensors){
         if(sensor.imei == data.imei){
             sensor.measurement1 = data.measurement1
@@ -158,15 +184,18 @@ function setMeasurementsData(data, sensors){
     }
 }
 
-function alarmEvent(sensors, alarmedSensors, data, setAlarmedSensors){
-    const sensor = sensors.find(s=>s.imei == data.imei)
-    if(sensor){
-        sensor.alarmedMeasurements.push(data)
-        addSensorToAlarm(sensor, alarmedSensors, setAlarmedSensors)
-    }
+function alarmEvent(sensors:ConvertedPressureSensor[], alarmedSensors:ConvertedPressureSensor[],
+     data:PressureAlarmDto,
+     setAlarmedSensors:React.Dispatch<React.SetStateAction<ConvertedPressureSensor[]>>){
+        const sensor = sensors.find(s=>s.imei == data.imei)
+        if(sensor){
+            sensor.alarmedMeasurements.push(data)
+            addSensorToAlarm(sensor, alarmedSensors, setAlarmedSensors)
+        }
 }
 
-function addSensorToAlarm(sensor, alarmedSensors, setAlarmedSensors){
+function addSensorToAlarm(sensor:ConvertedPressureSensor, alarmedSensors:ConvertedPressureSensor[],
+     setAlarmedSensors:React.Dispatch<React.SetStateAction<ConvertedPressureSensor[]>>){
     if(!alarmedSensors.find(s=>s.imei==sensor.imei)){
         sensor.isAlarmed = true
         alarmedSensors.push(sensor)

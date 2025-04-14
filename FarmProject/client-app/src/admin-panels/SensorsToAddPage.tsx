@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
 import { getDisabledSensors, getSectionsDeepMetadata } from "../sensors/api/sensors-api"
 import DisabledSensors from "./DisabledSensor"
+import { PressureSensorDto, SensorSectionDeepMetaDto } from "../interfaces/DtoInterfaces"
 
 export default function SensorsToAddPage(){
-    const [disabledSensors, setDisabledSensors] = useState([])
-    const [sectionsMetadata, setSectionsMetadata] = useState([])
+    const [disabledSensors, setDisabledSensors] = useState<PressureSensorDto[]>([])
+    const [sectionsMetadata, setSectionsMetadata] = useState<SensorSectionDeepMetaDto[]>([])
 
     useEffect(()=>{
         async function getSensors() {

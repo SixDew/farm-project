@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react'
-import { getAllPressureSensors } from './api/sensors-api.js'
 import './App.css'
-import SensorsMiniContainer from './SensorsMiniContainer.jsx'
+import SensorsMiniContainer from './SensorsMiniContainer'
 import {BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import PressureSensor from './PressureSensor.jsx'
-import LoginPage from '../LoginPage.jsx'
-import AdminPage from '../AdminPage.jsx'
-import GroupPage from '../admin-panels/GroupPage.jsx'
-import SensorsToAddPage from '../admin-panels/SensorsToAddPage.jsx'
-import MapPage from '../admin-panels/MapPage.jsx'
+import PressureSensor from './PressureSensor'
+import LoginPage from '../LoginPage'
+import AdminPage from '../AdminPage'
+import GroupPage from '../admin-panels/GroupPage'
+import SensorsToAddPage from '../admin-panels/SensorsToAddPage'
+import MapPage from '../admin-panels/MapPage'
 
 export default function App(){
     return (

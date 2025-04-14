@@ -1,13 +1,28 @@
 import ReactECharts from 'echarts-for-react'
 //импортировать только нужное в будущем
 import { useEffect, useState, useRef, useMemo } from 'react';
+import { PressureAlarmDto, PressureMeasurements } from '../interfaces/DtoInterfaces';
 
-export default function PressureMeasurementChart({measurements, legacyMeasurements, alarmedMeasurements, alarmCheckedEvent}){
-    const [measurements1, setMeasurements1] = useState([])
-    const [measurements2, setMeasurements2] = useState([])
-    const [dates, setDates] = useState([])
-    const [markPointsData, setMarkPointsData] = useState([])
-    const chart = useRef(null)
+interface MeasurementsChartProps{
+  measurements?:PressureMeasurements,
+  legacyMeasurements:PressureMeasurements[],
+  alarmedMeasurements:PressureAlarmDto[],
+  alarmCheckedEvent:(id:number) => {}
+}
+
+interface MarkPointsData{
+  coord:any[],
+  y:string,
+  alarmMeasurementId:number
+}
+
+export default function PressureMeasurementChart({measurements, legacyMeasurements, alarmedMeasurements,
+   alarmCheckedEvent}:MeasurementsChartProps){
+    const [measurements1, setMeasurements1] = useState<number[]>([])
+    const [measurements2, setMeasurements2] = useState<number[]>([])
+    const [dates, setDates] = useState<string[]>([])
+    const [markPointsData, setMarkPointsData] = useState<MarkPointsData[]>([])
+    const chart = useRef<ReactECharts>(null)
 
     const initOption = useMemo(()=>{
       return {
@@ -83,8 +98,11 @@ export default function PressureMeasurementChart({measurements, legacyMeasuremen
     }, [measurements1, measurements2, dates, markPointsData])
 
     useEffect(()=>{
-      chart.current.getEchartsInstance().on('click', {seriesName: 'Предупреждения', componentType:'markPoint'}, (params)=>{
-        alarmCheckedEvent(params.data.alarmMeasurementId)
+      chart?.current?.getEchartsInstance().on('click', {seriesName: 'Предупреждения', componentType:'markPoint'}, (params)=>{
+        if(params.data){
+          const markData = params.data as MarkPointsData
+          alarmCheckedEvent(markData.alarmMeasurementId)
+        }
       })
     }, [])
 
@@ -93,7 +111,8 @@ export default function PressureMeasurementChart({measurements, legacyMeasuremen
     )
 }
 
-function setOption(measurements1, measurements2, chart, dates, markPointsData){
+function setOption(measurements1:number[], measurements2:number[], chart:React.RefObject<ReactECharts>,
+   dates:string[], markPointsData:MarkPointsData[]){
   const option = {
     series: [
       {
@@ -121,5 +140,5 @@ function setOption(measurements1, measurements2, chart, dates, markPointsData){
     }
   }
 
-  chart.current.getEchartsInstance().setOption(option)
+  chart?.current?.getEchartsInstance().setOption(option)
 }

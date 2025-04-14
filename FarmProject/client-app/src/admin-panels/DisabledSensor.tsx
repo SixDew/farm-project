@@ -2,9 +2,16 @@ import { useEffect, useState } from "react"
 import { addToGroup, getGroupsMetadata, removeFromGroup, setSensorActive } from "../sensors/api/sensors-api";
 import './DisabledSensor.css';
 import SettingsMenuBoolElemet from "../sensors/SettingsMenuBoolElemet";
+import {SensorGroupDeepMetaDto, SensorSectionDeepMetaDto } from "../interfaces/DtoInterfaces";
 
-export default function DisabledSensors({imei, gps, sectionsMeta}){
-    const [sensorGroups, setSensorGroups] = useState([])
+interface DisabledSensorsProps{
+    imei:string,
+    gps:string,
+    sectionsMeta:SensorSectionDeepMetaDto[]
+}
+
+export default function DisabledSensors({imei, gps, sectionsMeta}:DisabledSensorsProps){
+    const [sensorGroups, setSensorGroups] = useState<SensorGroupDeepMetaDto[]>([])
 
     useEffect(()=>{
         async function getGroups() {
@@ -14,7 +21,8 @@ export default function DisabledSensors({imei, gps, sectionsMeta}){
         getGroups()
     }, [imei])
 
-    async function groupChangeEvent(event, sensorGroups, group){
+    async function groupChangeEvent(event:React.ChangeEvent<HTMLInputElement>,
+         sensorGroups:SensorGroupDeepMetaDto[], group:SensorGroupDeepMetaDto){
         if(event.target.checked && !sensorGroups.find(g=>g.id == group.id)){
             const response = await addToGroup(group.id, imei)
             if(response.ok){
@@ -43,8 +51,8 @@ export default function DisabledSensors({imei, gps, sectionsMeta}){
                             <legend>{section.metadata.name}</legend>
                             <div>
                                 {
-                                    section.groupsMetadata.map(group=><div>
-                                        <SettingsMenuBoolElemet title={group.metadata.name} value={sensorGroups.find(g=>g.id == group.id)} 
+                                    section.groupsMetadata?.map(group=><div>
+                                        <SettingsMenuBoolElemet title={group.metadata.name} value={Boolean(sensorGroups.find(g=>g.id == group.id))} 
                                         changeEvent={(event)=>groupChangeEvent(event, sensorGroups, group)} key={group.id}></SettingsMenuBoolElemet>
                                     </div>)
                                 }

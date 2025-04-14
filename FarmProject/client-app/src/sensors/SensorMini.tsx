@@ -1,7 +1,15 @@
 import { useNavigate } from 'react-router-dom'
 import './SensorMini.css'
 
-export default function SensorMini({imei, gps, measurement1, measurement2, isAlarmed}){
+interface SensorMiniProps{
+    imei:string,
+    gps:string,
+    measurement1:number,
+    measurement2:number,
+    isAlarmed:boolean
+}
+
+export default function SensorMini({imei, gps, measurement1, measurement2, isAlarmed}:SensorMiniProps){
     const navigate = useNavigate()
     
     return (

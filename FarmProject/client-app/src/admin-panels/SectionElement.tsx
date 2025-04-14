@@ -1,7 +1,14 @@
+import { SensorGroupDto } from '../interfaces/DtoInterfaces'
 import { addToGroup, addGroup } from '../sensors/api/sensors-api'
 import './SectionElement.css'
 
-export default function SectionElement({name, groups, sensors, sectionId}){
+interface SectionElementProps{
+    name:string,
+    groups:SensorGroupDto[],
+    sectionId:number
+}
+
+export default function SectionElement({name, groups, sectionId}:SectionElementProps){
     console.log(sectionId)
     return(
         <div id='main-section-element'>

@@ -1,51 +1,75 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { MapContainer, TileLayer, FeatureGroup, useMap} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "./SelectedZoneMenu.css"
 import "leaflet-draw/dist/leaflet.draw.css";
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import { GeomanControls, layerEvents } from 'react-leaflet-geoman-v2';
+import L from "leaflet"
+import {Geometry} from "geojson"
+import { Feature } from "geojson";
 
 import { deleteZone, getZones, sendZone } from "../sensors/api/sensors-api";
 import Control from "react-leaflet-custom-control";
+import { MapZoneDto } from "../interfaces/DtoInterfaces";
 
+interface GeomanComponentProps{
+  zones:MapZoneDto[]
+  setZones:React.Dispatch<React.SetStateAction<MapZoneDto[]>>,
+  onZoneClick:(zone:ZoneProperties)=>void
+}
 
-function GeomanComponent({zones, setZones, onZoneClick}) {
+interface FeatureLayer extends L.Layer{
+  feature:Feature<Geometry, any>
+}
+
+interface ZoneProperties{
+  name:string,
+  id:number
+}
+
+interface GeoJsonLayer extends L.Layer{
+  toGeoJSON: () => GeoJSON.Feature;
+}
+
+function GeomanComponent({zones, setZones, onZoneClick}:GeomanComponentProps) {
   const map = useMap();
   useEffect(() => {
     console.log(zones)
-    const existingZoneId = []
+    const existingZoneId:number[] = []
 
     map.eachLayer(layer=>{
-      if(layer.feature && layer.feature.properties.id){
-        existingZoneId.push(layer.feature.properties.id)
+      const featureLayer = layer as FeatureLayer
+      if(featureLayer.feature && featureLayer.feature.properties.id){
+        existingZoneId.push(featureLayer.feature.properties.id)
       }
     })
 
     zones.forEach(zone => {
       if(!existingZoneId.find(id=>id == zone.id)){
         const geoJsonLayer = L.geoJSON(zone.geometry, {
-          onEachFeature : (feature, layer) =>{
-            layer.feature.properties.name = zone.name
-            layer.feature.properties.id = zone.id
+          onEachFeature : (_feature, layer) =>{
+            const featureLayer = layer as FeatureLayer
+            featureLayer.feature.properties.name = zone.name
+            featureLayer.feature.properties.id = zone.id
     
-            layer.bindPopup(`Зона: ${layer.feature.properties.name} Id: ${layer.feature.properties.id}`, {closeOnClick:true})
+            layer.bindPopup(`Зона: ${featureLayer.feature.properties.name} Id: ${featureLayer.feature.properties.id}`, {closeOnClick:true})
     
-            layer.on('mouseover', function () {
+            layer.on('mouseover', function (this:L.Layer) {
               this.openPopup()
             })
     
-            layer.on('mouseout', function(){
+            layer.on('mouseout', function(this:L.Layer){
               this.closePopup()
             })
 
             layer.on('click',()=>{
               console.log('Zone click')
-              onZoneClick(layer.feature.properties)
+              onZoneClick(featureLayer.feature.properties)
             })
   
             layer.on('pm:remove', async function(){
-              var zoneId = layer.feature.properties.id
+              var zoneId = featureLayer.feature.properties.id
               var response = await deleteZone(zoneId)
               if(response.ok){
                 setZones(zones.filter(z=>z.id != zoneId))
@@ -54,7 +78,6 @@ function GeomanComponent({zones, setZones, onZoneClick}) {
                 console.error('Ошибка удаления зоны', response)
               }
             })
-            
           }
         }).eachLayer((layer)=>{
           layerEvents(layer, {
@@ -66,9 +89,11 @@ function GeomanComponent({zones, setZones, onZoneClick}) {
     });
   }, [map, zones]);
 
-  const zoneCreateHandler = useCallback(async (e)=>{
+
+  const zoneCreateHandler = useCallback<L.PM.CreateEventHandler>(async (e)=>{
     console.log('add-zone')
-    var response = await sendZone({name:"test-zone", geometry:e.layer.toGeoJSON().geometry})
+    const geoJsoLayer = e.layer as GeoJsonLayer
+    var response = await sendZone({name:"test-zone", geometry:geoJsoLayer.toGeoJSON().geometry})
     if(response.ok){
       var data = await response.json()
       setZones(prev=>[...prev, data])
@@ -87,19 +112,10 @@ function GeomanComponent({zones, setZones, onZoneClick}) {
   );
 }
 
-function SelectedZoneMenu({name, id}){
-  return (
-    <div className="selected-zone-menu">
-      <h3>Зона: {name}</h3>
-      <h3>Id: {id}</h3>
-    </div>
-  )
-}
-
 
 export default function MapPage() {
-  const [zones, setZones] = useState([]);
-  const [selectedZone, setSelectedZone] = useState(null)
+  const [zones, setZones] = useState<MapZoneDto[]>([]);
+  const [selectedZone, setSelectedZone] = useState<ZoneProperties|null>(null)
 
   useEffect(() => {
     async function getAllZones() {
@@ -112,7 +128,7 @@ export default function MapPage() {
     getAllZones();
   }, []);
 
-  function onZoneClick(zone){
+  function onZoneClick(zone:ZoneProperties){
     setSelectedZone(zone)
   }
 

@@ -192,7 +192,10 @@ export async function sendZone(zone) {
             'Content-Type':'application/json',
             'Authorization':AuthorizathionHeader
         },
-        body: JSON.stringify(zone)
+        // TODO
+        body: JSON.stringify({
+            ...zone, SectionId:1
+        })
     })
     return response
 }

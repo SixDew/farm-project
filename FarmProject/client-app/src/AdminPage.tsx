@@ -3,16 +3,16 @@ import "./AdminPage.css"
 import { getUsers, createUser } from "./sensors/users-api"
 import { useNavigate } from "react-router-dom"
 import UserElement from "./UserElement"
-import { addGroup, addToGroup, getGroups } from "./sensors/api/sensors-api"
+import { AdminUserDto } from "./interfaces/DtoInterfaces"
 
 export default function AdminPage(){
-    const [users, setUsers] = useState()
-    const [addMode, setAddMode] = useState(false)
+    const [users, setUsers] = useState<AdminUserDto[]>()
+    const [addMode, setAddMode] = useState<boolean>(false)
     const nav = useNavigate()
 
-    const passInput = useRef()
-    const nameInput = useRef()
-    const phoneInput = useRef()
+    const passInput = useRef<HTMLInputElement>(null)
+    const nameInput = useRef<HTMLInputElement>(null)
+    const phoneInput = useRef<HTMLInputElement>(null)
     
     async function getUsersData(){
         const response = await getUsers()
@@ -30,9 +30,9 @@ export default function AdminPage(){
 
     async function addUser() {
         const response = await createUser({
-            Key:passInput.current.value,
-            Name:nameInput.current.value,
-            Phone:phoneInput.current.value,
+            Key:passInput?.current?.value,
+            Name:nameInput?.current?.value,
+            Phone:phoneInput?.current?.value,
             Role:"user"
         })
         if(response.ok){
