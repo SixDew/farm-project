@@ -1,5 +1,5 @@
 import Control from "react-leaflet-custom-control"
-import "./SelectedZoneMenu.css"
+import "./SelectedSectionMenu.css"
 import { ZoneProperties } from "./MapPage"
 import { SensorGroupDto, SensorSectionDto } from "../../interfaces/DtoInterfaces"
 import { useEffect, useState } from "react"
@@ -65,14 +65,6 @@ export default function SelectedSectionMenu({selectedZone, selectedSection, sect
                     })
                 }
             </select>
-            {
-                selectedZone && (
-                    <>
-                    <h3>Зона: {selectedZone.name}</h3>
-                    <h3>Id: {selectedZone.id}</h3>
-                    </>
-                )
-            }
             {
                 selectedSection && (
                     <div className="selected-section-sensors">

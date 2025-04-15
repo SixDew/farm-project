@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { MapContainer, TileLayer, FeatureGroup, useMap} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import "./SelectedZoneMenu.css"
+import "./SelectedSectionMenu.css"
 import "leaflet-draw/dist/leaflet.draw.css";
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import { GeomanControls, layerEvents } from 'react-leaflet-geoman-v2';
-import L, { marker } from "leaflet"
+import L from "leaflet"
 import {Geometry} from "geojson"
 import { Feature } from "geojson";
 
@@ -60,19 +60,6 @@ function GeomanComponent({zones, setZones, onZoneClick, markers}:GeomanComponent
             featureLayer.feature.properties.id = zone.id
             featureLayer.feature.properties.sectionId = zone.sectionId
     
-            layer.bindPopup(`Зона Id: ${featureLayer.feature.properties.id}`,
-               {closeOnClick:true,
-                autoPan:false
-               })
-    
-            layer.on('mouseover', function (this:L.Layer) {
-              this.openPopup()
-            })
-    
-            layer.on('mouseout', function(this:L.Layer){
-              this.closePopup()
-            })
-
             layer.on('click',()=>{
               console.log('Zone click')
               onZoneClick(featureLayer.feature.properties)
@@ -109,6 +96,7 @@ function GeomanComponent({zones, setZones, onZoneClick, markers}:GeomanComponent
       const mapMarker = L.marker([marker.coordX, marker.coordY], {
         title:marker.imei
       })
+
       mapMarker.addTo(map)
     })
   }, [map,markers])
@@ -138,10 +126,12 @@ function GeomanComponent({zones, setZones, onZoneClick, markers}:GeomanComponent
   );
 }
 
+interface MapPageProps{
+  facility?:FacilityDto
+}
 
-export default function MapPage() {
+export default function MapPage({facility}:MapPageProps) {
   const [zones, setZones] = useState<MapZoneDto[]>([])
-  const [facility, setFacility] = useState<FacilityDto>()
   const [sections, setSections] = useState<SensorSectionDto[]>([])
   const [groups, setGroups] = useState<SensorGroupDto[]>([])
   const [selectedZone, setSelectedZone] = useState<ZoneProperties|null>(null)
@@ -160,18 +150,6 @@ export default function MapPage() {
       setGroups(facility.groups)
     }
   }, [facility])
-
-  useEffect(()=>{
-    async function initFacilities() {
-      const response = await getFacility(1)
-      if(response.ok){
-        const facilityData:FacilityDto = await response.json()
-        console.log("Facility: ", facilityData)
-        setFacility(facilityData)
-      }
-    }
-    initFacilities()
-  }, [])
 
   useEffect(()=>{
     var markersBuffer:SensorMarker[] = []
@@ -211,7 +189,7 @@ export default function MapPage() {
     <MapContainer
       center={centerInit}
       zoom={zoomInit}
-      style={{ height: "100%", width: "100%" }}
+      style={{height:"100%", width: "100%" }}
     >
      <GeomanComponent zones={zones} setZones={setZones} onZoneClick={onZoneClick} markers={markers}></GeomanComponent>
      <SelectedSectionMenu sections={sections} selectedZone={selectedZone} selectedSection={selectedSection} groups={groups}></SelectedSectionMenu>

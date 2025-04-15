@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react"
 import "./AdminPage.css"
-import { getUsers, createUser } from "./sensors/users-api"
+import { getUsers, createUser } from "../sensors/users-api"
 import { useNavigate } from "react-router-dom"
-import UserElement from "./UserElement"
-import { AdminUserDto } from "./interfaces/DtoInterfaces"
+import UserElement from "../UserElement"
+import { AdminUserDto } from "../interfaces/DtoInterfaces"
 
 export default function AdminPage(){
     const [users, setUsers] = useState<AdminUserDto[]>()
