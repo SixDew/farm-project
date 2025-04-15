@@ -1,17 +1,31 @@
-﻿using FarmProject.group_feature.section;
+﻿using FarmProject.dto.map.services;
+using FarmProject.group_feature.section;
 
 namespace FarmProject.dto.groups.services;
 
-public class SectionConverter(GroupConverter _groupConverter)
+public class SectionConverter(GroupConverter _groupConverter, MapZoneConverter _zoneConverter)
 {
     public SectionToClientDto ConvertToClientDto(Section section)
     {
-        return new()
+        if (section.Zone is null)
         {
-            Metadata = section.Metadata,
-            Groups = section.sensorGroups.Select(_groupConverter.ConvertToClient).ToList(),
-            Id = section.Id
-        };
+            return new()
+            {
+                Metadata = section.Metadata,
+                Groups = section.sensorGroups.Select(_groupConverter.ConvertToClient).ToList(),
+                Id = section.Id,
+            };
+        }
+        else
+        {
+            return new()
+            {
+                Metadata = section.Metadata,
+                Groups = section.sensorGroups.Select(_groupConverter.ConvertToClient).ToList(),
+                Id = section.Id,
+                Zone = _zoneConverter.ConvertToClient(section.Zone)
+            };
+        }
     }
 
     public SectionDeepMetadataToClientDto ConvertToDeepMetadata(Section section)

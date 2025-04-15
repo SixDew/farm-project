@@ -20,7 +20,7 @@ export default function GroupPage(){
         {
             sections.map(s=><SectionElement name={s.metadata.name} groups={s.groups} key={s.id} sectionId={s.id}></SectionElement>)
         }
-        <button onClick={()=>addSection("Предприятие 1")}>Добавить секцию</button>
+        <button onClick={()=>addSection("Предприятие 2")}>Добавить секцию</button>
         </>
     )
 }

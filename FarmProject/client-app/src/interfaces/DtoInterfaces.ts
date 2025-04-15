@@ -57,7 +57,8 @@ export interface SensorSectionMetadataDto{
 export interface SensorSectionDto{
     metadata:SensorSectionMetadataDto,
     groups:SensorGroupDto[],
-    id:number
+    id:number,
+    zone:MapZoneDto | null
 }
 
 export interface SensorSectionDeepMetaDto{
@@ -77,5 +78,6 @@ export interface AdminUserDto{
 export interface MapZoneDto{
     id:number,
     name:string,
-    geometry:Geometry
+    geometry:Geometry,
+    sectionId:number
 }

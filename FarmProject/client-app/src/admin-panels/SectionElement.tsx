@@ -26,7 +26,7 @@ export default function SectionElement({name, groups, sectionId}:SectionElementP
                         </div>)
                     }
                     </div>
-                    <button onClick={()=>addToGroup(g.id, "add-test")}>Добавить сенсор</button>
+                    <button onClick={()=>addToGroup(g.id, "1")}>Добавить сенсор</button>
                 </div>)
             }
         </div>

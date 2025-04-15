@@ -38,14 +38,14 @@ public class ApplicationDbContext : DbContext
         PressureSensor s1 = new PressureSensor()
         {
             Id = 1,
-            GPS = "gps",
+            GPS = "53.36 38.123",
             IMEI = "1",
             IsActive = true,
         };
         PressureSensor s2 = new PressureSensor()
         {
             Id = 2,
-            GPS = "gps",
+            GPS = "55.15 35.141",
             IMEI = "2",
             IsActive = true,
         };

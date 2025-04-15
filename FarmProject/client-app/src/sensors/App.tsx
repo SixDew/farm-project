@@ -6,7 +6,7 @@ import LoginPage from '../LoginPage'
 import AdminPage from '../AdminPage'
 import GroupPage from '../admin-panels/GroupPage'
 import SensorsToAddPage from '../admin-panels/SensorsToAddPage'
-import MapPage from '../admin-panels/MapPage'
+import MapPage from '../admin-panels/map-page/MapPage'
 
 export default function App(){
     return (

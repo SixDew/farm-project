@@ -1,4 +1,5 @@
-﻿using FarmProject.group_feature.section;
+﻿using FarmProject.dto.map;
+using FarmProject.group_feature.section;
 
 namespace FarmProject.dto.groups
 {
@@ -6,6 +7,7 @@ namespace FarmProject.dto.groups
     {
         public SectionMetadata Metadata { get; set; }
         public List<GroupToClientDto> Groups { get; set; }
+        public MapZoneToClientDto? Zone { get; set; }
         public int Id { get; set; }
     }
 }

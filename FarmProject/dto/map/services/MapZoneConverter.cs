@@ -11,6 +11,7 @@ namespace FarmProject.dto.map.services
                 Geometry = zone.Geometry,
                 Id = zone.Id,
                 Name = zone.Name,
+                SectionId = zone.SectionId
             };
         }
 
