@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
-import { getDisabledSensors, getSectionsDeepMetadata } from "../sensors/api/sensors-api"
+import { getDisabledSensors, getFacilitiesDeppMeta } from "../sensors/api/sensors-api"
 import DisabledSensors from "./DisabledSensor"
-import { PressureSensorDto, SensorSectionDeepMetaDto } from "../interfaces/DtoInterfaces"
+import { FacilityDeepMetaDto, PressureSensorDto } from "../interfaces/DtoInterfaces"
 
 export default function SensorsToAddPage(){
     const [disabledSensors, setDisabledSensors] = useState<PressureSensorDto[]>([])
-    const [sectionsMetadata, setSectionsMetadata] = useState<SensorSectionDeepMetaDto[]>([])
+    const [facilitiesMetadata, setFacilitiesMetadata] = useState<FacilityDeepMetaDto[]>([])
 
     useEffect(()=>{
         async function getSensors() {
@@ -16,7 +16,7 @@ export default function SensorsToAddPage(){
 
     useEffect(()=>{
         async function getSections() {
-            setSectionsMetadata(await (await getSectionsDeepMetadata()).json())
+            setFacilitiesMetadata(await (await getFacilitiesDeppMeta()).json())
         }
         getSections()
     }, [])
@@ -24,7 +24,7 @@ export default function SensorsToAddPage(){
     return (
         <div>
             {
-                disabledSensors.map(s=><DisabledSensors imei={s.imei} gps={s.gps} sectionsMeta={sectionsMetadata} key={s.imei}/>)
+                disabledSensors.map(s=><DisabledSensors imei={s.imei} gps={s.gps} facilitiesMeta={facilitiesMetadata} key={s.imei}/>)
             }
         </div>
     )

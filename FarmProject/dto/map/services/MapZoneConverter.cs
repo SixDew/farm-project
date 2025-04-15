@@ -10,14 +10,13 @@ namespace FarmProject.dto.map.services
             {
                 Geometry = zone.Geometry,
                 Id = zone.Id,
-                Name = zone.Name,
                 SectionId = zone.SectionId
             };
         }
 
         public MapZone ConvertToModel(MapZoneFromClientDto zone)
         {
-            return new() { Geometry = zone.Geometry, Name = zone.Name, SectionId = zone.SectionId };
+            return new() { Geometry = zone.Geometry, SectionId = zone.SectionId };
         }
     }
 }

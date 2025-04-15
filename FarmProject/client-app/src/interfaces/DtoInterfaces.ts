@@ -22,7 +22,8 @@ export interface PressureSensorDto{
     imei:string,
     gps:string,
     measurements:PressureMeasurements[],
-    settings:PressureSensorSettingsDto
+    settings:PressureSensorSettingsDto,
+    facilityId:number
 }
 
 export interface PressureAlarmDto{
@@ -35,35 +36,40 @@ export interface PressureAlarmDto{
 }
 
 export interface SensorGroupDto{
-    metadata:SensorGroupMetadataDto,
+    name:string,
     id:number,
     sensors:PressureSensorDto[]
 }
 
-export interface SensorGroupDeepMetaDto{
-    metadata:SensorGroupMetadataDto,
+export interface SensorGroupMetaDto{
+    name:string,
     id:number,
 }
 
-export interface SensorGroupMetadataDto{
-    name:string,
-    description:string
-}
-
-export interface SensorSectionMetadataDto{
-    name:string
-}
 
 export interface SensorSectionDto{
-    metadata:SensorSectionMetadataDto,
-    groups:SensorGroupDto[],
+    name:string,
+    sensors:PressureSensorDto[],
     id:number,
     zone:MapZoneDto | null
 }
 
-export interface SensorSectionDeepMetaDto{
-    metadata:SensorSectionMetadataDto,
-    groupsMetadata:SensorGroupDeepMetaDto[],
+export interface SensorSectionMetaDto{
+    name:string,
+    id:number
+}
+
+export interface FacilityDto{
+    name:string,
+    sections:SensorSectionDto[],
+    groups:SensorGroupDto[],
+    id:number
+}
+
+export interface FacilityDeepMetaDto{
+    name:string,
+    sections:SensorSectionMetaDto[],
+    groups:SensorGroupMetaDto[],
     id:number
 }
 
@@ -77,7 +83,6 @@ export interface AdminUserDto{
 
 export interface MapZoneDto{
     id:number,
-    name:string,
     geometry:Geometry,
     sectionId:number
 }

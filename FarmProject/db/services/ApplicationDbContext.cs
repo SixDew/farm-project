@@ -1,6 +1,9 @@
 ﻿using FarmProject.auth;
 using FarmProject.db.configs;
 using FarmProject.db.models;
+using FarmProject.group_feature;
+using FarmProject.group_feature.group;
+using FarmProject.group_feature.section;
 using Microsoft.EntityFrameworkCore;
 
 namespace FarmProject.db.services;
@@ -30,8 +33,8 @@ public class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new PressureSensorConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new PressureAlarmMeasurementsConfiguration());
-        modelBuilder.ApplyConfiguration(new SensorGroupsConfiguration());
         modelBuilder.ApplyConfiguration(new SectionConfiguration());
+        modelBuilder.ApplyConfiguration(new FacilityConfiguration());
 
         modelBuilder.Entity<MapZone>().ToTable("MapZones");
 
@@ -41,6 +44,7 @@ public class ApplicationDbContext : DbContext
             GPS = "53.36 38.123",
             IMEI = "1",
             IsActive = true,
+            SectionId = 1,
         };
         PressureSensor s2 = new PressureSensor()
         {
@@ -48,6 +52,7 @@ public class ApplicationDbContext : DbContext
             GPS = "55.15 35.141",
             IMEI = "2",
             IsActive = true,
+            SectionId = 1,
         };
         modelBuilder.Entity<PressureSensor>().HasData([s1, s2]);
 
@@ -60,6 +65,26 @@ public class ApplicationDbContext : DbContext
                     PRR2 = 26,
                 }
             );
+
+        modelBuilder.Entity<Facility>().HasData(new Facility()
+        {
+            Id = 1,
+            Name = "test-facility"
+        });
+
+        modelBuilder.Entity<Section>().HasData(new Section()
+        {
+            Id = 1,
+            FacilityId = 1,
+            Name = "test-section"
+        });
+
+        modelBuilder.Entity<SensorGroup>().HasData(new SensorGroup()
+        {
+            Id = 1,
+            Name = "test-group",
+            FacilityId = 1
+        });
 
         modelBuilder.Entity<PressureSensorSettings>().ToTable("PressureSensorSettings").HasData(
                 new PressureSensorSettings()

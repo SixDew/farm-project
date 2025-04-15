@@ -96,6 +96,14 @@ export async function getSections() {
     return await sendRequestWithAuthorize(`${serverUrl}/sections`)
 }
 
+export async function getFacility(id:number) {
+    return await sendRequestWithAuthorize(`${serverUrl}/facilities/${id}`)   
+}
+
+export async function getFacilities(){
+    return await sendRequestWithAuthorize(`${serverUrl}/facilities`)
+}
+
 export async function addSection(name) {
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(`${serverUrl}/sections`,{
@@ -157,8 +165,8 @@ export async function setSensorActive(isActive, imei) {
     return response
 }
 
-export async function getSectionsDeepMetadata() {
-    return await sendRequestWithAuthorize(`${serverUrl}/sections/deepmeta`)
+export async function getFacilitiesDeppMeta() {
+    return await sendRequestWithAuthorize(`${serverUrl}/facilities/metadata`)
 }
 
 export async function getGroupsMetadata(imei) {

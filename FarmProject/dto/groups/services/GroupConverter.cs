@@ -9,7 +9,7 @@ public class GroupConverter(PressureSensorDtoConvertService _sensorConverter)
     {
         return new()
         {
-            Metadata = group.Metadata,
+            Name = group.Name,
             Sensors = group.Sensors.Select(_sensorConverter.ConvertToClient).ToList(),
             Id = group.Id
         };
@@ -19,7 +19,7 @@ public class GroupConverter(PressureSensorDtoConvertService _sensorConverter)
     {
         return new()
         {
-            Metadata = group.Metadata,
+            Name = group.Name,
             Id = group.Id
         };
     }

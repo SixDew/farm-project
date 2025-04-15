@@ -18,11 +18,11 @@ namespace FarmProject.controllers
             return Ok(groupList.Select(_converter.ConvertToClient));
         }
 
-        [HttpPost("{sectionId}")]
+        [HttpPost("{facilityId}")]
         [Authorize(Roles = $"{UserRoles.ADMIN}")]
-        public async Task<IActionResult> AddGroup([FromBody] GroupMetadata metadata, [FromRoute] int sectionId)
+        public async Task<IActionResult> AddGroup([FromBody] string name, [FromRoute] int facilityId)
         {
-            SensorGroup group = new SensorGroup() { Metadata = metadata, SectionId = sectionId };
+            SensorGroup group = new SensorGroup() { Name = name, FacilityId = facilityId };
             await _groups.AddAsync(group);
             await _groups.SaveChangesAsync();
             return Created($"/group/{group.Id}", _converter.ConvertToClient(group));

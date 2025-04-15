@@ -2,9 +2,9 @@ import { useNavigate } from "react-router-dom"
 import SensorMini from "./SensorMini"
 import './SensorsMiniContainer.css'
 import { Fragment, useEffect, useState } from "react"
-import { getAlarmedMeasurements, getAllPressureSensors, getSections } from "./api/sensors-api.js"
+import { getAlarmedMeasurements, getAllPressureSensors, getFacility, } from "./api/sensors-api.js"
 import connection from "./api/measurements-hub-connection.js"
-import { PressureAlarmDto, PressureMeasurements, PressureSensorDto, SensorGroupDto, SensorSectionDto } from "../interfaces/DtoInterfaces"
+import { FacilityDto, PressureAlarmDto, PressureMeasurements, PressureSensorDto, SensorGroupDto } from "../interfaces/DtoInterfaces"
 
 interface ConvertedPressureSensor{
     imei:string,
@@ -15,10 +15,6 @@ interface ConvertedPressureSensor{
     alarmedMeasurements:PressureAlarmDto[]
 }
 
-interface ConvertedSensorSection extends Omit<SensorSectionDto, 'groups'>{
-    groups:ConvertedGroup[]
-}
-
 interface ConvertedGroup extends Omit<SensorGroupDto, 'sensors'>{
     sensors?:ConvertedPressureSensor[]
 }
@@ -26,7 +22,7 @@ interface ConvertedGroup extends Omit<SensorGroupDto, 'sensors'>{
 export default function SensorsMiniContainer(){
     const navigate = useNavigate()
     let [sensors, setSensors] = useState<ConvertedPressureSensor[]>([])
-    let [sections, setSections] = useState<ConvertedSensorSection[]>([])
+    let [groups, setGroups] = useState<ConvertedGroup[]>([])
     const [alarmedSensors, setAlarmedSensors] = useState<ConvertedPressureSensor[]>([])
     
     useEffect(()=>{
@@ -42,20 +38,18 @@ export default function SensorsMiniContainer(){
         }
 
         async function getAllSections(){
-            const response = await getSections()
+            const response = await getFacility(1)
             if(response.ok){
-                const data: SensorSectionDto[] = await response.json();
-                console.log(data)
-                const transformedData:ConvertedSensorSection[] = data.map(s=>
+                const facility: FacilityDto = await response.json();
+                console.log(facility)
+                const transformedData:ConvertedGroup[] = facility.groups.map(g=>
                     {return {
-                        id:s.id, metadata:s.metadata, 
-                        groups:s.groups!.map(g=>{
-                                return {...g, sensors:getSensorsFromServerData(g.sensors)}
-                            }
-                        )
+                        id:g.id, name:g.name, 
+                        sensors:getSensorsFromServerData(g.sensors)
                     }
                 });
-                setSections(transformedData);
+                console.log(transformedData)
+                setGroups(transformedData);
             }
         }
         getAllSections()
@@ -132,23 +126,18 @@ export default function SensorsMiniContainer(){
             </div>
             <div className="sections-mini-container">
                 {
-                    sections.map((s)=> <div>
-                        <h3>{s.metadata.name}</h3>
+                    groups.map(g=><div className="groups-mini-container">
+                        <h4>{g.name}</h4>
                         {
-                            s.groups.map(g=><div className="groups-mini-container">
-                                <h4>{g.metadata.name}</h4>
-                                {
-                                    g.sensors && (
-                                        g.sensors.map(sensor=>{
-                                            const s = sensors.find(s=>s.imei == sensor.imei)
-                                            if(s){
-                                                return <SensorMini key={s.imei} imei={s.imei} gps={s.gps}
-                                                measurement1={s.measurement1} measurement2={s.measurement2} isAlarmed={s.isAlarmed}></SensorMini>
-                                            }
-                                        })
-                                    )
-                                }
-                            </div>)
+                            g.sensors && (
+                                g.sensors.map(sensor=>{
+                                    const s = sensors.find(s=>s.imei == sensor.imei)
+                                    if(s){
+                                        return <SensorMini key={s.imei} imei={s.imei} gps={s.gps}
+                                        measurement1={s.measurement1} measurement2={s.measurement2} isAlarmed={s.isAlarmed}></SensorMini>
+                                    }
+                                })
+                            )
                         }
                     </div>)
                 }

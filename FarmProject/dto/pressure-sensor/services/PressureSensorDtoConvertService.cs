@@ -11,7 +11,8 @@ namespace FarmProject.dto.servisces
             {
                 GPS = sensor.GPS,
                 IMEI = sensor.IMEI,
-                Settings = new() { IMEI = sensor.IMEI }
+                Settings = new() { IMEI = sensor.IMEI },
+                SectionId = 1
             };
         }
 
@@ -22,7 +23,8 @@ namespace FarmProject.dto.servisces
                 Gps = sensor.GPS,
                 Imei = sensor.IMEI,
                 Settings = sensor.Settings is not null ? settingsConverter.ConvertToClient(sensor.Settings) : null,
-                Measurements = sensor.Measurements is not null ? sensor.Measurements.Select(measurementsConverter.ConvertToClientDto).ToList() : null
+                Measurements = sensor.Measurements is not null ? sensor.Measurements.Select(measurementsConverter.ConvertToClientDto).ToList() : null,
+                SectionId = sensor.SectionId
             };
         }
     }

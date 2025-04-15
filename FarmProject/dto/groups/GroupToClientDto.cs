@@ -1,10 +1,8 @@
-﻿using FarmProject.group_feature.group;
-
-namespace FarmProject.dto.groups
+﻿namespace FarmProject.dto.groups
 {
     public class GroupToClientDto
     {
-        public GroupMetadata Metadata { get; set; } = new();
+        public string Name { get; set; } = "";
         public List<PressureSensorToClientDto> Sensors { get; set; } = new();
         public int Id { get; set; }
     }

@@ -58,6 +58,8 @@ builder.Services.AddTransient<GroupConverter>();
 builder.Services.AddTransient<SectionConverter>();
 builder.Services.AddScoped<MapZonesProvider>();
 builder.Services.AddTransient<MapZoneConverter>();
+builder.Services.AddTransient<FacilityConverter>();
+builder.Services.AddScoped<FacilityProvider>();
 
 builder.Services.AddMqttConnectionHandler();
 builder.Services.AddHostedMqttServer(OptionsBuilder =>

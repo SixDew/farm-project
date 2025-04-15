@@ -4,7 +4,7 @@ import {BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import PressureSensor from './PressureSensor'
 import LoginPage from '../LoginPage'
 import AdminPage from '../AdminPage'
-import GroupPage from '../admin-panels/GroupPage'
+import GroupPage from '../admin-panels/group-page/GroupPage'
 import SensorsToAddPage from '../admin-panels/SensorsToAddPage'
 import MapPage from '../admin-panels/map-page/MapPage'
 

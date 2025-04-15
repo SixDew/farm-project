@@ -2,16 +2,17 @@ import { useEffect, useState } from "react"
 import { addToGroup, getGroupsMetadata, removeFromGroup, setSensorActive } from "../sensors/api/sensors-api";
 import './DisabledSensor.css';
 import SettingsMenuBoolElemet from "../sensors/SettingsMenuBoolElemet";
-import {SensorGroupDeepMetaDto, SensorSectionDeepMetaDto } from "../interfaces/DtoInterfaces";
+import { FacilityDeepMetaDto, SensorGroupMetaDto } from "../interfaces/DtoInterfaces";
 
 interface DisabledSensorsProps{
     imei:string,
     gps:string,
-    sectionsMeta:SensorSectionDeepMetaDto[]
+    facilitiesMeta:FacilityDeepMetaDto[]
 }
 
-export default function DisabledSensors({imei, gps, sectionsMeta}:DisabledSensorsProps){
-    const [sensorGroups, setSensorGroups] = useState<SensorGroupDeepMetaDto[]>([])
+export default function DisabledSensors({imei, gps, facilitiesMeta}:DisabledSensorsProps){
+    const [sensorGroups, setSensorGroups] = useState<SensorGroupMetaDto[]>([])
+    const [selectedFacility, setSelectedFacility] = useState<FacilityDeepMetaDto>()
 
     useEffect(()=>{
         async function getGroups() {
@@ -22,7 +23,7 @@ export default function DisabledSensors({imei, gps, sectionsMeta}:DisabledSensor
     }, [imei])
 
     async function groupChangeEvent(event:React.ChangeEvent<HTMLInputElement>,
-         sensorGroups:SensorGroupDeepMetaDto[], group:SensorGroupDeepMetaDto){
+         sensorGroups:SensorGroupMetaDto[], group:SensorGroupMetaDto){
         if(event.target.checked && !sensorGroups.find(g=>g.id == group.id)){
             const response = await addToGroup(group.id, imei)
             if(response.ok){
@@ -42,23 +43,33 @@ export default function DisabledSensors({imei, gps, sectionsMeta}:DisabledSensor
             <div className="disabled-sensor-info-container">
                 <p>Imei:{imei}</p>
                 <p>GPS:{gps}</p>
-                <button onClick={()=>{setSensorActive(true, imei)}}>Активировать</button>
+                {
+                    selectedFacility && <button onClick={()=>{setSensorActive(true, imei)}}>Активировать</button>
+                }
             </div>
             <div className="disabled-sensor-info-container">
+                <p>Предприятие:</p>
+                <select onChange={(e)=>{
+                        console.log("change")
+                        setSelectedFacility(facilitiesMeta.find(f=>f.id == Number(e.target.value)))
+                    }}>
+                        <option value={0}>Выберете предприятие</option>
+                        {
+                            facilitiesMeta.map(facility=><option value={facility.id}>{facility.name}</option>)
+                        }
+                </select>
                 {
-                    sectionsMeta.map(section=><div key={section.id}>
-                        <fieldset>
-                            <legend>{section.metadata.name}</legend>
-                            <div>
-                                {
-                                    section.groupsMetadata?.map(group=><div>
-                                        <SettingsMenuBoolElemet title={group.metadata.name} value={Boolean(sensorGroups.find(g=>g.id == group.id))} 
-                                        changeEvent={(event)=>groupChangeEvent(event, sensorGroups, group)} key={group.id}></SettingsMenuBoolElemet>
-                                    </div>)
-                                }
-                            </div>
-                        </fieldset>
-                    </div>)
+                    
+                    selectedFacility && (
+                                    <div>
+                                        {
+                                        selectedFacility.groups.map(group=><div>
+                                            <SettingsMenuBoolElemet title={group.name} value={Boolean(sensorGroups.find(g=>g.id == group.id))} 
+                                                changeEvent={(event)=>groupChangeEvent(event, sensorGroups, group)} key={group.id}></SettingsMenuBoolElemet>
+                                        </div>)
+                                    }
+                                    </div>
+                                )
                 }
             </div>
         </div>

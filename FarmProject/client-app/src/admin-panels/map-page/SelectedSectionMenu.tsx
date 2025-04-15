@@ -1,7 +1,7 @@
 import Control from "react-leaflet-custom-control"
 import "./SelectedZoneMenu.css"
 import { ZoneProperties } from "./MapPage"
-import { SensorSectionDto } from "../../interfaces/DtoInterfaces"
+import { SensorGroupDto, SensorSectionDto } from "../../interfaces/DtoInterfaces"
 import { useEffect, useState } from "react"
 import { useMap } from "react-leaflet"
 
@@ -9,6 +9,7 @@ interface SelectedZoneMenuProps{
     selectedZone:ZoneProperties | null,
     selectedSection:SensorSectionDto | null,
     sections:SensorSectionDto[],
+    groups:SensorGroupDto[]
 }
 
 interface GroupSelectedMarker{
@@ -16,13 +17,13 @@ interface GroupSelectedMarker{
     isSelected:boolean
 }
 
-export default function SelectedZoneMenu({selectedZone, selectedSection, sections}:SelectedZoneMenuProps){
+export default function SelectedSectionMenu({selectedZone, selectedSection, sections, groups}:SelectedZoneMenuProps){
     const map = useMap()
     const [groupSelecetedMarkers, setGroupSelectedMarkers] = useState<GroupSelectedMarker[]>([])
 
     useEffect(()=>{
         const groupArrayBuffer:GroupSelectedMarker[] = []
-        selectedSection?.groups.map(group=>{
+        groups.map(group=>{
             groupArrayBuffer.push({groupId:group.id, isSelected:false})
         })
         setGroupSelectedMarkers(groupArrayBuffer)
@@ -53,12 +54,12 @@ export default function SelectedZoneMenu({selectedZone, selectedSection, section
                     sections.map(section=>{
                         if(selectedSection && section.id == selectedSection.id){
                             return (
-                                <option value={section.id} selected>{section.metadata.name}</option>
+                                <option value={section.id} selected>{section.name}</option>
                             )
                         }
                         else{
                             return (
-                                <option value={section.id}>{section.metadata.name}</option>
+                                <option value={section.id}>{section.name}</option>
                             )
                         }
                     })
@@ -76,10 +77,10 @@ export default function SelectedZoneMenu({selectedZone, selectedSection, section
                 selectedSection && (
                     <div className="selected-section-sensors">
                         {
-                            selectedSection.groups.map(group=>{
+                            groups.map(group=>{
                                 return (
                                     <div>
-                                        <button onClick={()=>onGroupSelect(group.id)}><h5>{group.metadata.name}</h5></button>
+                                        <button onClick={()=>onGroupSelect(group.id)}><h5>{group.name}</h5></button>
                                         {
                                             groupSelecetedMarkers.find(m=>m.groupId == group.id)?.isSelected && (
                                                 <div>

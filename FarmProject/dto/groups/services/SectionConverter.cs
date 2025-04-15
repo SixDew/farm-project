@@ -1,9 +1,10 @@
 ﻿using FarmProject.dto.map.services;
+using FarmProject.dto.servisces;
 using FarmProject.group_feature.section;
 
 namespace FarmProject.dto.groups.services;
 
-public class SectionConverter(GroupConverter _groupConverter, MapZoneConverter _zoneConverter)
+public class SectionConverter(PressureSensorDtoConvertService _sensorConverter, MapZoneConverter _zoneConverter)
 {
     public SectionToClientDto ConvertToClientDto(Section section)
     {
@@ -11,8 +12,8 @@ public class SectionConverter(GroupConverter _groupConverter, MapZoneConverter _
         {
             return new()
             {
-                Metadata = section.Metadata,
-                Groups = section.sensorGroups.Select(_groupConverter.ConvertToClient).ToList(),
+                Name = section.Name,
+                Sensors = section.Sensors.Select(_sensorConverter.ConvertToClient).ToList(),
                 Id = section.Id,
             };
         }
@@ -20,21 +21,20 @@ public class SectionConverter(GroupConverter _groupConverter, MapZoneConverter _
         {
             return new()
             {
-                Metadata = section.Metadata,
-                Groups = section.sensorGroups.Select(_groupConverter.ConvertToClient).ToList(),
+                Name = section.Name,
+                Sensors = section.Sensors.Select(_sensorConverter.ConvertToClient).ToList(),
                 Id = section.Id,
                 Zone = _zoneConverter.ConvertToClient(section.Zone)
             };
         }
     }
 
-    public SectionDeepMetadataToClientDto ConvertToDeepMetadata(Section section)
+    public SectionMetadataToClientDto ConvertToMetadata(Section section)
     {
         return new()
         {
             Id = section.Id,
-            Metadata = section.Metadata,
-            GroupsMetadata = section.sensorGroups.Select(_groupConverter.ConvertToMetadata).ToList()
+            Name = section.Name,
         };
     }
 }

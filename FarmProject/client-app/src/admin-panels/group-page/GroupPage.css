@@ -1,0 +1,7 @@
+.factility-element{
+    background-color: gainsboro;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 10px gray;
+}

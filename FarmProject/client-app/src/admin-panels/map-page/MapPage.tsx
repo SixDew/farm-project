@@ -9,9 +9,9 @@ import L, { marker } from "leaflet"
 import {Geometry} from "geojson"
 import { Feature } from "geojson";
 
-import { deleteZone, getSections, sendZone } from "../../sensors/api/sensors-api";
-import { MapZoneDto, SensorSectionDto } from "../../interfaces/DtoInterfaces";
-import SelectedZoneMenu from "./SelectedZoneMenu";
+import { deleteZone, getFacility, sendZone } from "../../sensors/api/sensors-api";
+import { FacilityDto, MapZoneDto, SensorGroupDto, SensorSectionDto } from "../../interfaces/DtoInterfaces";
+import SelectedSectionMenu from "./SelectedSectionMenu";
 
 interface GeomanComponentProps{
   zones:MapZoneDto[]
@@ -57,11 +57,10 @@ function GeomanComponent({zones, setZones, onZoneClick, markers}:GeomanComponent
         const geoJsonLayer = L.geoJSON(zone.geometry, {
           onEachFeature : (_feature, layer) =>{
             const featureLayer = layer as FeatureLayer
-            featureLayer.feature.properties.name = zone.name
             featureLayer.feature.properties.id = zone.id
             featureLayer.feature.properties.sectionId = zone.sectionId
     
-            layer.bindPopup(`Зона: ${featureLayer.feature.properties.name} Id: ${featureLayer.feature.properties.id}`,
+            layer.bindPopup(`Зона Id: ${featureLayer.feature.properties.id}`,
                {closeOnClick:true,
                 autoPan:false
                })
@@ -119,7 +118,7 @@ function GeomanComponent({zones, setZones, onZoneClick, markers}:GeomanComponent
     if(e.layer instanceof L.Polygon){
       console.log('add-zone')
       const geoJsoLayer = e.layer as GeoJsonLayer
-      var response = await sendZone({name:"test-zone", geometry:geoJsoLayer.toGeoJSON().geometry})
+      var response = await sendZone({geometry:geoJsoLayer.toGeoJSON().geometry})
       if(response.ok){
         var data = await response.json()
         setZones(prev=>[...prev, data])
@@ -141,8 +140,10 @@ function GeomanComponent({zones, setZones, onZoneClick, markers}:GeomanComponent
 
 
 export default function MapPage() {
-  const [zones, setZones] = useState<MapZoneDto[]>([]);
-  const [sections, setSections] = useState<SensorSectionDto[]>([]);
+  const [zones, setZones] = useState<MapZoneDto[]>([])
+  const [facility, setFacility] = useState<FacilityDto>()
+  const [sections, setSections] = useState<SensorSectionDto[]>([])
+  const [groups, setGroups] = useState<SensorGroupDto[]>([])
   const [selectedZone, setSelectedZone] = useState<ZoneProperties|null>(null)
   const [selectedSection, setSelectedSection] = useState<SensorSectionDto|null>(null)
   const [markers, setMarkers] = useState<SensorMarker[]>([])
@@ -154,24 +155,28 @@ export default function MapPage() {
   },[])
 
   useEffect(()=>{
-    async function initSections() {
-      const response = await getSections()
+    if(facility){
+      setSections(facility.sections)
+      setGroups(facility.groups)
+    }
+  }, [facility])
+
+  useEffect(()=>{
+    async function initFacilities() {
+      const response = await getFacility(1)
       if(response.ok){
-        const data:SensorSectionDto[] = await response.json()
-
-        console.log(data)
-
-        setSections(data)
+        const facilityData:FacilityDto = await response.json()
+        console.log("Facility: ", facilityData)
+        setFacility(facilityData)
       }
     }
-    initSections()
+    initFacilities()
   }, [])
 
   useEffect(()=>{
     var markersBuffer:SensorMarker[] = []
     sections.forEach(section=>{
-      section.groups.forEach(group=>{
-        group.sensors.forEach(sensor=>{
+        section.sensors.forEach(sensor=>{
           const coords:number[] = sensor.gps.split(' ').map(c=>Number(c))
           const cXBuffer:number|undefined = coords.at(0)
           const cYBuffer:number|undefined = coords.at(1)
@@ -179,7 +184,6 @@ export default function MapPage() {
             markersBuffer.push({coordX:cXBuffer, coordY:cYBuffer, imei:sensor.imei})
           }
         })
-      })
     })
     setMarkers(markersBuffer)
   },[sections])
@@ -210,7 +214,7 @@ export default function MapPage() {
       style={{ height: "100%", width: "100%" }}
     >
      <GeomanComponent zones={zones} setZones={setZones} onZoneClick={onZoneClick} markers={markers}></GeomanComponent>
-     <SelectedZoneMenu sections={sections} selectedZone={selectedZone} selectedSection={selectedSection}></SelectedZoneMenu>
+     <SelectedSectionMenu sections={sections} selectedZone={selectedZone} selectedSection={selectedSection} groups={groups}></SelectedSectionMenu>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
