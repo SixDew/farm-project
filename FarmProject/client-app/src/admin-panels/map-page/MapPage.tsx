@@ -134,7 +134,6 @@ export default function MapPage({facility}:MapPageProps) {
   const [zones, setZones] = useState<MapZoneDto[]>([])
   const [sections, setSections] = useState<SensorSectionDto[]>([])
   const [groups, setGroups] = useState<SensorGroupDto[]>([])
-  const [selectedZone, setSelectedZone] = useState<ZoneProperties|null>(null)
   const [selectedSection, setSelectedSection] = useState<SensorSectionDto|null>(null)
   const [markers, setMarkers] = useState<SensorMarker[]>([])
   const centerInit = useMemo<L.LatLngExpression>(()=>{
@@ -176,9 +175,16 @@ export default function MapPage({facility}:MapPageProps) {
   }, [sections])
 
   function onZoneClick(zone:ZoneProperties){
-    setSelectedZone(zone)
-
     const zoneSection = sections.find(s=>s.id == zone.sectionId)
+    if(zoneSection){
+      setSelectedSection(zoneSection)
+      console.log("Selected section:", zoneSection)
+    }
+  }
+
+  function onSectionSelect(e:React.ChangeEvent<HTMLSelectElement>){
+    const sectionId = Number(e.target.value)
+    const zoneSection = sections.find(s=>s.id == sectionId)
     if(zoneSection){
       setSelectedSection(zoneSection)
       console.log("Selected section:", zoneSection)
@@ -192,7 +198,7 @@ export default function MapPage({facility}:MapPageProps) {
       style={{height:"100%", width: "100%" }}
     >
      <GeomanComponent zones={zones} setZones={setZones} onZoneClick={onZoneClick} markers={markers}></GeomanComponent>
-     <SelectedSectionMenu sections={sections} selectedZone={selectedZone} selectedSection={selectedSection} groups={groups}></SelectedSectionMenu>
+     <SelectedSectionMenu sections={sections} selectedSection={selectedSection} groups={groups} onSectionSelect={onSectionSelect}></SelectedSectionMenu>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

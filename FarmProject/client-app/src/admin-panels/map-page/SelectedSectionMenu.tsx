@@ -6,10 +6,10 @@ import { useEffect, useState } from "react"
 import { useMap } from "react-leaflet"
 
 interface SelectedZoneMenuProps{
-    selectedZone:ZoneProperties | null,
     selectedSection:SensorSectionDto | null,
     sections:SensorSectionDto[],
-    groups:SensorGroupDto[]
+    groups:SensorGroupDto[],
+    onSectionSelect:React.ChangeEventHandler<HTMLSelectElement> 
 }
 
 interface GroupSelectedMarker{
@@ -17,7 +17,7 @@ interface GroupSelectedMarker{
     isSelected:boolean
 }
 
-export default function SelectedSectionMenu({selectedZone, selectedSection, sections, groups}:SelectedZoneMenuProps){
+export default function SelectedSectionMenu({selectedSection, sections, groups, onSectionSelect}:SelectedZoneMenuProps){
     const map = useMap()
     const [groupSelecetedMarkers, setGroupSelectedMarkers] = useState<GroupSelectedMarker[]>([])
 
@@ -49,7 +49,8 @@ export default function SelectedSectionMenu({selectedZone, selectedSection, sect
     return (
         <Control prepend position="topright">
           <div className="selected-zone-menu">
-            <select>
+            <select onChange={onSectionSelect}>
+            <option value={0}>-Выберете секцию-</option>
                 {
                     sections.map(section=>{
                         if(selectedSection && section.id == selectedSection.id){
@@ -75,7 +76,7 @@ export default function SelectedSectionMenu({selectedZone, selectedSection, sect
                                         <button onClick={()=>onGroupSelect(group.id)}><h5>{group.name}</h5></button>
                                         {
                                             groupSelecetedMarkers.find(m=>m.groupId == group.id)?.isSelected && (
-                                                <div>
+                                                <div className="group-sensors-section">
                                                     {
                                                         group.sensors.map(sensor=>{
                                                             return (

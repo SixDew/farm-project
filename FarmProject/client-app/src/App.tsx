@@ -50,11 +50,11 @@ export default function App(){
                 <Route path='/disabled' element={<SensorsToAddPage/>}/>
                 <Route path='/map' element={<MapPage facility={selectedFacility}/>}/>
             </Routes>
-        </Router>
-
-        <div className='main-menu'>
+            
+            <div className='main-menu'>
             <FacilitySelect facilitiesMeta={facilitiesMeta} onSelectEvent={onFacilitySelect}></FacilitySelect>
-        </div>
+            </div>
+        </Router>
         </div>
         
     )

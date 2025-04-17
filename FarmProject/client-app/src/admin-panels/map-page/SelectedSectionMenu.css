@@ -5,8 +5,29 @@
     padding: 10px;
 }
 
+.selected-zone-menu > *{
+    margin-top: 10px;
+    margin-bottom: 10px
+}
+
+.group-sensors-section > *{
+    margin-top: 5px;
+    margin-bottom: 5px
+}
+
+.group-sensors-section{
+    border: 2px solid black;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
 .selected-section-sensors{
     overflow: auto;
-    
+    border: 2px solid black;
     max-height: 30vh;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
