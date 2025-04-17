@@ -5,8 +5,9 @@ import "./SelectedSectionMenu.css"
 import "leaflet-draw/dist/leaflet.draw.css";
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import { GeomanControls, layerEvents } from 'react-leaflet-geoman-v2';
-import L from "leaflet"
-import {Geometry} from "geojson"
+import L, { Polygon } from "leaflet"
+import geo, { Position } from "geojson"
+import {GeoJsonObject, Geometry} from "geojson"
 import { Feature } from "geojson";
 
 import { deleteZone, getFacility, sendZone } from "../../sensors/api/sensors-api";
@@ -16,7 +17,7 @@ import SelectedSectionMenu from "./SelectedSectionMenu";
 interface GeomanComponentProps{
   zones:MapZoneDto[]
   setZones:React.Dispatch<React.SetStateAction<MapZoneDto[]>>,
-  onZoneClick:(zone:ZoneProperties)=>void
+  onZoneClick:(zone:ZoneProperties, map:L.Map)=>void
   markers:SensorMarker[]
 }
 
@@ -38,6 +39,20 @@ export interface ZoneProperties{
 
 interface GeoJsonLayer extends L.Layer{
   toGeoJSON: () => GeoJSON.Feature;
+}
+
+function getCenter(coords:Position[]):Position{
+  var centerX:number = 0
+  var centerY:number = 0
+  coords.forEach(point=>{
+    centerX+=point.at(0) as number
+    centerY+=point.at(1) as number
+  })
+
+  centerX /= coords.length
+  centerY /= coords.length
+
+  return [centerY, centerX]
 }
 
 function GeomanComponent({zones, setZones, onZoneClick, markers}:GeomanComponentProps) {
@@ -62,7 +77,7 @@ function GeomanComponent({zones, setZones, onZoneClick, markers}:GeomanComponent
     
             layer.on('click',()=>{
               console.log('Zone click')
-              onZoneClick(featureLayer.feature.properties)
+              onZoneClick(featureLayer.feature.properties, map)
             })
   
             layer.on('pm:remove', async function(){
@@ -174,20 +189,35 @@ export default function MapPage({facility}:MapPageProps) {
     setZones(sectionsZones)
   }, [sections])
 
-  function onZoneClick(zone:ZoneProperties){
+  function onZoneClick(zone:ZoneProperties, map:L.Map){
     const zoneSection = sections.find(s=>s.id == zone.sectionId)
     if(zoneSection){
       setSelectedSection(zoneSection)
+
+      ZoomToSection(zoneSection, map)
       console.log("Selected section:", zoneSection)
     }
   }
 
-  function onSectionSelect(e:React.ChangeEvent<HTMLSelectElement>){
+  function ZoomToSection(zoneSection:SensorSectionDto, map:L.Map){
+    const zoneGeometry = zoneSection.zone!.geometry as geo.Polygon
+      const zoneCenter = getCenter(zoneGeometry.coordinates.at(0) as Position[])
+      map.flyTo(zoneCenter as L.LatLngExpression, map.getZoom(), {
+        duration:0.5
+      })
+
+  }
+
+  function onSectionSelect(e:React.ChangeEvent<HTMLSelectElement>, map:L.Map){
     const sectionId = Number(e.target.value)
     const zoneSection = sections.find(s=>s.id == sectionId)
     if(zoneSection){
       setSelectedSection(zoneSection)
+      ZoomToSection(zoneSection, map)
       console.log("Selected section:", zoneSection)
+    }
+    else{
+      setSelectedSection(null)
     }
   }
 

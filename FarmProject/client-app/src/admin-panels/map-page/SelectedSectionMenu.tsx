@@ -9,7 +9,7 @@ interface SelectedZoneMenuProps{
     selectedSection:SensorSectionDto | null,
     sections:SensorSectionDto[],
     groups:SensorGroupDto[],
-    onSectionSelect:React.ChangeEventHandler<HTMLSelectElement> 
+    onSectionSelect:(e:React.ChangeEvent<HTMLSelectElement>, map:L.Map)=>void
 }
 
 interface GroupSelectedMarker{
@@ -49,7 +49,7 @@ export default function SelectedSectionMenu({selectedSection, sections, groups, 
     return (
         <Control prepend position="topright">
           <div className="selected-zone-menu">
-            <select onChange={onSectionSelect}>
+            <select onChange={(e)=>onSectionSelect(e, map)}>
             <option value={0}>-Выберете секцию-</option>
                 {
                     sections.map(section=>{

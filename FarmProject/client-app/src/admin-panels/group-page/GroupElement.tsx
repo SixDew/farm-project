@@ -9,14 +9,14 @@ interface GroupElementProps{
 
 export default function GroupElement({name, sensors}:GroupElementProps){
     return (
-        <div>
+        <div className="group-info-element">
             <h3>Группа: {name}</h3>
             {
                 sensors.map(s=>{
                     return (
-                        <div>
-                            Imei: {s.imei}
-                            gps: {s.gps}
+                        <div className="sensor-info-element">
+                            <p>Imei: {s.imei}</p>
+                            <p>gps: {s.gps}</p>
                         </div>
                     )
                 })
