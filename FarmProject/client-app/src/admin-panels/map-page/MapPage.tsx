@@ -5,12 +5,12 @@ import "./SelectedSectionMenu.css"
 import "leaflet-draw/dist/leaflet.draw.css";
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import { GeomanControls, layerEvents } from 'react-leaflet-geoman-v2';
-import L, { Polygon } from "leaflet"
+import L from "leaflet"
 import geo, { Position } from "geojson"
-import {GeoJsonObject, Geometry} from "geojson"
+import { Geometry} from "geojson"
 import { Feature } from "geojson";
 
-import { deleteZone, getFacility, sendZone } from "../../sensors/api/sensors-api";
+import { deleteZone, sendZone } from "../../sensors/api/sensors-api";
 import { FacilityDto, MapZoneDto, SensorGroupDto, SensorSectionDto, AlarmablePressureSensor } from "../../interfaces/DtoInterfaces";
 import SelectedSectionMenu from "./SelectedSectionMenu";
 
@@ -19,6 +19,7 @@ interface GeomanComponentProps{
   setZones:React.Dispatch<React.SetStateAction<MapZoneDto[]>>,
   onZoneClick:(zone:ZoneProperties, map:L.Map)=>void
   markers:SensorMarker[]
+  selectedSection:SensorSectionDto|null
 }
 
 interface FeatureLayer extends L.Layer{
@@ -55,7 +56,7 @@ function getCenter(coords:Position[]):Position{
   return [centerY, centerX]
 }
 
-function GeomanComponent({zones, setZones, onZoneClick, markers}:GeomanComponentProps) {
+function GeomanComponent({zones, setZones, onZoneClick, markers, selectedSection}:GeomanComponentProps) {
   const map = useMap();
   useEffect(() => {
     const existingZoneId:number[] = []
@@ -123,17 +124,17 @@ function GeomanComponent({zones, setZones, onZoneClick, markers}:GeomanComponent
 
 
   const zoneCreateHandler = useCallback<L.PM.CreateEventHandler>(async (e)=>{
-    if(e.layer instanceof L.Polygon){
+    if(e.layer instanceof L.Polygon && selectedSection){
       console.log('add-zone')
       const geoJsoLayer = e.layer as GeoJsonLayer
-      var response = await sendZone({geometry:geoJsoLayer.toGeoJSON().geometry})
+      var response = await sendZone({geometry:geoJsoLayer.toGeoJSON().geometry}, selectedSection.id)
       if(response.ok){
         var data = await response.json()
         setZones(prev=>[...prev, data])
       }
       e.layer.remove()  
     }
-  }, [])
+  }, [selectedSection])
 
   return (
     <FeatureGroup>
@@ -222,11 +223,11 @@ export default function MapPage({facility, sensors}:MapPageProps) {
     if(zoneSection){
       setSelectedSection(zoneSection)
       ZoomToSection(zoneSection, map)
-      console.log("Selected section:", zoneSection)
     }
     else{
       setSelectedSection(null)
     }
+    console.log("Selected section:", zoneSection)
   }
 
   return (
@@ -235,7 +236,7 @@ export default function MapPage({facility, sensors}:MapPageProps) {
       zoom={zoomInit}
       style={{height:"100%", width: "100%" }}
     >
-     <GeomanComponent zones={zones} setZones={setZones} onZoneClick={onZoneClick} markers={markers}></GeomanComponent>
+    <GeomanComponent zones={zones} setZones={setZones} onZoneClick={onZoneClick} markers={markers} selectedSection={selectedSection}></GeomanComponent>
      <SelectedSectionMenu sections={sections} selectedSection={selectedSection} groups={groups} onSectionSelect={onSectionSelect}></SelectedSectionMenu>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

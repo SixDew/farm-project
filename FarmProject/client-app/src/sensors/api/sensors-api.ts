@@ -192,7 +192,7 @@ export async function getZones() {
     return await sendRequestWithAuthorize(`${serverUrl}/map/zones`)
 }
 
-export async function sendZone(zone) {
+export async function sendZone(zone, sectionId:number) {
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(`${serverUrl}/map/zones`,{
         method:'POST',
@@ -202,7 +202,7 @@ export async function sendZone(zone) {
         },
         // TODO
         body: JSON.stringify({
-            ...zone, SectionId:1
+            ...zone, SectionId:sectionId
         })
     })
     return response
