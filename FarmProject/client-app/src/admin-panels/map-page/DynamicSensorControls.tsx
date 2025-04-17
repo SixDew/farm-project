@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { MapContainer, TileLayer, FeatureGroup, useMap, GeoJSON, Marker, Tooltip} from "react-leaflet";
+import { MapContainer, TileLayer, FeatureGroup, useMap, GeoJSON, Marker, Tooltip, Popup} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "./SelectedSectionMenu.css"
 import "leaflet-draw/dist/leaflet.draw.css";
@@ -13,6 +13,7 @@ import { deleteZone, sendZone } from "../../sensors/api/sensors-api";
 import { FacilityDto, MapZoneDto, SensorGroupDto, SensorSectionDto, AlarmablePressureSensor } from "../../interfaces/DtoInterfaces";
 import SelectedSectionMenu from "./SelectedSectionMenu";
 import AdvancedGeomanControls from "./AdvancedGeomanControls";
+import { useNavigate } from "react-router-dom";
 
 
 interface FeatureLayer extends L.Layer{
@@ -22,7 +23,9 @@ interface FeatureLayer extends L.Layer{
 interface SensorMarker{
   coordX:number,
   coordY:number,
-  imei:string
+  imei:string,
+  measurement1:number,
+  measurement2:number
 }
 
 export interface ZoneProperties{
@@ -61,6 +64,7 @@ export default function DynamicSensorControls({facility, sensors}:DynamicSensorC
   const [selectedSection, setSelectedSection] = useState<SensorSectionDto|null>(null)
   const [markers, setMarkers] = useState<SensorMarker[]>([])
   const map = useMap()
+  const nav = useNavigate()
 
   const zoneCreateHandler = useCallback<L.PM.CreateEventHandler>(async (e)=>{
     if(e.layer instanceof L.Polygon && selectedSection){
@@ -93,7 +97,7 @@ export default function DynamicSensorControls({facility, sensors}:DynamicSensorC
           const cXBuffer:number|undefined = coords.at(0)
           const cYBuffer:number|undefined = coords.at(1)
           if(cXBuffer && cYBuffer){
-            markersBuffer.push({coordX:cXBuffer, coordY:cYBuffer, imei:sensor.imei})
+            markersBuffer.push({coordX:cXBuffer, coordY:cYBuffer, imei:sensor.imei, measurement1:sensor.measurement1, measurement2:sensor.measurement2})
           }
         })
     setMarkers(markersBuffer)
@@ -194,9 +198,22 @@ export default function DynamicSensorControls({facility, sensors}:DynamicSensorC
         })
       }
 
-      {markers.map(({ coordX, coordY, imei }) => (
-        <Marker key={imei} position={[coordX, coordY]}>
-          <Tooltip>{imei}</Tooltip>
+      {markers.map(marker => (
+        <Marker key={marker.imei} position={[marker.coordX, marker.coordY]}>
+          <Popup
+            autoClose={false}
+            autoPan={false}
+            closeOnClick={false}
+          >
+            <p>Датчик: {marker.imei}</p>
+            <p>Координаты: {marker.coordX}, {marker.coordY}</p>
+            <fieldset>
+              <legend>Измерения</legend>
+              <p>Первый канал: {marker.measurement1}</p>
+              <p>Второй канал: {marker.measurement2}</p>
+            </fieldset>
+            <button onClick={()=>nav(`/sensors/pressure/${marker.imei}`)}>Подробнее</button>
+          </Popup>
         </Marker>
       ))}
 

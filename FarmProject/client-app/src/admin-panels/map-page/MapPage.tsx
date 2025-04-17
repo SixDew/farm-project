@@ -74,6 +74,7 @@ export default function MapPage({facility, sensors}:MapPageProps) {
       center={centerInit}
       zoom={zoomInit}
       style={{height:"100%", width: "100%" }}
+      closePopupOnClick={false}
     >
      <DynamicSensorControls facility={facility} sensors={sensors}></DynamicSensorControls>
     </MapContainer>
