@@ -17,59 +17,59 @@ export default function PressureSensor(){
     const [showSettings, setShowSettings] = useState(false)
     const [notifications, setNotifications] = useState<PressureAlarmDto[]>([])
 
-    useEffect(()=>{
-        async function setConnection() {
-            if(connection.state === 'Disconnected'){
-                await connection.start()
-                .then(()=>{console.log("StartConnection")})
-                .catch((err)=>{console.error("Connection Error", err)})
-            }
+    // useEffect(()=>{
+    //     async function setConnection() {
+    //         if(connection.state === 'Disconnected'){
+    //             await connection.start()
+    //             .then(()=>{console.log("StartConnection")})
+    //             .catch((err)=>{console.error("Connection Error", err)})
+    //         }
 
-            if(connection.state === 'Connected'){
-                connection.invoke("AddPressureClientToGroup", imei).catch((err)=>console.error("add to group error", err))
-            }
+    //         if(connection.state === 'Connected'){
+    //             connection.invoke("AddPressureClientToGroup", imei).catch((err)=>console.error("add to group error", err))
+    //         }
 
-            connection.on('ReciveMeasurements',(data:PressureMeasurements)=>{
-                setMeasurementsData(data)
-            })
+    //         connection.on('ReciveMeasurements',(data:PressureMeasurements)=>{
+    //             setMeasurementsData(data)
+    //         })
 
-            connection.on('ReciveAlarmNotify', (data:PressureAlarmDto)=>{
-                setNotifications((prev)=>{return [...prev, data]})
-                setAlarmedMeasurements((prev)=>{return [...prev, data]})
-            })
-        }
+    //         connection.on('ReciveAlarmNotify', (data:PressureAlarmDto)=>{
+    //             setNotifications((prev)=>{return [...prev, data]})
+    //             setAlarmedMeasurements((prev)=>{return [...prev, data]})
+    //         })
+    //     }
 
-        async function getSensorData() {
-            getPressureSensorData(imei, ()=>{navigate('/login')})
-            .then((data:PressureSensorDto)=>setLegacyMeasurements(data.measurements))
-        }
+    //     async function getSensorData() {
+    //         getPressureSensorData(imei, ()=>{navigate('/login')})
+    //         .then((data:PressureSensorDto)=>setLegacyMeasurements(data.measurements))
+    //     }
 
-        async function getAlarmedMeasurementsAsync() {
-            var response = await getAlarmedMeasurements(imei)
-            if(response.ok){
-                var alarmedMeasurementsList:PressureAlarmDto[] = await response.json()
-                var notCheckedAlarmedMeasurementsList:PressureAlarmDto[] = []
-                for(const measurement of alarmedMeasurementsList){
-                        if(!measurement.isChecked){
-                            notCheckedAlarmedMeasurementsList.push(measurement)
-                            setNotifications((prev)=>{return [...prev, measurement]})
-                        }
-                    }
-                    setAlarmedMeasurements(notCheckedAlarmedMeasurementsList)
-                }
-            }
+    //     async function getAlarmedMeasurementsAsync() {
+    //         var response = await getAlarmedMeasurements(imei)
+    //         if(response.ok){
+    //             var alarmedMeasurementsList:PressureAlarmDto[] = await response.json()
+    //             var notCheckedAlarmedMeasurementsList:PressureAlarmDto[] = []
+    //             for(const measurement of alarmedMeasurementsList){
+    //                     if(!measurement.isChecked){
+    //                         notCheckedAlarmedMeasurementsList.push(measurement)
+    //                         setNotifications((prev)=>{return [...prev, measurement]})
+    //                     }
+    //                 }
+    //                 setAlarmedMeasurements(notCheckedAlarmedMeasurementsList)
+    //             }
+    //         }
 
-        getSensorData()
-        getAlarmedMeasurementsAsync()
-        setConnection()
+    //     getSensorData()
+    //     getAlarmedMeasurementsAsync()
+    //     setConnection()
 
-        return ()=>{
-            connection.off('ReciveMeasurements')
-            if(connection.state === 'Connected'){
-                connection.invoke('RemovePressureClientFromGroup', imei)
-            }
-        }
-    },[imei])
+    //     return ()=>{
+    //         connection.off('ReciveMeasurements')
+    //         if(connection.state === 'Connected'){
+    //             connection.invoke('RemovePressureClientFromGroup', imei)
+    //         }
+    //     }
+    // },[imei])
 
 
     return (

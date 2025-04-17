@@ -213,24 +213,29 @@ export default function DynamicSensorControls({facility, sensors, alarmedSensors
         })
       }
 
-      {markers.map(marker => (
-        <Marker key={marker.imei} position={[marker.coordX, marker.coordY]} icon={marker.isAlarmed? redIcon : blueIcon}>
-          <Popup
-            autoClose={false}
-            autoPan={false}
-            closeOnClick={false}
-          >
-            <p>Датчик: {marker.imei}</p>
-            <p>Координаты: {marker.coordX}, {marker.coordY}</p>
-            <fieldset>
-              <legend>Измерения</legend>
-              <p>Первый канал: {marker.measurement1}</p>
-              <p>Второй канал: {marker.measurement2}</p>
-            </fieldset>
-            <button onClick={()=>nav(`/sensors/pressure/${marker.imei}`)}>Подробнее</button>
-          </Popup>
-        </Marker>
-      ))}
+      {markers.map(marker => {
+        console.log(marker)
+        return (
+          (
+            <Marker key={marker.imei} position={[marker.coordX, marker.coordY]} icon={marker.isAlarmed? redIcon : blueIcon}>
+              <Popup
+                autoClose={false}
+                autoPan={false}
+                closeOnClick={false}
+              >
+                <p>Датчик: {marker.imei}</p>
+                <p>Координаты: {marker.coordX}, {marker.coordY}</p>
+                <fieldset>
+                  <legend>Измерения</legend>
+                  <p>Первый канал: {marker.measurement1}</p>
+                  <p>Второй канал: {marker.measurement2}</p>
+                </fieldset>
+                <button onClick={()=>nav(`/sensors/pressure/${marker.imei}`)}>Подробнее</button>
+              </Popup>
+            </Marker>
+          )
+        )
+      })}
 
      </FeatureGroup>
      <SelectedSectionMenu sections={sections} selectedSection={selectedSection} groups={groups} 

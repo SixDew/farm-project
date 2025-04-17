@@ -34,8 +34,8 @@ function setMeasurementsData(data:PressureMeasurements, sensors:AlarmablePressur
 
 function addSensorToAlarm(sensor:AlarmablePressureSensor, alarmedSensors:AlarmablePressureSensor[],
     setAlarmedSensors:React.Dispatch<React.SetStateAction<AlarmablePressureSensor[]>>){
+        sensor.isAlarmed = true
         if(!alarmedSensors.find(s=>s.imei==sensor.imei)){
-            sensor.isAlarmed = true
             alarmedSensors.push(sensor)
             setAlarmedSensors([...alarmedSensors])
         }
@@ -120,11 +120,11 @@ export default function App(){
                 if(response.ok){
                     var alarmedMeasurementsList:PressureAlarmDto[] = await response.json()
                     for(const measurement of alarmedMeasurementsList){
-                        if(!sensor.alarmedMeasurements.find(m=>m.id == measurement.id)){
-                            if(!measurement.isChecked){
+                        if(!measurement.isChecked){
+                            if(!sensor.alarmedMeasurements.find(m=>m.id == measurement.id)){
                                 sensor.alarmedMeasurements.push(measurement)
-                                addSensorToAlarm(sensor, alarmedSensors, setAlarmedSensors)
                             }
+                            addSensorToAlarm(sensor, alarmedSensors, setAlarmedSensors)
                         }
                     }
                 }
