@@ -11,7 +11,7 @@ import {GeoJsonObject, Geometry} from "geojson"
 import { Feature } from "geojson";
 
 import { deleteZone, getFacility, sendZone } from "../../sensors/api/sensors-api";
-import { FacilityDto, MapZoneDto, SensorGroupDto, SensorSectionDto } from "../../interfaces/DtoInterfaces";
+import { FacilityDto, MapZoneDto, SensorGroupDto, SensorSectionDto, AlarmablePressureSensor } from "../../interfaces/DtoInterfaces";
 import SelectedSectionMenu from "./SelectedSectionMenu";
 
 interface GeomanComponentProps{
@@ -148,9 +148,10 @@ function GeomanComponent({zones, setZones, onZoneClick, markers}:GeomanComponent
 
 interface MapPageProps{
   facility?:FacilityDto
+  sensors?:AlarmablePressureSensor[]
 }
 
-export default function MapPage({facility}:MapPageProps) {
+export default function MapPage({facility, sensors}:MapPageProps) {
   const [zones, setZones] = useState<MapZoneDto[]>([])
   const [sections, setSections] = useState<SensorSectionDto[]>([])
   const [groups, setGroups] = useState<SensorGroupDto[]>([])
@@ -176,8 +177,7 @@ export default function MapPage({facility}:MapPageProps) {
 
   useEffect(()=>{
     var markersBuffer:SensorMarker[] = []
-    sections.forEach(section=>{
-        section.sensors.forEach(sensor=>{
+        sensors && sensors.forEach(sensor=>{
           const coords:number[] = sensor.gps.split(' ').map(c=>Number(c))
           const cXBuffer:number|undefined = coords.at(0)
           const cYBuffer:number|undefined = coords.at(1)
@@ -185,9 +185,8 @@ export default function MapPage({facility}:MapPageProps) {
             markersBuffer.push({coordX:cXBuffer, coordY:cYBuffer, imei:sensor.imei})
           }
         })
-    })
     setMarkers(markersBuffer)
-  },[sections])
+  },[sensors])
 
   useEffect(()=>{
     const sectionsZones:MapZoneDto[] = []

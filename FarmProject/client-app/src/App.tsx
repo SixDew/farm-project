@@ -7,20 +7,11 @@ import AdminPage from './admin-panels/AdminPage'
 import GroupPage from './admin-panels/group-page/GroupPage'
 import SensorsToAddPage from './admin-panels/SensorsToAddPage'
 import MapPage from './admin-panels/map-page/MapPage'
-import { FacilityDeepMetaDto, FacilityDto, PressureAlarmDto, PressureMeasurements, PressureSensorDto } from './interfaces/DtoInterfaces'
+import { AlarmablePressureSensor, FacilityDeepMetaDto, FacilityDto, PressureAlarmDto, PressureMeasurements, PressureSensorDto } from './interfaces/DtoInterfaces'
 import { useEffect, useState } from 'react'
 import { getAlarmedMeasurements, getFacilitiesDeppMeta, getFacility } from './sensors/api/sensors-api'
 import FacilitySelect from './main-menu/FacilitySelect'
 import connection from "./sensors/api/measurements-hub-connection.js"
-
-interface AlarmablePressureSensor{
-    imei:string,
-    gps:string,
-    measurement1:number,
-    measurement2:number,
-    isAlarmed:boolean,
-    alarmedMeasurements:PressureAlarmDto[]
-}
 
 function convertSensorsFromServerData(data:PressureSensorDto[] | undefined):AlarmablePressureSensor[]{
     if(data){
@@ -167,7 +158,7 @@ export default function App(){
                 <Route path='/admin' element={<AdminPage/>}/>
                 <Route path='/groups' element={<GroupPage/>}/>
                 <Route path='/disabled' element={<SensorsToAddPage/>}/>
-                <Route path='/map' element={<MapPage facility={selectedFacility}/>}/>
+                <Route path='/map' element={<MapPage facility={selectedFacility} sensors={sensors}/>}/>
             </Routes>
 
             <div className='main-menu'>

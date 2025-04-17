@@ -86,3 +86,12 @@ export interface MapZoneDto{
     geometry:Geometry,
     sectionId:number
 }
+
+export interface AlarmablePressureSensor{
+    imei:string,
+    gps:string,
+    measurement1:number,
+    measurement2:number,
+    isAlarmed:boolean,
+    alarmedMeasurements:PressureAlarmDto[]
+}
