@@ -7,14 +7,64 @@ import AdminPage from './admin-panels/AdminPage'
 import GroupPage from './admin-panels/group-page/GroupPage'
 import SensorsToAddPage from './admin-panels/SensorsToAddPage'
 import MapPage from './admin-panels/map-page/MapPage'
-import { FacilityDeepMetaDto, FacilityDto } from './interfaces/DtoInterfaces'
+import { FacilityDeepMetaDto, FacilityDto, PressureAlarmDto, PressureMeasurements, PressureSensorDto } from './interfaces/DtoInterfaces'
 import { useEffect, useState } from 'react'
-import { getFacilitiesDeppMeta, getFacility } from './sensors/api/sensors-api'
+import { getAlarmedMeasurements, getFacilitiesDeppMeta, getFacility } from './sensors/api/sensors-api'
 import FacilitySelect from './main-menu/FacilitySelect'
+import connection from "./sensors/api/measurements-hub-connection.js"
+
+interface AlarmablePressureSensor{
+    imei:string,
+    gps:string,
+    measurement1:number,
+    measurement2:number,
+    isAlarmed:boolean,
+    alarmedMeasurements:PressureAlarmDto[]
+}
+
+function convertSensorsFromServerData(data:PressureSensorDto[] | undefined):AlarmablePressureSensor[]{
+    if(data){
+        return data.map(sensor=>{
+            return {imei:sensor.imei, gps:sensor.gps, measurement1:0, measurement2:0, isAlarmed:false, alarmedMeasurements:[]}
+        })
+    }
+    else{
+        return []
+    }
+}
+
+function setMeasurementsData(data:PressureMeasurements, sensors:AlarmablePressureSensor[]){
+    const sensor = sensors.find(s=>s.imei == data.imei)
+    if(sensor){
+        sensor.measurement1 = data.measurement1
+        sensor.measurement2 = data.measurement2
+    }
+}
+
+function addSensorToAlarm(sensor:AlarmablePressureSensor, alarmedSensors:AlarmablePressureSensor[],
+    setAlarmedSensors:React.Dispatch<React.SetStateAction<AlarmablePressureSensor[]>>){
+        if(!alarmedSensors.find(s=>s.imei==sensor.imei)){
+            sensor.isAlarmed = true
+            alarmedSensors.push(sensor)
+            setAlarmedSensors([...alarmedSensors])
+        }
+}
+
+function alarmEvent(sensors:AlarmablePressureSensor[], alarmedSensors:AlarmablePressureSensor[],
+    data:PressureAlarmDto,
+    setAlarmedSensors:React.Dispatch<React.SetStateAction<AlarmablePressureSensor[]>>){
+        const sensor = sensors.find(s=>s.imei == data.imei)
+        if(sensor){
+            sensor.alarmedMeasurements.push(data)
+            addSensorToAlarm(sensor, alarmedSensors, setAlarmedSensors)
+        }
+}
 
 export default function App(){
     const [facilitiesMeta, setFacilitiesMeta] = useState<FacilityDeepMetaDto[]>([])
     const [selectedFacility, setSelectedFacility] = useState<FacilityDto>()
+    const [sensors, setSensors] = useState<AlarmablePressureSensor[]>([])
+    const [alarmedSensors, setAlarmedSensors] = useState<AlarmablePressureSensor[]>([])
 
     async function onFacilitySelect(e:React.ChangeEvent<HTMLSelectElement>){
         const facilityId = Number(e.target.value)
@@ -28,8 +78,74 @@ export default function App(){
     }
 
     useEffect(()=>{
+        const sensorsBuffer:PressureSensorDto[] = []
+        selectedFacility?.sections.forEach(section=>section.sensors.forEach(sensor=>sensorsBuffer.push(sensor)))
+        setSensors(convertSensorsFromServerData(sensorsBuffer))
+
+    }, [selectedFacility])
+
+    useEffect(()=>{
+        async function setConnection() {
+            if(connection.state === 'Disconnected'){
+                await connection.start()
+                .then(()=>{console.log("StartConnection")})
+                .catch((err)=>{console.error("Connection Error", err)})
+            }
+
+            if(connection.state === 'Connected'){
+                sensors.forEach(sensor=>{
+                    connection.invoke("AddPressureClientToGroup", sensor.imei).catch((err)=>console.error("add to group error", err))
+                })
+            }
+
+            connection.on('ReciveMeasurements',(data:PressureMeasurements)=>{
+                const updateSensors = [...sensors]
+                setMeasurementsData(data, updateSensors)
+                setSensors(updateSensors)
+            })
+
+            connection.on('ReciveAlarmNotify', (data:PressureAlarmDto)=>{
+                alarmEvent(sensors, alarmedSensors, data, setAlarmedSensors)
+            })
+        }
+        setConnection()
+
+        return ()=>{
+            connection.off('ReciveMeasurements')
+            if(connection.state === 'Connected'){
+                sensors.forEach(sensor=>connection.invoke('RemovePressureClientFromGroup', sensor.imei))
+            }
+        }
+    },[sensors])
+
+    useEffect(()=>{
+        async function getAlarmedMeasurementsAsync() {
+            for(const sensor of sensors){
+                var response = await getAlarmedMeasurements(sensor.imei)
+                if(response.ok){
+                    var alarmedMeasurementsList:PressureAlarmDto[] = await response.json()
+                    for(const measurement of alarmedMeasurementsList){
+                        if(!sensor.alarmedMeasurements.find(m=>m.id == measurement.id)){
+                            if(!measurement.isChecked){
+                                sensor.alarmedMeasurements.push(measurement)
+                                addSensorToAlarm(sensor, alarmedSensors, setAlarmedSensors)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        getAlarmedMeasurementsAsync()
+    }, [sensors])
+    
+
+    useEffect(()=>{
         console.log("Current facility:", selectedFacility)
     }, [selectedFacility])
+
+    useEffect(()=>{
+        console.log("sensors:", sensors)
+    },[sensors])
 
     useEffect(()=>{
         async function facilitiesMetaInit() {
