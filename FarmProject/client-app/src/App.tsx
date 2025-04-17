@@ -22,6 +22,9 @@ export default function App(){
         if(response.ok){
             setSelectedFacility(await response.json())
         }
+        else{
+            setSelectedFacility(undefined)
+        }
     }
 
     useEffect(()=>{
@@ -50,7 +53,7 @@ export default function App(){
                 <Route path='/disabled' element={<SensorsToAddPage/>}/>
                 <Route path='/map' element={<MapPage facility={selectedFacility}/>}/>
             </Routes>
-            
+
             <div className='main-menu'>
             <FacilitySelect facilitiesMeta={facilitiesMeta} onSelectEvent={onFacilitySelect}></FacilitySelect>
             </div>

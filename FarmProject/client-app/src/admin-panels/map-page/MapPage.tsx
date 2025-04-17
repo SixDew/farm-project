@@ -63,7 +63,12 @@ function GeomanComponent({zones, setZones, onZoneClick, markers}:GeomanComponent
     map.eachLayer(layer=>{
       const featureLayer = layer as FeatureLayer
       if(featureLayer.feature && featureLayer.feature.properties.id){
-        existingZoneId.push(featureLayer.feature.properties.id)
+        if(zones.find(zone=>zone.id == featureLayer.feature.properties.id )){
+          existingZoneId.push(featureLayer.feature.properties.id)
+        }
+        else{
+          featureLayer.remove()
+        }
       }
     })
 
@@ -162,6 +167,10 @@ export default function MapPage({facility}:MapPageProps) {
     if(facility){
       setSections(facility.sections)
       setGroups(facility.groups)
+    }
+    else{
+      setSections([])
+      setGroups([])
     }
   }, [facility])
 
