@@ -1,7 +1,7 @@
 import Control from "react-leaflet-custom-control"
 import "./SelectedSectionMenu.css"
 import { ZoneProperties } from "./MapPage"
-import { SensorGroupDto, SensorSectionDto } from "../../interfaces/DtoInterfaces"
+import { PressureSensorDto, SensorGroupDto, SensorSectionDto } from "../../interfaces/DtoInterfaces"
 import { useEffect, useState } from "react"
 import { useMap } from "react-leaflet"
 
@@ -10,6 +10,7 @@ interface SelectedZoneMenuProps{
     sections:SensorSectionDto[],
     groups:SensorGroupDto[],
     onSectionSelect:(e:React.ChangeEvent<HTMLSelectElement>)=>void
+    onSensorSelect?:(sensor:PressureSensorDto)=>void
 }
 
 interface GroupSelectedMarker{
@@ -17,7 +18,7 @@ interface GroupSelectedMarker{
     isSelected:boolean
 }
 
-export default function SelectedSectionMenu({selectedSection, sections, groups, onSectionSelect}:SelectedZoneMenuProps){
+export default function SelectedSectionMenu({selectedSection, sections, groups, onSectionSelect, onSensorSelect}:SelectedZoneMenuProps){
     const map = useMap()
     const [groupSelecetedMarkers, setGroupSelectedMarkers] = useState<GroupSelectedMarker[]>([])
 
@@ -35,14 +36,6 @@ export default function SelectedSectionMenu({selectedSection, sections, groups, 
             selectedMarker.isSelected = !selectedMarker.isSelected
         }
         setGroupSelectedMarkers(prev=>[...prev])
-    }
-
-    function onSensorClick(coordX:number|undefined, coordY:number|undefined){
-        if(coordX && coordY){
-          map.flyTo([coordX, coordY], map.getZoom(), {
-            duration:0.5
-          })
-        }
     }
     
 
@@ -82,7 +75,7 @@ export default function SelectedSectionMenu({selectedSection, sections, groups, 
                                                             return (
                                                                <div>
                                                                  <button onClick={()=>{
-                                                                    onSensorClick(Number(sensor.gps.split(' ').at(0)),Number(sensor.gps.split(' ').at(1)))
+                                                                    onSensorSelect && onSensorSelect(sensor)
                                                                 }}>
                                                                     Imei: {sensor.imei}
                                                                 </button>

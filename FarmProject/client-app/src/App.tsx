@@ -57,6 +57,10 @@ export default function App(){
     const [sensors, setSensors] = useState<AlarmablePressureSensor[]>([])
     const [alarmedSensors, setAlarmedSensors] = useState<AlarmablePressureSensor[]>([])
 
+    useEffect(()=>{
+        console.log('alarmed sensors on mainapp:', alarmedSensors)
+    }, [alarmedSensors])
+
     async function onFacilitySelect(e:React.ChangeEvent<HTMLSelectElement>){
         const facilityId = Number(e.target.value)
         const response = await getFacility(facilityId)
@@ -158,7 +162,7 @@ export default function App(){
                 <Route path='/admin' element={<AdminPage/>}/>
                 <Route path='/groups' element={<GroupPage/>}/>
                 <Route path='/disabled' element={<SensorsToAddPage/>}/>
-                <Route path='/map' element={<MapPage facility={selectedFacility} sensors={sensors}/>}/>
+                <Route path='/map' element={<MapPage facility={selectedFacility} sensors={sensors} alarmedSenosrs={alarmedSensors}/>}/>
             </Routes>
 
             <div className='main-menu'>

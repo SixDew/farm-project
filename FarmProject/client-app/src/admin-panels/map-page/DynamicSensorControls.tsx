@@ -10,10 +10,12 @@ import geo, { Position } from "geojson"
 import { Geometry, Feature} from "geojson"
 
 import { deleteZone, sendZone } from "../../sensors/api/sensors-api";
-import { FacilityDto, MapZoneDto, SensorGroupDto, SensorSectionDto, AlarmablePressureSensor } from "../../interfaces/DtoInterfaces";
+import { FacilityDto, MapZoneDto, SensorGroupDto, SensorSectionDto, AlarmablePressureSensor, PressureSensorDto } from "../../interfaces/DtoInterfaces";
 import SelectedSectionMenu from "./SelectedSectionMenu";
 import AdvancedGeomanControls from "./AdvancedGeomanControls";
 import { useNavigate } from "react-router-dom";
+import { blueIcon, redIcon } from "./Icons";
+import AlarmedSensorsMenu from "./AlarmedSensorsMenu";
 
 
 interface FeatureLayer extends L.Layer{
@@ -25,7 +27,8 @@ interface SensorMarker{
   coordY:number,
   imei:string,
   measurement1:number,
-  measurement2:number
+  measurement2:number,
+  isAlarmed:boolean
 }
 
 export interface ZoneProperties{
@@ -55,14 +58,16 @@ function getCenter(coords:Position[]):Position{
 interface DynamicSensorControlsProps{
   facility?:FacilityDto
   sensors?:AlarmablePressureSensor[]
+  alarmedSensors?:AlarmablePressureSensor[]
 }
 
-export default function DynamicSensorControls({facility, sensors}:DynamicSensorControlsProps) {
+export default function DynamicSensorControls({facility, sensors, alarmedSensors}:DynamicSensorControlsProps) {
   const [zones, setZones] = useState<MapZoneDto[]>([])
   const [sections, setSections] = useState<SensorSectionDto[]>([])
   const [groups, setGroups] = useState<SensorGroupDto[]>([])
   const [selectedSection, setSelectedSection] = useState<SensorSectionDto|null>(null)
   const [markers, setMarkers] = useState<SensorMarker[]>([])
+  const mapSensorZoom:number = 15
   const map = useMap()
   const nav = useNavigate()
 
@@ -97,7 +102,9 @@ export default function DynamicSensorControls({facility, sensors}:DynamicSensorC
           const cXBuffer:number|undefined = coords.at(0)
           const cYBuffer:number|undefined = coords.at(1)
           if(cXBuffer && cYBuffer){
-            markersBuffer.push({coordX:cXBuffer, coordY:cYBuffer, imei:sensor.imei, measurement1:sensor.measurement1, measurement2:sensor.measurement2})
+            markersBuffer.push({coordX:cXBuffer, coordY:cYBuffer, imei:sensor.imei,
+               measurement1:sensor.measurement1, measurement2:sensor.measurement2,
+              isAlarmed:sensor.isAlarmed})
           }
         })
     setMarkers(markersBuffer)
@@ -158,6 +165,14 @@ export default function DynamicSensorControls({facility, sensors}:DynamicSensorC
     }
   }
 
+  function flyToSensor(sensor:AlarmablePressureSensor | PressureSensorDto){
+    const coordX:number = Number(sensor.gps.split(' ').at(0))
+    const coordY:number = Number(sensor.gps.split(' ').at(1))
+    map.flyTo([coordX, coordY], mapSensorZoom, {
+      duration:0.5
+    })
+  }
+
   return (
      <>
      <FeatureGroup>
@@ -199,7 +214,7 @@ export default function DynamicSensorControls({facility, sensors}:DynamicSensorC
       }
 
       {markers.map(marker => (
-        <Marker key={marker.imei} position={[marker.coordX, marker.coordY]}>
+        <Marker key={marker.imei} position={[marker.coordX, marker.coordY]} icon={marker.isAlarmed? redIcon : blueIcon}>
           <Popup
             autoClose={false}
             autoPan={false}
@@ -218,7 +233,9 @@ export default function DynamicSensorControls({facility, sensors}:DynamicSensorC
       ))}
 
      </FeatureGroup>
-     <SelectedSectionMenu sections={sections} selectedSection={selectedSection} groups={groups} onSectionSelect={onSectionSelect}></SelectedSectionMenu>
+     <SelectedSectionMenu sections={sections} selectedSection={selectedSection} groups={groups} 
+     onSectionSelect={onSectionSelect} onSensorSelect={flyToSensor}></SelectedSectionMenu>
+      <AlarmedSensorsMenu alarmedSensors={alarmedSensors} onAlarmedSensorSelect={flyToSensor}></AlarmedSensorsMenu>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

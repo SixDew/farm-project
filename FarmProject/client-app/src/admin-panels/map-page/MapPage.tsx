@@ -59,10 +59,11 @@ function getCenter(coords:Position[]):Position{
 
 interface MapPageProps{
   facility?:FacilityDto
-  sensors?:AlarmablePressureSensor[]
+  sensors?:AlarmablePressureSensor[],
+  alarmedSenosrs?:AlarmablePressureSensor[]
 }
 
-export default function MapPage({facility, sensors}:MapPageProps) {
+export default function MapPage({facility, sensors, alarmedSenosrs}:MapPageProps) {
   const centerInit = useMemo<L.LatLngExpression>(()=>{
     return [55.75, 37.61]
   }, [])
@@ -76,7 +77,7 @@ export default function MapPage({facility, sensors}:MapPageProps) {
       style={{height:"100%", width: "100%" }}
       closePopupOnClick={false}
     >
-     <DynamicSensorControls facility={facility} sensors={sensors}></DynamicSensorControls>
+     <DynamicSensorControls facility={facility} sensors={sensors} alarmedSensors={alarmedSenosrs}></DynamicSensorControls>
     </MapContainer>
   );
 }

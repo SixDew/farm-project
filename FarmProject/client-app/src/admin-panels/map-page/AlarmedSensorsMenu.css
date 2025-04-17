@@ -1,0 +1,9 @@
+.alarmed-sensors-menu{
+    background-color: rgba(240, 45, 45, 0.781);
+    border: 2px solid black;
+    margin: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
