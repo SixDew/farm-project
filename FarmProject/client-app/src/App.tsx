@@ -166,7 +166,7 @@ export default function App(){
         <Router>
             <Routes>
                 <Route path='/login' element={<LoginPage/>}/>
-                <Route path='/' element={<SensorsMiniContainer/>}/>
+                <Route path='/' element={<SensorsMiniContainer facility={selectedFacility} sensors={sensors} alarmedSensors={alarmedSensors}/>}/>
                 <Route path='/sensors/pressure/:imei' element={<PressureSensor sensors={sensors} sensorOnDisalarm={sensorOnDisalarm}/>}/>
                 <Route path='/admin' element={<AdminPage/>}/>
                 <Route path='/groups' element={<GroupPage/>}/>
