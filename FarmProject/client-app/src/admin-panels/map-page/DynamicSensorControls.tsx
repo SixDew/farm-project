@@ -108,7 +108,7 @@ export default function DynamicSensorControls({facility, sensors, alarmedSensors
         })
         console.log('Маркеры:',markersBuffer)
     setMarkers(markersBuffer)
-  },[sensors])
+  },[sensors, alarmedSensors])
 
   useEffect(()=>{
     const sectionsZones:MapZoneDto[] = []
