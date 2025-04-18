@@ -16,7 +16,7 @@ import connection from "./sensors/api/measurements-hub-connection.js"
 function convertSensorsFromServerData(data:PressureSensorDto[] | undefined):AlarmablePressureSensor[]{
     if(data){
         return data.map(sensor=>{
-            return {imei:sensor.imei, gps:sensor.gps, measurement1:0, measurement2:0, isAlarmed:false, alarmedMeasurements:[]}
+            return {imei:sensor.imei, gps:sensor.gps, lastMeasurement:null, isAlarmed:false, alarmedMeasurements:[]}
         })
     }
     else{
@@ -27,8 +27,7 @@ function convertSensorsFromServerData(data:PressureSensorDto[] | undefined):Alar
 function setMeasurementsData(data:PressureMeasurements, sensors:AlarmablePressureSensor[]){
     const sensor = sensors.find(s=>s.imei == data.imei)
     if(sensor){
-        sensor.measurement1 = data.measurement1
-        sensor.measurement2 = data.measurement2
+        sensor.lastMeasurement = data
     }
 }
 
@@ -47,6 +46,7 @@ function alarmEvent(sensors:AlarmablePressureSensor[], alarmedSensors:AlarmableP
         const sensor = sensors.find(s=>s.imei == data.imei)
         if(sensor){
             sensor.alarmedMeasurements.push(data)
+            sensor.alarmedMeasurements = [...sensor.alarmedMeasurements]
             addSensorToAlarm(sensor, alarmedSensors, setAlarmedSensors)
         }
 }
@@ -152,13 +152,18 @@ export default function App(){
         facilitiesMetaInit()
     }, [])
 
+    function sensorOnDisalarm(sensor:AlarmablePressureSensor){
+        sensor.isAlarmed = false
+        setAlarmedSensors(prev=>[...prev.filter(s=>s.imei != sensor.imei)])
+    }
+
     return (
         <div className='main-app-container'>
         <Router>
             <Routes>
                 <Route path='/login' element={<LoginPage/>}/>
                 <Route path='/' element={<SensorsMiniContainer/>}/>
-                <Route path='/sensors/pressure/:imei' element={<PressureSensor/>}/>
+                <Route path='/sensors/pressure/:imei' element={<PressureSensor sensors={sensors} sensorOnDisalarm={sensorOnDisalarm}/>}/>
                 <Route path='/admin' element={<AdminPage/>}/>
                 <Route path='/groups' element={<GroupPage/>}/>
                 <Route path='/disabled' element={<SensorsToAddPage/>}/>

@@ -1,75 +1,40 @@
 import { Fragment, useEffect, useState } from "react";
 import './PressureSensor.css'
 import { useNavigate, useParams } from "react-router-dom";
-import connection from "./api/measurements-hub-connection";
 import PressureMeasurementChart from "./PressureMeasurementChart";
-import { getAlarmedMeasurements, getPressureSensorData, sendAlarmedMeasurementChecked } from './api/sensors-api'
+import {getPressureSensorData, sendAlarmedMeasurementChecked } from './api/sensors-api'
 import PressureSensorSettings from "./PressureSensorSettings";
 import AlarmNotification from "./AlarmNotification";
-import { PressureAlarmDto, PressureMeasurements, PressureSensorDto } from "../interfaces/DtoInterfaces";
+import { AlarmablePressureSensor, PressureAlarmDto, PressureMeasurements, PressureSensorDto } from "../interfaces/DtoInterfaces";
 
-export default function PressureSensor(){
+interface PressureSensorProps{
+    sensors:AlarmablePressureSensor[]
+    sensorOnDisalarm?:(sensor:AlarmablePressureSensor)=>void
+}
+
+export default function PressureSensor({sensors, sensorOnDisalarm}:PressureSensorProps){
     const navigate = useNavigate()
     const {imei} = useParams()
-    const [measurementsData, setMeasurementsData] = useState<PressureMeasurements>()
-    const [legacyMeasurements, setLegacyMeasurements] = useState<PressureMeasurements[]>([])
+    const [sensor, setSensor] = useState<AlarmablePressureSensor>()
     const [alarmedMeasurements, setAlarmedMeasurements] = useState<PressureAlarmDto[]>([])
+    const [legacyMeasurements, setLegacyMeasurements] = useState<PressureMeasurements[]>([])
     const [showSettings, setShowSettings] = useState(false)
-    const [notifications, setNotifications] = useState<PressureAlarmDto[]>([])
 
-    // useEffect(()=>{
-    //     async function setConnection() {
-    //         if(connection.state === 'Disconnected'){
-    //             await connection.start()
-    //             .then(()=>{console.log("StartConnection")})
-    //             .catch((err)=>{console.error("Connection Error", err)})
-    //         }
+    useEffect(()=>{
+        setSensor(sensors.find(s=>s.imei == imei))
+    }, [imei, sensors])
 
-    //         if(connection.state === 'Connected'){
-    //             connection.invoke("AddPressureClientToGroup", imei).catch((err)=>console.error("add to group error", err))
-    //         }
-
-    //         connection.on('ReciveMeasurements',(data:PressureMeasurements)=>{
-    //             setMeasurementsData(data)
-    //         })
-
-    //         connection.on('ReciveAlarmNotify', (data:PressureAlarmDto)=>{
-    //             setNotifications((prev)=>{return [...prev, data]})
-    //             setAlarmedMeasurements((prev)=>{return [...prev, data]})
-    //         })
-    //     }
-
-    //     async function getSensorData() {
-    //         getPressureSensorData(imei, ()=>{navigate('/login')})
-    //         .then((data:PressureSensorDto)=>setLegacyMeasurements(data.measurements))
-    //     }
-
-    //     async function getAlarmedMeasurementsAsync() {
-    //         var response = await getAlarmedMeasurements(imei)
-    //         if(response.ok){
-    //             var alarmedMeasurementsList:PressureAlarmDto[] = await response.json()
-    //             var notCheckedAlarmedMeasurementsList:PressureAlarmDto[] = []
-    //             for(const measurement of alarmedMeasurementsList){
-    //                     if(!measurement.isChecked){
-    //                         notCheckedAlarmedMeasurementsList.push(measurement)
-    //                         setNotifications((prev)=>{return [...prev, measurement]})
-    //                     }
-    //                 }
-    //                 setAlarmedMeasurements(notCheckedAlarmedMeasurementsList)
-    //             }
-    //         }
-
-    //     getSensorData()
-    //     getAlarmedMeasurementsAsync()
-    //     setConnection()
-
-    //     return ()=>{
-    //         connection.off('ReciveMeasurements')
-    //         if(connection.state === 'Connected'){
-    //             connection.invoke('RemovePressureClientFromGroup', imei)
-    //         }
-    //     }
-    // },[imei])
+    useEffect(()=>{
+        setAlarmedMeasurements(sensor?.alarmedMeasurements? sensor.alarmedMeasurements : [])
+    },[sensor])
+    
+    useEffect(()=>{
+        async function getSensorData() {
+            getPressureSensorData(imei, ()=>{navigate('/login')})
+            .then((data:PressureSensorDto)=>setLegacyMeasurements(data.measurements))
+        }
+        getSensorData()
+    }, [imei])
 
 
     return (
@@ -78,13 +43,13 @@ export default function PressureSensor(){
             <div id='base-info-container'>
             <button onClick={()=>navigate('/')} id="back-button">Назад</button>
             <h1>Imei:{imei}</h1>
-            <h2>M1:{measurementsData?.measurement1}</h2>
-            <h2>M2:{measurementsData?.measurement2}</h2>
+            <h2>M1:{sensor?.lastMeasurement?.measurement1}</h2>
+            <h2>M2:{sensor?.lastMeasurement?.measurement2}</h2>
             </div>
 
             <div id="notifucations-info-container">
-                {notifications.map((n, index)=><AlarmNotification measurement1={n.measurement1} measurement2={n.measurement2} date={n.measurementsTime} key={index}
-                onCheck={()=>onNotificationCheck(n.id, imei, setNotifications, setAlarmedMeasurements)}/>)}
+                {alarmedMeasurements.map((n, index)=><AlarmNotification measurement1={n.measurement1} measurement2={n.measurement2} date={n.measurementsTime} key={index}
+                onCheck={()=>onNotificationCheck(n.id, imei, sensor, sensorOnDisalarm, setAlarmedMeasurements)}/>)}
             </div>
             
             <div id='settings-container'>
@@ -94,20 +59,27 @@ export default function PressureSensor(){
 
             </div>
 
-            <PressureMeasurementChart measurements={measurementsData} legacyMeasurements={legacyMeasurements} alarmedMeasurements={alarmedMeasurements} 
-            alarmCheckedEvent={(id:number)=>onNotificationCheck(id, imei, setNotifications, setAlarmedMeasurements)}/>
+            {
+                sensor  && <PressureMeasurementChart measurements={sensor.lastMeasurement ? sensor.lastMeasurement : undefined} legacyMeasurements={legacyMeasurements} alarmedMeasurements={sensor.alarmedMeasurements} 
+                alarmCheckedEvent={(id:number)=>onNotificationCheck(id, imei, sensor, sensorOnDisalarm, setAlarmedMeasurements)}/>
+            }
         </Fragment>
     )
 }
 
-async function onNotificationCheck(id:number, imei:string | undefined,
-     setNotifications:React.Dispatch<React.SetStateAction<PressureAlarmDto[]>>,
-      setAlarmedMeasurements:React.Dispatch<React.SetStateAction<PressureAlarmDto[]>>){
-        if(imei){
+async function onNotificationCheck(id:number, imei:string | undefined, sensor: AlarmablePressureSensor | undefined,
+    sensorOnDisalarm:((sensor:AlarmablePressureSensor)=>void) | undefined,
+    setAlarmedMeasurements:React.Dispatch<React.SetStateAction<PressureAlarmDto[]>>){
+        if(imei && sensor){
             const response = await sendAlarmedMeasurementChecked(id, imei)
             if(response.ok){
-                setAlarmedMeasurements(prev=>prev.filter(m=>m.id !== id))
-                setNotifications(prev=>prev.filter(n=>n.id !== id))
+                const newAlarmedMeasurements = sensor.alarmedMeasurements.filter(m=>m.id != id)
+                sensor.alarmedMeasurements = newAlarmedMeasurements
+                setAlarmedMeasurements(sensor.alarmedMeasurements)
+                
+            }
+            if(sensor.alarmedMeasurements.length == 0 ){
+                sensorOnDisalarm && sensorOnDisalarm(sensor)
             }
         }
 }

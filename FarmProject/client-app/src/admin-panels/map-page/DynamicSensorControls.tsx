@@ -10,7 +10,7 @@ import geo, { Position } from "geojson"
 import { Geometry, Feature} from "geojson"
 
 import { deleteZone, sendZone } from "../../sensors/api/sensors-api";
-import { FacilityDto, MapZoneDto, SensorGroupDto, SensorSectionDto, AlarmablePressureSensor, PressureSensorDto } from "../../interfaces/DtoInterfaces";
+import { FacilityDto, MapZoneDto, SensorGroupDto, SensorSectionDto, AlarmablePressureSensor, PressureSensorDto, PressureMeasurements } from "../../interfaces/DtoInterfaces";
 import SelectedSectionMenu from "./SelectedSectionMenu";
 import AdvancedGeomanControls from "./AdvancedGeomanControls";
 import { useNavigate } from "react-router-dom";
@@ -26,8 +26,7 @@ interface SensorMarker{
   coordX:number,
   coordY:number,
   imei:string,
-  measurement1:number,
-  measurement2:number,
+  lastMeasurement:PressureMeasurements|null
   isAlarmed:boolean
 }
 
@@ -103,10 +102,11 @@ export default function DynamicSensorControls({facility, sensors, alarmedSensors
           const cYBuffer:number|undefined = coords.at(1)
           if(cXBuffer && cYBuffer){
             markersBuffer.push({coordX:cXBuffer, coordY:cYBuffer, imei:sensor.imei,
-               measurement1:sensor.measurement1, measurement2:sensor.measurement2,
+               lastMeasurement:sensor.lastMeasurement,
               isAlarmed:sensor.isAlarmed})
           }
         })
+        console.log('Маркеры:',markersBuffer)
     setMarkers(markersBuffer)
   },[sensors])
 
@@ -214,7 +214,7 @@ export default function DynamicSensorControls({facility, sensors, alarmedSensors
       }
 
       {markers.map(marker => {
-        console.log(marker)
+        console.log('Маркер:', marker)
         return (
           (
             <Marker key={marker.imei} position={[marker.coordX, marker.coordY]} icon={marker.isAlarmed? redIcon : blueIcon}>
@@ -227,8 +227,8 @@ export default function DynamicSensorControls({facility, sensors, alarmedSensors
                 <p>Координаты: {marker.coordX}, {marker.coordY}</p>
                 <fieldset>
                   <legend>Измерения</legend>
-                  <p>Первый канал: {marker.measurement1}</p>
-                  <p>Второй канал: {marker.measurement2}</p>
+                  <p>Первый канал: {marker.lastMeasurement?.measurement1}</p>
+                  <p>Второй канал: {marker.lastMeasurement?.measurement2}</p>
                 </fieldset>
                 <button onClick={()=>nav(`/sensors/pressure/${marker.imei}`)}>Подробнее</button>
               </Popup>

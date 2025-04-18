@@ -90,8 +90,7 @@ export interface MapZoneDto{
 export interface AlarmablePressureSensor{
     imei:string,
     gps:string,
-    measurement1:number,
-    measurement2:number,
+    lastMeasurement:PressureMeasurements|null
     isAlarmed:boolean,
     alarmedMeasurements:PressureAlarmDto[]
 }
