@@ -3,15 +3,16 @@ import SensorsMiniContainer from './sensors/SensorsMiniContainer'
 import {BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import PressureSensor from './sensors/PressureSensor'
 import LoginPage from './LoginPage'
-import AdminPage from './admin-panels/AdminPage'
+import UsersPage from './admin-panels/UsersPage'
 import GroupPage from './admin-panels/group-page/GroupPage'
 import SensorsToAddPage from './admin-panels/SensorsToAddPage'
 import MapPage from './admin-panels/map-page/MapPage'
 import { AlarmablePressureSensor, FacilityDeepMetaDto, FacilityDto, PressureAlarmDto, PressureMeasurements, PressureSensorDto } from './interfaces/DtoInterfaces'
 import { useEffect, useState } from 'react'
-import { getAlarmedMeasurements, getFacilitiesDeppMeta, getFacility, getUncheckedAlarmedMeasurements } from './sensors/api/sensors-api'
+import { getFacilitiesDeppMeta, getFacility, getUncheckedAlarmedMeasurements } from './sensors/api/sensors-api'
 import FacilitySelect from './main-menu/FacilitySelect'
 import connection from "./sensors/api/measurements-hub-connection.js"
+import NavButton from './main-menu/NavButton'
 
 function convertSensorsFromServerData(data:PressureSensorDto[] | undefined):AlarmablePressureSensor[]{
     if(data){
@@ -166,16 +167,24 @@ export default function App(){
         <Router>
             <Routes>
                 <Route path='/login' element={<LoginPage/>}/>
-                <Route path='/' element={<SensorsMiniContainer facility={selectedFacility} sensors={sensors} alarmedSensors={alarmedSensors}/>}/>
+                <Route path='/monitor' element={<SensorsMiniContainer facility={selectedFacility} sensors={sensors} alarmedSensors={alarmedSensors}/>}/>
                 <Route path='/sensors/pressure/:imei' element={<PressureSensor sensors={sensors} sensorOnDisalarm={sensorOnDisalarm}/>}/>
-                <Route path='/admin' element={<AdminPage/>}/>
+                <Route path='/users' element={<UsersPage/>}/>
                 <Route path='/groups' element={<GroupPage/>}/>
-                <Route path='/disabled' element={<SensorsToAddPage/>}/>
+                <Route path='/sensors-to-add' element={<SensorsToAddPage/>}/>
                 <Route path='/map' element={<MapPage facility={selectedFacility} sensors={sensors} alarmedSenosrs={alarmedSensors}/>}/>
             </Routes>
 
             <div className='main-menu'>
-            <FacilitySelect facilitiesMeta={facilitiesMeta} onSelectEvent={onFacilitySelect}></FacilitySelect>
+                <FacilitySelect 
+                facilitiesMeta={facilitiesMeta}
+                onSelectEvent={onFacilitySelect}
+                />
+                <NavButton navPath='/groups' title='Группы'/>
+                <NavButton navPath='/map' title='Карта'/>
+                <NavButton navPath='/sensors-to-add' title='Датчики на добавление'/>
+                <NavButton navPath='/monitor' title='Мониторинг'/>
+                <NavButton navPath='/users' title='Пользователи'/>
             </div>
         </Router>
         </div>

@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react"
-import "./AdminPage.css"
+import "./UsersPage.css"
 import { getUsers, createUser } from "../sensors/users-api"
 import { useNavigate } from "react-router-dom"
 import UserElement from "../UserElement"
 import { AdminUserDto } from "../interfaces/DtoInterfaces"
 
-export default function AdminPage(){
+export default function UsersPage(){
     const [users, setUsers] = useState<AdminUserDto[]>()
     const [addMode, setAddMode] = useState<boolean>(false)
     const nav = useNavigate()
@@ -43,7 +43,7 @@ export default function AdminPage(){
 
     return (
         <div id="main-admin-container">
-            <h1>Панель администратора</h1>
+            <h1>Операторы</h1>
             <div id="users-container">
                 {users && users.map((user, index)=><UserElement key={index} pass={user.key} name={user.name} phone={user.phone} role={user.role} userId={user.id}/>)}
             </div>
@@ -56,10 +56,6 @@ export default function AdminPage(){
                     <button onClick={()=>setAddMode(false)}>Отмена</button>
                 </div>
             </div> : <button onClick={()=>setAddMode(true)}>Добавить оператора</button>}
-            <button onClick={()=>nav("/")}>Мониторинг</button>
-            <button onClick={()=>nav("/groups")}>Группы</button>
-            <button onClick={()=>nav("/disabled")}>Датчики на добавление</button>
-            <button onClick={()=>nav("/map")}>Карта</button>
         </div>
     )
 }
