@@ -9,7 +9,7 @@ import SensorsToAddPage from './admin-panels/SensorsToAddPage'
 import MapPage from './admin-panels/map-page/MapPage'
 import { AlarmablePressureSensor, FacilityDeepMetaDto, FacilityDto, PressureAlarmDto, PressureMeasurements, PressureSensorDto } from './interfaces/DtoInterfaces'
 import { useEffect, useState } from 'react'
-import { getAlarmedMeasurements, getFacilitiesDeppMeta, getFacility } from './sensors/api/sensors-api'
+import { getAlarmedMeasurements, getFacilitiesDeppMeta, getFacility, getUncheckedAlarmedMeasurements } from './sensors/api/sensors-api'
 import FacilitySelect from './main-menu/FacilitySelect'
 import connection from "./sensors/api/measurements-hub-connection.js"
 
@@ -60,6 +60,10 @@ export default function App(){
     useEffect(()=>{
         console.log('alarmed sensors on mainapp:', alarmedSensors)
     }, [alarmedSensors])
+
+    useEffect(()=>{
+        console.log('update sensors on mainapp', sensors)
+    }, [sensors])
 
     async function onFacilitySelect(e:React.ChangeEvent<HTMLSelectElement>){
         const facilityId = Number(e.target.value)
@@ -114,23 +118,23 @@ export default function App(){
     },[sensors])
 
     useEffect(()=>{
-        async function getAlarmedMeasurementsAsync() {
+        async function setAlarmedSensorsAsync() {
+            const bufferAlarmedSensors:AlarmablePressureSensor[] = []
             for(const sensor of sensors){
-                var response = await getAlarmedMeasurements(sensor.imei)
+                var response = await getUncheckedAlarmedMeasurements(sensor.imei)
                 if(response.ok){
-                    var alarmedMeasurementsList:PressureAlarmDto[] = await response.json()
-                    for(const measurement of alarmedMeasurementsList){
-                        if(!measurement.isChecked){
-                            if(!sensor.alarmedMeasurements.find(m=>m.id == measurement.id)){
-                                sensor.alarmedMeasurements.push(measurement)
-                            }
-                            addSensorToAlarm(sensor, alarmedSensors, setAlarmedSensors)
-                        }
+                    var uncheckedAlarmedMeasurements:PressureAlarmDto[] = await response.json()
+                    if(uncheckedAlarmedMeasurements.length > 0){
+                        sensor.isAlarmed = true
+                        sensor.alarmedMeasurements = uncheckedAlarmedMeasurements
+                        bufferAlarmedSensors.push(sensor)
                     }
                 }
             }
+            setAlarmedSensors(bufferAlarmedSensors)
         }
-        getAlarmedMeasurementsAsync()
+        setAlarmedSensorsAsync()
+
     }, [sensors])
     
 

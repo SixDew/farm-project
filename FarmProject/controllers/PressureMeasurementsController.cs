@@ -156,6 +156,30 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
         return Ok(alarmedMeasurementsList.Select(converter.ConvertToHubAlarmToClientDto));
     }
 
+    [HttpGet("measurements/alarms/checked/{imei}")]
+    [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
+    public async Task<IActionResult> GetCheckedAlarmedMeasurements([FromRoute] string imei, PressureAlarmDtoConvertService converter)
+    {
+        var checkedAlarmedMeasurements = await sensorProvider.GetCheckedAlarmedMeasurementsAsync(imei);
+        if (checkedAlarmedMeasurements is null)
+        {
+            return BadRequest("Sensor is not exist");
+        }
+        return Ok(checkedAlarmedMeasurements.Select(converter.ConvertToHubAlarmToClientDto));
+    }
+
+    [HttpGet("measurements/alarms/unchecked/{imei}")]
+    [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
+    public async Task<IActionResult> GetUncheckedAlarmedMeasurements([FromRoute] string imei, PressureAlarmDtoConvertService converter)
+    {
+        var checkedAlarmedMeasurements = await sensorProvider.GetUncheckedAlarmedMeasurementsAsync(imei);
+        if (checkedAlarmedMeasurements is null)
+        {
+            return BadRequest("Sensor is not exist");
+        }
+        return Ok(checkedAlarmedMeasurements.Select(converter.ConvertToHubAlarmToClientDto));
+    }
+
     [HttpPost("measurements/alarms/{imei}/check/{id}")]
     [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
     public async Task<IActionResult> CheckAlarmedMeasurement([FromRoute] int id, [FromRoute] string imei)

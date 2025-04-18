@@ -57,4 +57,18 @@ public class PressureSensorProvider(ApplicationDbContext db) : DbProvider<Pressu
         }
         return sensor.Groups;
     }
+
+    public async Task<List<AlarmedPressureMeasurements>?> GetCheckedAlarmedMeasurementsAsync(string imei)
+    {
+        var sensor = await _dbSet.Include(s => s.AlarmedMeasurements.Where(am => am.isChecked)).ThenInclude(am => am.Measurements)
+            .FirstOrDefaultAsync(s => s.IMEI == imei);
+        return sensor?.AlarmedMeasurements;
+    }
+
+    public async Task<List<AlarmedPressureMeasurements>?> GetUncheckedAlarmedMeasurementsAsync(string imei)
+    {
+        var sensor = await _dbSet.Include(s => s.AlarmedMeasurements.Where(am => !am.isChecked)).ThenInclude(am => am.Measurements)
+            .FirstOrDefaultAsync(s => s.IMEI == imei);
+        return sensor?.AlarmedMeasurements;
+    }
 }
