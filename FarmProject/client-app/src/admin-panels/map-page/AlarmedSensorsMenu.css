@@ -1,9 +1,30 @@
 .alarmed-sensors-menu{
-    background-color: rgba(240, 45, 45, 0.781);
-    border: 2px solid black;
+    background-color: rgb(200, 35, 10);
+    color: aliceblue;
+    /* border: 2px solid black; */
+    box-shadow: 0 5px 5px gray;
+    border-radius: 10px;
     margin: 10px;
     padding: 10px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     overflow: auto;
+}
+
+.alarmed-sensor-element{
+    color: aliceblue;
+    padding: 10px;
+    background-color: rgb(226, 40, 15);
+    border: 2px solid aliceblue;
+    border-radius: 10px;
+    font-size: medium;
+}
+
+.alarmed-sensor-element:hover{
+    background-color: rgb(186, 40, 15);
+}
+
+.alarmed-sensor-element:active{
+    background-color: rgb(146, 40, 15);
 }

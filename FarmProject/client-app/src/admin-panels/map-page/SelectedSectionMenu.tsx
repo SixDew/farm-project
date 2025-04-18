@@ -42,7 +42,7 @@ export default function SelectedSectionMenu({selectedSection, sections, groups, 
     return (
         <Control prepend position="topright">
           <div className="selected-zone-menu">
-            <select onChange={onSectionSelect}>
+            <select className="section-select-button" onChange={onSectionSelect}>
             <option value={0}>-Выберете секцию-</option>
                 {
                     sections.map(section=>{
@@ -61,25 +61,27 @@ export default function SelectedSectionMenu({selectedSection, sections, groups, 
             </select>
             {
                 selectedSection && (
-                    <div className="selected-section-sensors">
+                    <div className="selected-section-groups">
+                        <p>-Группы-</p>
                         {
                             groups.map(group=>{
                                 return (
-                                    <div>
-                                        <button onClick={()=>onGroupSelect(group.id)}><h5>{group.name}</h5></button>
+                                    <div className="selected-section-group">
+                                        <button className="group-button" onClick={()=>onGroupSelect(group.id)}>{group.name}</button>
                                         {
                                             groupSelecetedMarkers.find(m=>m.groupId == group.id)?.isSelected && (
                                                 <div className="group-sensors-section">
+                                                    <p>-Датчики-</p>
                                                     {
                                                         group.sensors.map(sensor=>{
                                                             return (
-                                                               <div>
+                                                               <>
                                                                  <button onClick={()=>{
                                                                     onSensorSelect && onSensorSelect(sensor)
                                                                 }}>
-                                                                    Imei: {sensor.imei}
+                                                                    Сенсор: {sensor.imei}
                                                                 </button>
-                                                               </div>
+                                                               </>
                                                             )
                                                         })
                                                     }

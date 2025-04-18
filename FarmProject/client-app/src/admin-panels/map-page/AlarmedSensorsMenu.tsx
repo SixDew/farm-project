@@ -11,12 +11,14 @@ export default function AlarmedSensorsMenu({alarmedSensors, onAlarmedSensorSelec
     console.log('alarmed:', alarmedSensors)
     return (
         <Control prepend position="topleft">
-            <div className="alarmed-sensors-menu">
-                <h3>Проблемы</h3>
+            {
+                alarmedSensors && alarmedSensors.length > 0 && 
+                <div className="alarmed-sensors-menu">
+                <h2>Проблемы</h2>
                 {
                     alarmedSensors?.map(sensor=>{
                         return (
-                            <button onClick={()=>onAlarmedSensorSelect && onAlarmedSensorSelect(sensor)}>
+                            <button key={'alarmed-sensor'+sensor.imei} className="alarmed-sensor-element" onClick={()=>onAlarmedSensorSelect && onAlarmedSensorSelect(sensor)}>
                                 <h5>Сенсор: {sensor.imei}</h5>
                                 <h5>Координаты: {sensor.gps}</h5>
                             </button>
@@ -24,6 +26,7 @@ export default function AlarmedSensorsMenu({alarmedSensors, onAlarmedSensorSelec
                     })
                 }
             </div>
+            }
         </Control>
     )
 }

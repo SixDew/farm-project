@@ -14,7 +14,7 @@ export default function NavButton({navPath, title}:NavButtonProps){
             className="nav-button"
             onClick={()=>nav(navPath)}
             >
-                <h4>{title}</h4>
+                {title}
             </button>
         </div>
     )

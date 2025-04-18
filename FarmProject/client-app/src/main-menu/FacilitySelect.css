@@ -1,6 +1,22 @@
-.facility-select-element{
-    min-width: 50px;
-    min-height: 50px;
-    border: 2px solid black;
+.facility-select-container{
     display: flex;
+}
+
+.facility-select-element{
+    width: 200px;
+    display: flex;
+    box-shadow: 0 5px 10px gray;
+    font-size: medium;
+    background-color: aliceblue;
+    border: 1px solid gray;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.facility-select-element:hover{
+    background-color: rgb(235, 235, 235)
+}
+
+.facility-select-element:active{
+    background-color: rgb(220, 220, 220)
 }
