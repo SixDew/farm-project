@@ -1,6 +1,28 @@
-#main-section-element{
-    background-color: gray;
+.section-element{
+    padding: 20px;
+    border-radius: 10px;
+    font-size: medium;
+    display: flex;
+    flex-direction: column;
 }
+
 .sensors{
-    background-color: royalblue;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.sensor-info-element{
+    background-color: aliceblue;
+    border: 1px solid gray;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+
+    width: 100px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
 }

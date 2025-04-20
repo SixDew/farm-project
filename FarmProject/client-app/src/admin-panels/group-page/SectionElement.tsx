@@ -8,13 +8,13 @@ interface SectionElementProps{
 
 export default function SectionElement({name, sensors}:SectionElementProps){
     return(
-        <div id='main-section-element'>
-        <p>{name}</p>
+        <div className='section-element'>
+        <h3>{name}</h3>
         <div className='sensors'>
-            <p>Датчики</p>
             {
-                sensors.map(s=><div className='group' key={s.imei}>
-                    <p>Imei:{s.imei}</p>
+                sensors.map(s=><div className='sensor-info-element' key={s.imei}>
+                    <p>Сенсор:<p>{s.imei}</p></p>
+                    <p>Координаты:<p>{s.gps}</p></p>
                 </div>)
             }
         </div>

@@ -1,12 +1,24 @@
 .sensor-info-element{
     background-color: azure;
     margin: 10px auto 10px 10px;
-    min-width: 10vw;
     border-radius: 5px;
     padding: 10px;
+    box-shadow: 0 0px 5px gray;
+    font-size: large;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 150px;
+    height: 150px;
 }
 
 .group-info-element{
     display: flex;
     flex-direction: column;
+    background-color: rgb(225, 230, 235);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0px 5px gray;
+    font-size: medium;
 }

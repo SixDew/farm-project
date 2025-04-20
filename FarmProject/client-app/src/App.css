@@ -15,10 +15,8 @@
     height: 150px;
     margin-top: auto;
     box-shadow: 0 -5px 20px gray;
-    /* border: 2px solid black; */
     display: flex;
     justify-content: center;
-    position: sticky;
     z-index: 2;
 }
 

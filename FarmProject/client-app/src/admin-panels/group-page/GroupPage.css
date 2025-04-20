@@ -1,7 +1,76 @@
 .factility-element{
-    background-color: gainsboro;
+    background-color: aliceblue;
     margin: 10px;
     padding: 10px;
     border-radius: 10px;
-    box-shadow: 0px 5px 10px gray;
+    box-shadow: 0px 0px 10px gray;
+}
+
+.sections-container{
+    display: flex;
+    flex-direction: row;
+    overflow: auto;
+    padding: 20px;
+}
+
+.groups-panel{
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    margin-right: auto;
+    background-color: rgb(225, 230, 235);
+    border-radius: 0 10px 10px 0;
+    padding: 10px;
+}
+
+.groups-panel > *{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.according-sector{
+    padding: 5px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.according-element{
+    background-color: aliceblue;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px gray;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+    border: 1px solid gray;
+    font-size: medium;
+}
+
+.according-element:hover{
+    background-color: rgb(235, 235, 240);
+}
+
+.according-element:active{
+    background-color: rgb(200, 200, 200);
+}
+
+.sensors-panel{
+    background-color: rgb(225, 230, 235);
+    width: 100%;
+    height: 100%;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.main-group-page-container{
+    display: flex;
+    height: 100%;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }

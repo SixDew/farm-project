@@ -170,7 +170,7 @@ export default function App(){
                 <Route path='/monitor' element={<SensorsMiniContainer facility={selectedFacility} sensors={sensors} alarmedSensors={alarmedSensors}/>}/>
                 <Route path='/sensors/pressure/:imei' element={<PressureSensor sensors={sensors} sensorOnDisalarm={sensorOnDisalarm}/>}/>
                 <Route path='/users' element={<UsersPage/>}/>
-                <Route path='/groups' element={<GroupPage/>}/>
+                <Route path='/groups' element={<GroupPage facility={selectedFacility}/>}/>
                 <Route path='/sensors-to-add' element={<SensorsToAddPage/>}/>
                 <Route path='/map' element={<MapPage facility={selectedFacility} sensors={sensors} alarmedSenosrs={alarmedSensors}/>}/>
             </Routes>

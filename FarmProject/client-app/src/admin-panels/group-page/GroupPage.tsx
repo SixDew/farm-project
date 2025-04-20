@@ -1,51 +1,58 @@
 import { useEffect, useState } from "react"
 import {addSection, getFacilities, getSections } from "../../sensors/api/sensors-api"
-import { FacilityDto } from "../../interfaces/DtoInterfaces"
+import { FacilityDto, SensorGroupDto, SensorSectionDto } from "../../interfaces/DtoInterfaces"
 import SectionElement from "./SectionElement"
 import GroupElement from "./GroupElement"
 import "./GroupPage.css"
+import MultiplyAccordion, { AccordingSector } from "./MultiplyAccordion"
 
-export default function GroupPage(){
-    const [facilities, setFacilities] = useState<FacilityDto[]>([])
+interface GroupPageProps{
+    facility:FacilityDto|undefined
+}
 
-    useEffect(()=>{
-        async function getAllFacilities() {
-            var facilities = await (await getFacilities()).json();
-            console.log(facilities);
-            setFacilities(facilities);
-        }
-        getAllFacilities();
-    },[])
+export default function GroupPage({facility}:GroupPageProps){
 
-    return (
+    const [selectedSensorsSet, setSelectedSensorsSet] = useState<SensorGroupDto | SensorSectionDto>()
+
+    return(
         <>
         {
-            facilities.map(f=>{
-                return (
-                    <div className="factility-element">
-                        <h2>Предприятие: {f.name}</h2>
-                        <div>
-                        <h3>Секции</h3>
+            facility && (
+                <div className="main-group-page-container">
+                    <div className="groups-panel">
+                        <MultiplyAccordion>
+                            <AccordingSector title="Группы" className="according-sector">
+                                {
+                                    facility.groups.map(group=>
+                                        <button className="according-element" onClick={()=>setSelectedSensorsSet(group)}>
+                                            {group.name}
+                                        </button>
+                                    )
+                                }
+                            </AccordingSector>
+                            <AccordingSector title="Секции" className="according-sector">
+                                {
+                                    facility.sections.map(secttion=>
+                                        <button className="according-element" onClick={()=>setSelectedSensorsSet(secttion)}>
+                                            {secttion.name}
+                                        </button>
+                                    )
+                                }
+                            </AccordingSector>
+                        </MultiplyAccordion>
+                    </div>
+
+                    <div className="sensors-panel">
                         {
-                            f.sections.map(s=>{
-                                return (
-                                    <SectionElement name={s.name} sensors={s.sensors} key={s.id}></SectionElement>
-                                )
-                            })
-                        }
-                        </div>
-                        <h3>Группы</h3>
-                        {
-                            f.groups.map(g=>{
-                                return (
-                                    <GroupElement name={g.name} sensors={g.sensors} key={g.id}></GroupElement>
-                                )
-                            })
+                            selectedSensorsSet && (
+                                <SectionElement name={selectedSensorsSet.name} sensors={selectedSensorsSet.sensors}></SectionElement>
+                            )
                         }
                     </div>
-                )
-            })
+                </div>
+            )
         }
         </>
     )
+
 }
