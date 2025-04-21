@@ -76,8 +76,13 @@ export default function DynamicSensorControls({facility, sensors, alarmedSensors
       const geoJsoLayer = e.layer as GeoJsonLayer
       var response = await sendZone({geometry:geoJsoLayer.toGeoJSON().geometry}, selectedSection.id)
       if(response.ok){
-        var data = await response.json()
+        var data:MapZoneDto = await response.json()
+        const section = sections.find(s=>s.id == data.sectionId)
+        if(section){
+          section.zone = data
+        }
         setZones(prev=>[...prev, data])
+        setSections([...sections])
       } 
     }
     e.layer.remove() 
@@ -130,11 +135,13 @@ export default function DynamicSensorControls({facility, sensors, alarmedSensors
   }
 
   function ZoomToSection(zoneSection:SensorSectionDto){
-    const zoneGeometry = zoneSection.zone!.geometry as geo.Polygon
+    if(zoneSection.zone){
+      const zoneGeometry = zoneSection.zone.geometry as geo.Polygon
       const zoneCenter = getCenter(zoneGeometry.coordinates.at(0) as Position[])
       map.flyTo(zoneCenter as L.LatLngExpression, map.getZoom(), {
         duration:0.5
       })
+    }
 
   }
 
@@ -178,6 +185,7 @@ export default function DynamicSensorControls({facility, sensors, alarmedSensors
      <FeatureGroup>
       <AdvancedGeomanControls
         zoneCreateHandler={zoneCreateHandler}
+        id={selectedSection?.id}
       >
       </AdvancedGeomanControls>
 
