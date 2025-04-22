@@ -6,3 +6,8 @@
 .position-button{
     padding: 0px;
 }
+
+.alarm-counter{
+    color: rgb(202, 14, 14);
+    font-size: large;
+}

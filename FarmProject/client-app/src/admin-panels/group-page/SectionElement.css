@@ -1,9 +1,12 @@
 .section-element{
-    padding: 20px;
+    padding-bottom: 30px;
+    margin: 20px;
     border-radius: 10px;
     font-size: medium;
     display: flex;
     flex-direction: column;
+    background-color: aliceblue;
+    border: 1px solid gray;
 }
 
 .sensors{

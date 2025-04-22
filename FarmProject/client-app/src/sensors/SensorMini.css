@@ -21,6 +21,7 @@
     color: rgb(224, 255, 255);
 
     transition: 0.15s ease-in-out;
+    cursor: pointer;
 }
 .sensor-mini:hover{
     transform: scale(1.1);

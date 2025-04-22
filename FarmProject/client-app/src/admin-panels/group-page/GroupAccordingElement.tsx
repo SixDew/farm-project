@@ -34,7 +34,7 @@ export default function GroupAccordingElement({name, groupSensorsCount,
                 onChangeVisible && onChangeVisible(e)
             }}>{isVisible ? <>O</> : <>=</>}</button>
             {
-                groupAlarmedSensorsCount > 0 && (<><span>!</span> <span>{groupAlarmedSensorsCount}/{groupSensorsCount}</span></>)
+                groupAlarmedSensorsCount > 0 && (<span className='alarm-counter'><span>!</span> <span>{groupAlarmedSensorsCount}/{groupSensorsCount}</span></span>)
             }
         </div>
     )

@@ -123,7 +123,7 @@ export default function GroupPage({facility, alarmedSensors, sensors, setFacilit
                                         <>
                                             <SectionElement
                                                 name={group.name}
-                                                sensors={group.sensors}
+                                                sensors={group.sensors.map(s=>sensors.find(sensor=>sensor.imei == s.imei))}
                                                 key={group.id}
                                             >
                                             </SectionElement>

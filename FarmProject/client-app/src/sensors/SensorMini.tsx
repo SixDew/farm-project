@@ -4,8 +4,8 @@ import './SensorMini.css'
 interface SensorMiniProps{
     imei:string,
     gps:string,
-    measurement1:number,
-    measurement2:number,
+    measurement1?:number,
+    measurement2?:number,
     isAlarmed:boolean
 }
 
