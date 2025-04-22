@@ -1,4 +1,5 @@
 import { Children, ReactElement, ReactNode, useEffect, useState } from "react"
+import "./MultiplyAccordion.css"
 
 interface MultiplyAccordionProps{
     children?:ReactElement<AccordingSectorProps>[] | ReactElement<AccordingSectorProps>
@@ -50,10 +51,9 @@ export default function MultiplyAccordion({children}:MultiplyAccordionProps){
                                     }
                                 }}
                             >
-                                <span>{child.props.title}</span>
-                                {
-                                    isSelected? <span>▼</span> : <span>▶</span>
-                                }
+                                <span className="accordion-sector-title">{child.props.title}{
+                                    isSelected? <>▼</> : <>▶</>
+                                }</span>
                             </span>
                             {
                                 isSelected && child

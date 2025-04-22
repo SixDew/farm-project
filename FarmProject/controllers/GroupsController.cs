@@ -95,5 +95,28 @@ namespace FarmProject.controllers
             await _sensorProvider.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpPost("change/{id}")]
+        [Authorize(Roles = $"{UserRoles.ADMIN}")]
+        public async Task<IActionResult> ChangeGroupList([FromBody] string[] sensorsImei, [FromRoute] int id)
+        {
+            var group = await _groups.GetWithSensorsAsync(id);
+            if (group is null)
+            {
+                return BadRequest();
+            }
+            group.Sensors.Clear();
+            foreach (var imei in sensorsImei)
+            {
+                var sensor = await _sensorProvider.GetByImeiAsync(imei);
+                if (sensor is not null)
+                {
+                    group.Sensors.Add(sensor);
+                }
+
+            }
+            await _groups.SaveChangesAsync();
+            return Ok(_converter.ConvertToClient(group));
+        }
     }
 }

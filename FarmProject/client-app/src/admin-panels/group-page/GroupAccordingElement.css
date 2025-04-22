@@ -1,0 +1,8 @@
+.position-control{
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.position-button{
+    padding: 0px;
+}

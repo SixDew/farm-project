@@ -1,0 +1,30 @@
+.add-sensor-dialog{
+    width: 50vw;
+    height: 50vh;
+    border: 1px solid gray;
+    border-radius: 10px;
+    margin: auto;
+    text-align: center;
+}
+
+.selcted-dialog-sensor-container{
+    background-color: rgb(116, 187, 219);
+    width: fit-content;
+    height: fit-content;
+    border-radius: 10px;
+}
+
+.dialog-sensor-container{
+    width: fit-content;
+    height: fit-content;
+    border-radius: 10px;
+}
+
+.dialog-group-sensors-container{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.dialog-group-sensors-container *{
+    margin: 10px;
+}

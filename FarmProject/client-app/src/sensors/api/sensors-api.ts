@@ -100,6 +100,21 @@ export async function getSections() {
     return await sendRequestWithAuthorize(`${serverUrl}/sections`)
 }
 
+export async function sendGroupChangeList(id:number, sensorsImei:string[]){
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/groups/change/${id}`,{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+        body: JSON.stringify(
+            sensorsImei
+        )
+    })
+    return response
+}
+
 export async function getFacility(id:number) {
     return await sendRequestWithAuthorize(`${serverUrl}/facilities/${id}`)   
 }

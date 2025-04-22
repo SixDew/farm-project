@@ -1,5 +1,6 @@
 import { PressureSensorDto }from '../../interfaces/DtoInterfaces'
 import './SectionElement.css'
+import SensorInfoElement from './SensorInfoElement'
 
 interface SectionElementProps{
     name:string,
@@ -12,10 +13,7 @@ export default function SectionElement({name, sensors}:SectionElementProps){
         <h3>{name}</h3>
         <div className='sensors'>
             {
-                sensors.map(s=><div className='sensor-info-element' key={s.imei}>
-                    <p>Сенсор:<p>{s.imei}</p></p>
-                    <p>Координаты:<p>{s.gps}</p></p>
-                </div>)
+                sensors.map(s=><SensorInfoElement sensor={s} key={s.imei}/>)
             }
         </div>
         </div>

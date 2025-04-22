@@ -1,0 +1,5 @@
+.accordion-sector-title{
+    user-select: none;
+    -moz-user-select: none;
+    cursor: pointer;
+}

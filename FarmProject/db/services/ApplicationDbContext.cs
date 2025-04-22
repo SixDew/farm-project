@@ -54,7 +54,23 @@ public class ApplicationDbContext : DbContext
             IsActive = true,
             SectionId = 1,
         };
-        modelBuilder.Entity<PressureSensor>().HasData([s1, s2]);
+        PressureSensor s3 = new PressureSensor()
+        {
+            Id = 3,
+            GPS = "54.15 34.141",
+            IMEI = "3",
+            IsActive = true,
+            SectionId = 2,
+        };
+        PressureSensor s4 = new PressureSensor()
+        {
+            Id = 4,
+            GPS = "56.15 36.141",
+            IMEI = "4",
+            IsActive = true,
+            SectionId = 2,
+        };
+        modelBuilder.Entity<PressureSensor>().HasData([s1, s2, s3, s4]);
 
         modelBuilder.Entity<PressureMeasurements>().ToTable("PressureMeaserments").HasData(
                 new PressureMeasurements()
@@ -69,22 +85,34 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Facility>().HasData(new Facility()
         {
             Id = 1,
-            Name = "test-facility"
+            Name = "Мое предприятие"
         });
 
-        modelBuilder.Entity<Section>().HasData(new Section()
+        modelBuilder.Entity<Section>().HasData([new Section()
         {
             Id = 1,
             FacilityId = 1,
-            Name = "test-section"
-        });
+            Name = "Секция 1"
+        },
+        new Section()
+        {
+            Id = 2,
+            FacilityId = 1,
+            Name = "Секция 2"
+        }]);
 
-        modelBuilder.Entity<SensorGroup>().HasData(new SensorGroup()
+        modelBuilder.Entity<SensorGroup>().HasData([new SensorGroup()
         {
             Id = 1,
-            Name = "test-group",
+            Name = "Влажность почвы",
             FacilityId = 1
-        });
+        },
+        new SensorGroup()
+        {
+            Id = 2,
+            Name = "Давление насосов",
+            FacilityId = 1
+        }]);
 
         modelBuilder.Entity<PressureSensorSettings>().ToTable("PressureSensorSettings").HasData(
                 new PressureSensorSettings()
