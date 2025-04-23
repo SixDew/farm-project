@@ -1,3 +1,4 @@
+import { ReactNode } from 'react'
 import { AlarmablePressureSensor, PressureSensorDto }from '../../interfaces/DtoInterfaces'
 import SensorMini from '../../sensors/SensorMini'
 import './SectionElement.css'
@@ -6,9 +7,10 @@ import SensorInfoElement from './SensorInfoElement'
 interface SectionElementProps{
     name:string,
     sensors:(AlarmablePressureSensor|undefined)[]
+    children?:ReactNode
 }
 
-export default function SectionElement({name, sensors}:SectionElementProps){
+export default function SectionElement({name, sensors,children}:SectionElementProps){
     return(
         <div className='section-element'>
         <h3>{name}</h3>
@@ -20,6 +22,7 @@ export default function SectionElement({name, sensors}:SectionElementProps){
                     key={s.imei}/>)
             }
         </div>
+        <div>{children}</div>
         </div>
     )
 }

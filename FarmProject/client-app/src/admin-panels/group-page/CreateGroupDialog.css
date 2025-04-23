@@ -1,0 +1,13 @@
+.create-group-dialog-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.create-group-dialog-container *{
+    margin: 10px;
+}
+
+.group-name-input{
+    width: 150px;
+    text-align: center;
+}

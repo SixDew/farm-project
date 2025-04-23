@@ -28,3 +28,15 @@
 .dialog-group-sensors-container *{
     margin: 10px;
 }
+
+.dialog-group-name-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dialog-group-delete-button{
+    width: fit-content;
+    height: fit-content;
+    margin: 10px;
+}

@@ -11,3 +11,8 @@
     color: rgb(202, 14, 14);
     font-size: large;
 }
+
+.element-name{
+    margin-left: auto;
+    margin-right: auto;
+}

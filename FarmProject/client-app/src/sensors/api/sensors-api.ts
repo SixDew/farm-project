@@ -96,6 +96,22 @@ export async function getGroups() {
     return await sendRequestWithAuthorize(`${serverUrl}/groups`)
 }
 
+export async function addGroup(facilityId:number, groupName:string) {
+    const name = groupName
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/groups/${facilityId}`,{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+        body: JSON.stringify(
+            name
+        )
+    })
+    return response
+}
+
 export async function getSections() {
     return await sendRequestWithAuthorize(`${serverUrl}/sections`)
 }
@@ -138,22 +154,6 @@ export async function addSection(name) {
     return response
 }
 
-export async function addGroup(name, description, id) {
-    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
-    const response = await fetch(`${serverUrl}/groups/${id}`,{
-        method:'POST',
-        headers:{
-            'Content-Type':'application/json',
-            'Authorization':AuthorizathionHeader
-        },
-        body: JSON.stringify({
-            name:name,
-            description:description
-        })
-    })
-    return response
-}
-
 export async function addToGroup(groupId, sensorImei) {
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(`${serverUrl}/groups/add/${groupId}`,{
@@ -165,6 +165,18 @@ export async function addToGroup(groupId, sensorImei) {
         body: JSON.stringify(
             sensorImei
         )
+    })
+    return response
+}
+
+export async function deleteGroup(groupId:number) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/groups/delete/${groupId}`,{
+        method:'DELETE',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
     })
     return response
 }

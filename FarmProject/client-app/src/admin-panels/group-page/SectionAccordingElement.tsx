@@ -1,23 +1,21 @@
-import './GroupAccordingElement.css'
+import { ReactElement } from "react"
+import { GroupAccordingElementProps } from "./GroupAccordingElement"
 
-export interface GroupAccordingElementProps{
-    name:string,
-    groupSensorsCount:number,
-    groupAlarmedSensorsCount:number,
-    className?:string,
-    isVisible:boolean,
+interface SectionAccordingElementProps{
+    className?:string
+    children?:ReactElement<GroupAccordingElementProps>[] | ReactElement<GroupAccordingElementProps>,
+    sectionName:string,
+    isVisible:boolean
+    onPositionUp?:()=>void,
+    onPositionDown?:()=>void,
     onClick?:React.MouseEventHandler<HTMLDivElement>,
     onChangeVisible?:React.MouseEventHandler<HTMLButtonElement>
-    onPositionUp?:()=>void
-    onPositionDown?:()=>void
+
 }
 
-export default function GroupAccordingElement({name, groupSensorsCount,
-     groupAlarmedSensorsCount, className, isVisible,
-      onClick, onChangeVisible, onPositionUp, onPositionDown}:GroupAccordingElementProps){
-
+export default function SectionAccordingElement({className, children, sectionName,isVisible, onPositionUp, onPositionDown, onChangeVisible}:SectionAccordingElementProps){
     return (
-        <div className={className} onClick={onClick}>
+        <div className={className}>
             <span className='position-control'>
                 <button className='position-button' onClick={(e)=>{
                     e.stopPropagation()
@@ -28,14 +26,12 @@ export default function GroupAccordingElement({name, groupSensorsCount,
                     onPositionDown && onPositionDown()
                 }}>⯆</button>
             </span>
-            <div className='element-name'>{name}</div>
+            <div>{sectionName}</div>
+            <div>{children}</div>
             <button onClick={(e)=>{
                 e.stopPropagation()
                 onChangeVisible && onChangeVisible(e)
             }}>{isVisible ? <>O</> : <>=</>}</button>
-            {
-                groupAlarmedSensorsCount > 0 && (<span className='alarm-counter'><span>!</span> <span>{groupAlarmedSensorsCount}/{groupSensorsCount}</span></span>)
-            }
         </div>
     )
 }

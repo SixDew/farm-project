@@ -147,15 +147,12 @@ export default function App(){
         console.log("sensors:", sensors)
     },[sensors])
 
-    useEffect(()=>{
-        async function facilitiesMetaInit() {
-            var response = await getFacilitiesDeppMeta()
-            if(response.ok){
-                setFacilitiesMeta(await response.json())
-            }
+    async function facilitiesMetaInit() {
+        var response = await getFacilitiesDeppMeta()
+        if(response.ok){
+            setFacilitiesMeta(await response.json())
         }
-        facilitiesMetaInit()
-    }, [])
+    }
 
     function sensorOnDisalarm(sensor:AlarmablePressureSensor){
         sensor.isAlarmed = false
@@ -177,8 +174,9 @@ export default function App(){
 
             <div className='main-menu'>
                 <FacilitySelect 
-                facilitiesMeta={facilitiesMeta}
-                onSelectEvent={onFacilitySelect}
+                    facilitiesMeta={facilitiesMeta}
+                    onSelectEvent={onFacilitySelect}
+                    onClick={facilitiesMetaInit}
                 />
                 <NavButton navPath='/groups' title='Группы'/>
                 <NavButton navPath='/map' title='Карта'/>

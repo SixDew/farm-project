@@ -96,6 +96,21 @@ namespace FarmProject.controllers
             return Ok();
         }
 
+        [HttpDelete("delete/{id}")]
+        [Authorize(Roles = $"{UserRoles.ADMIN}")]
+        public async Task<IActionResult> DeleteGroup([FromRoute] int id)
+        {
+            var group = await _groups.GetAsync(id);
+            if (group is null)
+            {
+                return BadRequest("group is not exist");
+            }
+            _groups.Delete(group);
+            await _groups.SaveChangesAsync();
+            return Ok(_converter.ConvertToMetadata(group));
+
+        }
+
         [HttpPost("change/{id}")]
         [Authorize(Roles = $"{UserRoles.ADMIN}")]
         public async Task<IActionResult> ChangeGroupList([FromBody] string[] sensorsImei, [FromRoute] int id)
