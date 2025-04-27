@@ -1,5 +1,6 @@
 ﻿using FarmProject.auth;
 using FarmProject.db.services.providers;
+using FarmProject.dto.groups;
 using FarmProject.dto.groups.services;
 using FarmProject.group_feature.group;
 using Microsoft.AspNetCore.Authorization;
@@ -132,6 +133,21 @@ namespace FarmProject.controllers
             }
             await _groups.SaveChangesAsync();
             return Ok(_converter.ConvertToClient(group));
+        }
+
+        [HttpPut("change-meta")]
+        [Authorize(Roles = $"{UserRoles.ADMIN}")]
+        public async Task<IActionResult> ChangeSectionMeta([FromBody] GroupMetadataFromClientDto metadata)
+        {
+            var group = await _groups.GetAsync(metadata.Id);
+            if (group is null)
+            {
+                return BadRequest("group is not exist");
+            }
+
+            group.Name = metadata.Name;
+            await _groups.SaveChangesAsync();
+            return Ok(_converter.ConvertToMetadata(group));
         }
     }
 }

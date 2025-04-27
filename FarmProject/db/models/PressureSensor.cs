@@ -15,6 +15,6 @@ namespace FarmProject.db.models
         [Required]
         public PressureSensorSettings Settings { get; set; }
         public List<SensorGroup> Groups { get; set; } = new();
-        public int SectionId { get; set; }
+        public int? SectionId { get; set; }
     }
 }

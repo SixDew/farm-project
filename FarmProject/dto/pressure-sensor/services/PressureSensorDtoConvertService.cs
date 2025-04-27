@@ -12,7 +12,7 @@ namespace FarmProject.dto.servisces
                 GPS = sensor.GPS,
                 IMEI = sensor.IMEI,
                 Settings = new() { IMEI = sensor.IMEI },
-                SectionId = 1
+                SectionId = null
             };
         }
 

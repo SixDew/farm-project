@@ -4,9 +4,11 @@ import SectionElement from "./SectionElement"
 import "./GroupPage.css"
 import MultiplyAccordion, { AccordingSector } from "./MultiplyAccordion"
 import GroupAccordingElement from "./GroupAccordingElement"
-import SensorAddDialog from "./SensorAddDialog"
+import EditGroupDialog from "./EditGroupDialog"
 import CreateGroupDialog from "./CreateGroupDialog"
 import SectionAccordingElement from "./SectionAccordingElement"
+import CreateSectionDialog from "./CreateSectionDialog"
+import EditSectionDialog from "./EditSectionDialog"
 
 interface GroupPageProps{
     facility:FacilityDto|undefined
@@ -33,9 +35,12 @@ function moveItem(arr:any[], fromIndex:number, toIndex:number):any[]{
 
 export default function GroupPage({facility, alarmedSensors, sensors, setFacility}:GroupPageProps){
     const [visibleGroups, setVisibleGroups] = useState<VisibleSensorGroup[]>([])
-    const [showAddSensorDialog, setShowAddSensorDialog] = useState<boolean>(false)
+    const [showEditGroupDialog, setShowEditGroupDialog] = useState<boolean>(false)
     const [showCreateGroupDialog, setShowCreateGroupDialog] = useState<boolean>(false)
-    const [groupToSensorAdd, setGroupToSensorAdd] = useState<SensorGroupDto>()
+    const [showCreateSectionDialog, setShowCreateSectionDialog] = useState<boolean>(false)
+    const [showEditSectionDialog, setShowEditSectionDialog] = useState<boolean>(false)
+    const [groupToEdit, setGroupToEdit] = useState<SensorGroupDto>()
+    const [sectionToEdit, setSectionToEdit] = useState<SensorSectionDto>()
     const [visibleSections, setVisibleSections] = useState<VisibleSectionWithGroups[]>([]) 
 
     useEffect(()=>{
@@ -47,16 +52,26 @@ export default function GroupPage({facility, alarmedSensors, sensors, setFacilit
     }, [facility])
 
     useEffect(()=>{
-        const buffVisibleSections:VisibleSectionWithGroups[] = [...visibleSections]
+        let buffVisibleSections:VisibleSectionWithGroups[] = [...visibleSections]
+        //Убираем удаленные секции
+        buffVisibleSections = buffVisibleSections.filter(s=>facility?.sections.find(fs=>fs.id == s.id))
+
         facility?.sections.forEach(section=>{
             const visibleSection = buffVisibleSections.find(s=>s.id == section.id)
             //Если секция уже добавлена
             if(visibleSection){
+                //Обновляем метаданные
+                visibleSection.name = section.name
+                visibleSection.zone = section.zone
+
                 const buffVisibleGroups:VisibleSensorGroup[] = []
                 facility?.groups.forEach(group=>{
                         //Если группа есть в старой секции
                         const finderGroup = visibleSection.groups.find(g=>g.id == group.id)
                         if(finderGroup){
+                            //Обновляем метаданные
+                            finderGroup.name = group.name
+
                             //Обновляем список датчиков
                             const sensors = group.sensors.filter(s=>section.sensors.find(sectionSensor=>sectionSensor.imei == s.imei))
                             if(sensors.length > 0){
@@ -108,13 +123,13 @@ export default function GroupPage({facility, alarmedSensors, sensors, setFacilit
             facility && (
                 <div className="main-group-page-container">
                     {
-                        groupToSensorAdd && <SensorAddDialog 
-                        isOpen={showAddSensorDialog}
-                        group={groupToSensorAdd}
+                        groupToEdit && <EditGroupDialog 
+                        isOpen={showEditGroupDialog}
+                        group={groupToEdit}
                         sensors={sensors}
                         onEnd={()=>{
-                            setShowAddSensorDialog(false)
-                            setGroupToSensorAdd(undefined)
+                            setShowEditGroupDialog(false)
+                            setGroupToEdit(undefined)
                         }}
                         onGroupChange={(updatedGroup)=>{
                                 facility.groups = facility.groups.map(group=>
@@ -127,7 +142,36 @@ export default function GroupPage({facility, alarmedSensors, sensors, setFacilit
                             facility.groups = facility.groups.filter(g=>g.id != groupMeta.id)
                             setFacility({...facility})
                         }}
-                        ></SensorAddDialog>
+                        onGroupMetadataChange={(groupMeta)=>{
+                            facility.groups = facility.groups.map(g=>{
+                                if(g.id == groupMeta.id){
+                                    g.name = groupMeta.name
+                                }
+                                return g
+                            })
+                        }}
+                        ></EditGroupDialog>
+                    }
+                    {
+                        sectionToEdit && <EditSectionDialog
+                            isOpen={showEditSectionDialog}
+                            section={sectionToEdit}
+                            onEnd={()=>setShowEditSectionDialog(false)}
+                            onSectionDelete={(section)=>{
+                                facility.sections = facility.sections.filter(s=>s.id != section.id)
+                                setFacility({...facility})
+                            }}
+                            onSectionChange={(sectionMeta)=>{
+                                facility.sections = facility.sections.map(s=>{
+                                    if(s.id == sectionMeta.id){
+                                        s.name = sectionMeta.name
+                                    }
+                                    return s
+                                })
+                                setFacility({...facility})
+                            }}
+                        >
+                        </EditSectionDialog>
                     }
                     <CreateGroupDialog 
                         isOpen={showCreateGroupDialog}
@@ -138,7 +182,17 @@ export default function GroupPage({facility, alarmedSensors, sensors, setFacilit
                             setFacility({...facility})
                         }}
                         >
-                        </CreateGroupDialog>
+                    </CreateGroupDialog>
+                    <CreateSectionDialog
+                        isOpen={showCreateSectionDialog}
+                        facilityId={facility.id}
+                        onEnd={()=>setShowCreateSectionDialog(false)}
+                        onSectionAdd={(section)=>{
+                            facility.sections.push(section)
+                            setFacility({...facility})
+                        }}
+                    >
+                    </CreateSectionDialog>
 
                     <div className="groups-panel">
                         <MultiplyAccordion>
@@ -165,8 +219,8 @@ export default function GroupPage({facility, alarmedSensors, sensors, setFacilit
                                                 }
                                             }}
                                             onClick={()=>{
-                                                setShowAddSensorDialog(!showAddSensorDialog)
-                                                setGroupToSensorAdd(group)
+                                                setShowEditGroupDialog(!showEditGroupDialog)
+                                                setGroupToEdit(group)
                                             }}
                                             onPositionUp={()=>{
                                                 facility.groups = moveItem(facility.groups, index, index - 1)
@@ -178,6 +232,7 @@ export default function GroupPage({facility, alarmedSensors, sensors, setFacilit
                                                 console.log("down group pos", facility)
                                                 setFacility({...facility})
                                             }}
+                                            key={"group-according-element"+group.id}
                                         ></GroupAccordingElement>
                                     )
                                 }
@@ -210,6 +265,10 @@ export default function GroupPage({facility, alarmedSensors, sensors, setFacilit
                                                         setVisibleSections([...visibleSections])
                                                     }
                                                 }
+                                            }}
+                                            onClick={()=>{
+                                                setSectionToEdit(section)
+                                                setShowEditSectionDialog(!showEditSectionDialog)
                                             }}
                                             onPositionDown={()=>{
                                                 const buffer:VisibleSectionWithGroups[] = moveItem(visibleSections, index, index + 1)
@@ -248,6 +307,11 @@ export default function GroupPage({facility, alarmedSensors, sensors, setFacilit
                                                         console.log("down group pos", facility)
                                                         setVisibleSections([...visibleSections])
                                                     }}
+                                                    onClick={(e)=>{
+                                                        e.stopPropagation()
+                                                        setShowEditGroupDialog(!showEditGroupDialog)
+                                                        setGroupToEdit(group)
+                                                    }}
                                                 ></GroupAccordingElement>
                                                 )
                                             }
@@ -256,6 +320,11 @@ export default function GroupPage({facility, alarmedSensors, sensors, setFacilit
                                     }
                                     )
                                 }
+                                <button
+                                    onClick={()=>setShowCreateSectionDialog(true)}
+                                >
+                                    +
+                                </button>
                             </AccordingSector>
                         </MultiplyAccordion>
                     </div>

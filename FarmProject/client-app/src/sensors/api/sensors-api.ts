@@ -139,17 +139,15 @@ export async function getFacilities(){
     return await sendRequestWithAuthorize(`${serverUrl}/facilities`)
 }
 
-export async function addSection(name) {
+export async function addSection(name:string, facilityId:number) {
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
-    const response = await fetch(`${serverUrl}/sections`,{
+    const response = await fetch(`${serverUrl}/sections/add/${facilityId}`,{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
             'Authorization':AuthorizathionHeader
         },
-        body: JSON.stringify({
-            name:name
-        })
+        body: JSON.stringify(name)
     })
     return response
 }
@@ -177,6 +175,50 @@ export async function deleteGroup(groupId:number) {
             'Content-Type':'application/json',
             'Authorization':AuthorizathionHeader
         },
+    })
+    return response
+}
+
+export async function deleteSection(sectionId:number) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/sections/${sectionId}`,{
+        method:'DELETE',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+    })
+    return response
+}
+
+export async function changeSectionMetadata(sectionId:number, sectionName:string) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/sections/change-meta`,{
+        method:'PUT',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+        body:JSON.stringify({
+            name:sectionName,
+            id:sectionId
+        })
+    })
+    return response
+}
+
+export async function changeGroupMetadata(groupId:number, groupName:string) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/groups/change-meta`,{
+        method:'PUT',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+        body:JSON.stringify({
+            name:groupName,
+            id:groupId
+        })
     })
     return response
 }

@@ -1,0 +1,43 @@
+.add-sensor-dialog{
+    width: 50vw;
+    height: 50vh;
+    border: 1px solid gray;
+    border-radius: 10px;
+    margin: auto;
+    text-align: center;
+}
+
+.selcted-dialog-sensor-container{
+    background-color: rgb(116, 187, 219);
+    width: fit-content;
+    height: fit-content;
+    border-radius: 10px;
+}
+
+.dialog-sensor-container{
+    width: fit-content;
+    height: fit-content;
+    border-radius: 10px;
+}
+
+.dialog-section-sensors-container{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.dialog-section-sensors-container *{
+    margin: 10px;
+}
+
+.dialog-section-name-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dialog-section-delete-button{
+    width: fit-content;
+    height: fit-content;
+    margin: 10px;
+}

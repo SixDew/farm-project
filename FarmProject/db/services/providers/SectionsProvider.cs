@@ -10,5 +10,10 @@ namespace FarmProject.db.services.providers
         {
             return await _dbSet.Include(s => s.Sensors).Include(s => s.Zone).ToListAsync();
         }
+
+        public async Task<Section?> GetWithSensorsAsync(int id)
+        {
+            return await _dbSet.Include(s => s.Sensors).FirstOrDefaultAsync(s => s.Id == id);
+        }
     }
 }

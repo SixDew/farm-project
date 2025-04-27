@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useRef } from 'react'
-import './SensorAddDialog.css'
+import './EditGroupDialog.css'
 
 interface DialogProps{
     children?:ReactNode

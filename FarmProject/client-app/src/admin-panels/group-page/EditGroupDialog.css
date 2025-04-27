@@ -23,6 +23,7 @@
 .dialog-group-sensors-container{
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .dialog-group-sensors-container *{

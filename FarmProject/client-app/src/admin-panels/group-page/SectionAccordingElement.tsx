@@ -13,9 +13,9 @@ interface SectionAccordingElementProps{
 
 }
 
-export default function SectionAccordingElement({className, children, sectionName,isVisible, onPositionUp, onPositionDown, onChangeVisible}:SectionAccordingElementProps){
+export default function SectionAccordingElement({className, children, sectionName,isVisible, onPositionUp, onPositionDown, onChangeVisible, onClick}:SectionAccordingElementProps){
     return (
-        <div className={className}>
+        <div className={className} onClick={onClick}>
             <span className='position-control'>
                 <button className='position-button' onClick={(e)=>{
                     e.stopPropagation()
