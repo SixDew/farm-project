@@ -227,9 +227,12 @@ export async function getDisabledSensors() {
     return await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/disabled`)
 }
 
-export async function setSensorActive(isActive, imei) {
+export async function setSensorActive(isActive:boolean, imei:string, sectionId?:number) {
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
-    const response = await fetch(`${serverUrl}/sensors/pressure/${imei}/set-active?isActive=${isActive}`, {
+    var url:string = ''
+    sectionId ? url = `${serverUrl}/sensors/pressure/${imei}/set-active?isActive=${isActive}&sectionId=${sectionId}` : 
+        url = `${serverUrl}/sensors/pressure/${imei}/set-active?isActive=${isActive}`
+    const response = await fetch(url, {
         method: 'PUT',
         headers: {
             'Authorization':AuthorizathionHeader
@@ -284,6 +287,18 @@ export async function sendZone(zone, sectionId:number) {
 export async function deleteZone(id) {
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(`${serverUrl}/map/zones/${id}`,{
+        method:'Delete',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+    })
+    return response
+}
+
+export async function deleteSensor(imei:string) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/sensors/pressure/${imei}`,{
         method:'Delete',
         headers:{
             'Content-Type':'application/json',

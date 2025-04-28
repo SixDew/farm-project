@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import './PressureSensorSettings.css'
-import { getPressureSettings, updatePressureSettings, getAdminPressureSettings, updateAdminPressureSettings } from './api/sensors-api'
+import { getPressureSettings, updatePressureSettings, getAdminPressureSettings, updateAdminPressureSettings, setSensorActive } from './api/sensors-api'
 import SettingsMenuNumElemet from './SettingsMenuNumElement'
 import SettingsMenuBoolElemet from './SettingsMenuBoolElemet'
 import { useNavigate } from 'react-router-dom'
@@ -166,6 +166,7 @@ export default function PressureSensorSettings({imei, role}:PressureSensorSettin
                                 {showSaveOkMessage && <p className='ok-message'>Настройки успешно сохранены</p>}
                                 {showSaveErrorMessage && <p className='error-message'>Ошибка сохранения настроек</p>}
                                 <button onClick={saveAdminSettings}>Сохранить</button>
+                                <button onClick={()=>setSensorActive(false, imei)}>ДЕАКТИВИРОВАТЬ</button>
                             </div>
                         )
                     }

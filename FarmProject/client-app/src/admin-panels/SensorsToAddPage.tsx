@@ -1,30 +1,24 @@
-import { useEffect, useState } from "react"
-import { getDisabledSensors, getFacilitiesDeppMeta } from "../sensors/api/sensors-api"
 import DisabledSensors from "./DisabledSensor"
 import { FacilityDeepMetaDto, PressureSensorDto } from "../interfaces/DtoInterfaces"
 
-export default function SensorsToAddPage(){
-    const [disabledSensors, setDisabledSensors] = useState<PressureSensorDto[]>([])
-    const [facilitiesMetadata, setFacilitiesMetadata] = useState<FacilityDeepMetaDto[]>([])
+interface SensorsToAddPageProps{
+    disabledSensors:PressureSensorDto[],
+    facilitiesMetadata:FacilityDeepMetaDto[],
+    setDisabledSensors:React.Dispatch<React.SetStateAction<PressureSensorDto[]>>,
+    onDeleteSensor?:(sensor:PressureSensorDto)=>void
+}
 
-    useEffect(()=>{
-        async function getSensors() {
-            setDisabledSensors(await (await getDisabledSensors()).json())
-        }
-        getSensors()
-    }, [])
-
-    useEffect(()=>{
-        async function getSections() {
-            setFacilitiesMetadata(await (await getFacilitiesDeppMeta()).json())
-        }
-        getSections()
-    }, [])
-
+export default function SensorsToAddPage({disabledSensors, facilitiesMetadata, setDisabledSensors, onDeleteSensor}:SensorsToAddPageProps){
     return (
         <div>
             {
-                disabledSensors.map(s=><DisabledSensors imei={s.imei} gps={s.gps} facilitiesMeta={facilitiesMetadata} key={s.imei}/>)
+                disabledSensors.map(s=><DisabledSensors imei={s.imei} 
+                    gps={s.gps} 
+                    facilitiesMeta={facilitiesMetadata} 
+                    key={s.imei}
+                    setDisabledSensors={setDisabledSensors}
+                    onDeleteSensor={onDeleteSensor}
+                    />)
             }
         </div>
     )

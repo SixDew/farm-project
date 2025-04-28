@@ -9,7 +9,7 @@ import SensorsToAddPage from './admin-panels/SensorsToAddPage'
 import MapPage from './admin-panels/map-page/MapPage'
 import { AlarmablePressureSensor, FacilityDeepMetaDto, FacilityDto, PressureAlarmDto, PressureMeasurements, PressureSensorDto } from './interfaces/DtoInterfaces'
 import { useEffect, useState } from 'react'
-import { getFacilitiesDeppMeta, getFacility, getUncheckedAlarmedMeasurements } from './sensors/api/sensors-api'
+import { getDisabledSensors, getFacilitiesDeppMeta, getFacility, getUncheckedAlarmedMeasurements } from './sensors/api/sensors-api'
 import FacilitySelect from './main-menu/FacilitySelect'
 import connection from "./sensors/api/measurements-hub-connection.js"
 import NavButton from './main-menu/NavButton'
@@ -57,6 +57,7 @@ export default function App(){
     const [selectedFacility, setSelectedFacility] = useState<FacilityDto>()
     const [sensors, setSensors] = useState<AlarmablePressureSensor[]>([])
     const [alarmedSensors, setAlarmedSensors] = useState<AlarmablePressureSensor[]>([])
+    const [disabledSensors, setDisabledSensors] = useState<PressureSensorDto[]>([])
 
     useEffect(()=>{
         console.log('alarmed sensors on mainapp:', alarmedSensors)
@@ -65,6 +66,16 @@ export default function App(){
     useEffect(()=>{
         console.log('update sensors on mainapp', sensors)
     }, [sensors])
+
+    useEffect(()=>{
+        async function getDisSensors() {
+            const response = await getDisabledSensors()
+            if(response.ok){
+                setDisabledSensors(await response.json())
+            }
+        }
+        getDisSensors()
+    }, [selectedFacility])
 
     async function onFacilitySelect(e:React.ChangeEvent<HTMLSelectElement>){
         const facilityId = Number(e.target.value)
@@ -168,7 +179,20 @@ export default function App(){
                 <Route path='/sensors/pressure/:imei' element={<PressureSensor sensors={sensors} sensorOnDisalarm={sensorOnDisalarm}/>}/>
                 <Route path='/users' element={<UsersPage/>}/>
                 <Route path='/groups' element={<GroupPage facility={selectedFacility} alarmedSensors={alarmedSensors} sensors={sensors} setFacility={setSelectedFacility}/>}/>
-                <Route path='/sensors-to-add' element={<SensorsToAddPage/>}/>
+                <Route path='/sensors-to-add' element={<SensorsToAddPage disabledSensors={disabledSensors} 
+                facilitiesMetadata={facilitiesMeta}
+                setDisabledSensors={setDisabledSensors}
+                onDeleteSensor={(sensor)=>{
+                    if(selectedFacility){
+                        selectedFacility.sections.forEach(section=>{
+                            section.sensors = section.sensors.filter(s=>s.imei != sensor.imei)
+                        })
+                        selectedFacility.groups.forEach(group=>{
+                            group.sensors = group.sensors.filter(s=>s.imei != sensor.imei)
+                        })
+                        setSelectedFacility({...selectedFacility})
+                    }
+                }}/>}/>
                 <Route path='/map' element={<MapPage facility={selectedFacility} sensors={sensors} alarmedSenosrs={alarmedSensors}/>}/>
             </Routes>
 

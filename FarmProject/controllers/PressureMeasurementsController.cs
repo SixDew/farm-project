@@ -133,14 +133,14 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
     }
 
     [HttpDelete("{imei}")]
-    public async Task<IActionResult> DeleteSensor([FromRoute] string imei)
+    [Authorize(Roles = $"{UserRoles.ADMIN}")]
+    public async Task<IActionResult> DeleteSensor([FromRoute] string imei, [FromServices] PressureSensorDtoConvertService converter)
     {
         var sensor = await sensorProvider.GetByImeiAsync(imei);
-
-        if (sensor is not null) sensorProvider.Delete(sensor);
-
+        if (sensor is null) return BadRequest("sensor is not exist");
+        sensorProvider.Delete(sensor);
         await sensorProvider.SaveChangesAsync();
-        return Ok();
+        return Ok(converter.ConvertToClient(sensor));
     }
 
     [HttpGet("measurements/alarms/{imei}")]
@@ -210,13 +210,31 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
     }
     [HttpPut("{imei}/set-active")]
     [Authorize(Roles = $"{UserRoles.ADMIN}")]
-    public async Task<IActionResult> SetActive([FromQuery] bool isActive, [FromRoute] string imei)
+    public async Task<IActionResult> SetActive([FromQuery] bool isActive,
+        [FromQuery] int? sectionId,
+        [FromRoute] string imei,
+        [FromServices] SectionsProvider sections)
     {
+        if (sectionId is null && isActive)
+        {
+            return BadRequest("needs section id");
+        }
+
         var sensor = await sensorProvider.GetByImeiAsync(imei);
         if (sensor is null)
         {
-            return NotFound();
+            return BadRequest();
         }
+
+        if (sectionId is not null)
+        {
+            if (await sections.GetAsync(sectionId.Value) is null)
+            {
+                return BadRequest("section is not exist");
+            }
+            sensor.SectionId = sectionId;
+        }
+
         sensor.IsActive = isActive;
         await sensorProvider.SaveChangesAsync();
         return Ok();
