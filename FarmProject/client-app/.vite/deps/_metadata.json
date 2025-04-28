@@ -2,7 +2,87 @@
   "hash": "8213842e",
   "configHash": "93e0fb2d",
   "lockfileHash": "0da3ff7d",
-  "browserHash": "3ffb1114",
-  "optimized": {},
-  "chunks": {}
+  "browserHash": "853942c0",
+  "optimized": {
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "ce2f92c5",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "61ed8337",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.mjs",
+      "file": "react-router-dom.js",
+      "fileHash": "c7549e4c",
+      "needsInterop": false
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "7d9ab047",
+      "needsInterop": true
+    },
+    "@microsoft/signalr": {
+      "src": "../../node_modules/@microsoft/signalr/dist/esm/index.js",
+      "file": "@microsoft_signalr.js",
+      "fileHash": "0c9a7585",
+      "needsInterop": false
+    },
+    "react-leaflet": {
+      "src": "../../node_modules/react-leaflet/lib/index.js",
+      "file": "react-leaflet.js",
+      "fileHash": "14a3a16a",
+      "needsInterop": false
+    },
+    "react-leaflet-geoman-v2": {
+      "src": "../../node_modules/react-leaflet-geoman-v2/dist/index.js",
+      "file": "react-leaflet-geoman-v2.js",
+      "fileHash": "fa3d711a",
+      "needsInterop": false
+    },
+    "leaflet": {
+      "src": "../../node_modules/leaflet/dist/leaflet-src.js",
+      "file": "leaflet.js",
+      "fileHash": "995f73f7",
+      "needsInterop": true
+    },
+    "echarts-for-react": {
+      "src": "../../node_modules/echarts-for-react/esm/index.js",
+      "file": "echarts-for-react.js",
+      "fileHash": "d7254192",
+      "needsInterop": false
+    },
+    "react-leaflet-custom-control": {
+      "src": "../../node_modules/react-leaflet-custom-control/lib/Control.js",
+      "file": "react-leaflet-custom-control.js",
+      "fileHash": "2b01125d",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-Z72P76O7": {
+      "file": "chunk-Z72P76O7.js"
+    },
+    "chunk-Q2OYXIDF": {
+      "file": "chunk-Q2OYXIDF.js"
+    },
+    "chunk-JCT2QDAK": {
+      "file": "chunk-JCT2QDAK.js"
+    },
+    "chunk-PHQRXABF": {
+      "file": "chunk-PHQRXABF.js"
+    },
+    "chunk-OO3FSR4X": {
+      "file": "chunk-OO3FSR4X.js"
+    },
+    "chunk-2TUXWMP5": {
+      "file": "chunk-2TUXWMP5.js"
+    }
+  }
 }
