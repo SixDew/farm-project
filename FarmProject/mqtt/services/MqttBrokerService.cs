@@ -1,4 +1,6 @@
-﻿using FarmProject.alarm.services;
+﻿using System.Text;
+using System.Text.Json;
+using FarmProject.alarm.services;
 using FarmProject.db.services.providers;
 using FarmProject.dto;
 using FarmProject.dto.pressure_sensor.measurements;
@@ -9,8 +11,6 @@ using FarmProject.validation.services;
 using MQTTnet;
 using MQTTnet.Protocol;
 using MQTTnet.Server;
-using System.Text;
-using System.Text.Json;
 
 namespace FarmProject.mqtt.services;
 
@@ -77,6 +77,7 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
                         try
                         {
                             var data = JsonSerializer.Deserialize<AddSensorFromClientDto>(Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
+                            var dtoConverter = scope.ServiceProvider.GetRequiredService<PressureSensorDtoConvertService>();
 
                             var converter = scope.ServiceProvider.GetRequiredService<PressureSensorDtoConvertService>();
 
@@ -86,6 +87,7 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
                                 sensor = converter.ConvertToModel(data);
                                 await sensorProvider.AddAsync(sensor);
                                 await sensorProvider.SaveChangesAsync();
+                                await _measurementsHubService.SendAddSensorNotifyAsync(dtoConverter.ConvertToClient(sensor));
                             }
                         }
                         catch (JsonException ex)

@@ -31,9 +31,10 @@ export default function LoginPage(){
             setUnauthorizedError(true)
         }
         if(response.ok){
+            const data = await response.json()
             localStorage.setItem('role', role)
-            const key = await response.text()
-            localStorage.setItem('userKey', key)
+            localStorage.setItem('userKey', data.key)
+            localStorage.setItem('userId', data.userId)
             if(nav){
                 navigate(nav)
                 return

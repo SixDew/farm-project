@@ -1,4 +1,7 @@
-﻿using FarmProject.auth.claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using FarmProject.auth.claims;
 using FarmProject.db.services.providers;
 using FarmProject.dto.users;
 using FarmProject.dto.users.services;
@@ -6,9 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace FarmProject.auth.controllers;
 
@@ -20,7 +20,8 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
     [HttpPost("login")]
     public async Task<IActionResult> CreateAccessToken([FromBody] string key)
     {
-        if (await users.GetUserByKeyAsync(key) is null)
+        var user = await users.GetUserByKeyAsync(key);
+        if (user is null)
         {
             return Unauthorized("Invalid key");
         }
@@ -33,13 +34,14 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
                 expires: AuthenticationJwtOptions.EXPIRES,
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)), SecurityAlgorithms.HmacSha256)
             );
-        return Ok(new JwtSecurityTokenHandler().WriteToken(jwt));
+        return Ok(new { userId = user.Id, key = new JwtSecurityTokenHandler().WriteToken(jwt) });
     }
 
     [HttpPost("/login/admin")]
     public async Task<IActionResult> CreateAdminAccessToken([FromBody] string key)
     {
-        if (await users.GetAdminByKeyAsync(key) is null)
+        var user = await users.GetAdminByKeyAsync(key);
+        if (user is null)
         {
             return Unauthorized();
         }
@@ -51,7 +53,7 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
                 expires: AuthenticationJwtOptions.EXPIRES,
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)), SecurityAlgorithms.HmacSha256)
             );
-        return Ok(new JwtSecurityTokenHandler().WriteToken(jwt));
+        return Ok(new { userId = user.Id, key = new JwtSecurityTokenHandler().WriteToken(jwt) });
     }
     [HttpGet("admin/users")]
     [Authorize(Roles = UserRoles.ADMIN)]

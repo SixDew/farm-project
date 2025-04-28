@@ -1,4 +1,5 @@
-﻿using FarmProject.dto.pressure_sensor.alarm;
+﻿using FarmProject.dto;
+using FarmProject.dto.pressure_sensor.alarm;
 using FarmProject.dto.pressure_sensor.measurements;
 using Microsoft.AspNetCore.SignalR;
 
@@ -16,5 +17,10 @@ public class MeasurementsHubService(IHubContext<MeasurementsHub> hubContext)
     public async Task SendAlarmNotifyAsync(PressureAlarmToClientDto data, string imei)
     {
         await _hubContext.Clients.Group(GroupNameComposer.GetPressureGroup(imei)).SendAsync("ReciveAlarmNotify", data);
+    }
+
+    public async Task SendAddSensorNotifyAsync(PressureSensorToClientDto sensor)
+    {
+        await _hubContext.Clients.Group(GroupNameComposer.GetUsersGroup()).SendAsync("ReciveAddSensorNotify", sensor);
     }
 }

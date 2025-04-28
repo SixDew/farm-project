@@ -1,6 +1,6 @@
 import './App.css'
 import SensorsMiniContainer from './sensors/SensorsMiniContainer'
-import {BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import {BrowserRouter as Router, Route, Routes, data } from 'react-router-dom'
 import PressureSensor from './sensors/PressureSensor'
 import LoginPage from './LoginPage'
 import UsersPage from './admin-panels/UsersPage'
@@ -105,8 +105,9 @@ export default function App(){
 
             if(connection.state === 'Connected'){
                 sensors.forEach(sensor=>{
-                    connection.invoke("AddPressureClientToGroup", sensor.imei).catch((err)=>console.error("add to group error", err))
+                    connection.invoke("AddPressureClientToGroup", sensor.imei).catch((err)=>console.error("add to sensor group error", err))
                 })
+                connection.invoke("AddUserToUsersGroup").catch((err)=>console.error("add to users group error", err))
             }
 
             connection.on('ReciveMeasurements',(data:PressureMeasurements)=>{
@@ -118,13 +119,21 @@ export default function App(){
             connection.on('ReciveAlarmNotify', (data:PressureAlarmDto)=>{
                 alarmEvent(sensors, alarmedSensors, data, setAlarmedSensors)
             })
+
+            connection.on('ReciveAddSensorNotify', (data:PressureSensorDto)=>{
+                console.log('add new disabled sensor', data)
+                setDisabledSensors(prev=>[...prev, data])
+            })
         }
         setConnection()
 
         return ()=>{
             connection.off('ReciveMeasurements')
+            connection.off('ReciveAlarmNotify')
+            connection.off('ReciveAddSensorNotify')
             if(connection.state === 'Connected'){
                 sensors.forEach(sensor=>connection.invoke('RemovePressureClientFromGroup', sensor.imei))
+                connection.invoke("RemoveUserFromUsersGroup").catch((err)=>console.error("remove from users group error", err))
             }
         }
     },[sensors])
