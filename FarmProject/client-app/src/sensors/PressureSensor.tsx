@@ -22,11 +22,11 @@ export default function PressureSensor({sensors, sensorOnDisalarm}:PressureSenso
 
     useEffect(()=>{
         setSensor(sensors.find(s=>s.imei == imei))
-    }, [imei, sensors])
+    }, [sensors])
 
     useEffect(()=>{
         setAlarmedMeasurements(sensor?.alarmedMeasurements? sensor.alarmedMeasurements : [])
-    },[sensor])
+    },[sensor?.alarmedMeasurements])
     
     useEffect(()=>{
         async function getSensorData() {
