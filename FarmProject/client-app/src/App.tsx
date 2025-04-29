@@ -184,10 +184,9 @@ export default function App(){
         <Router>
             <Routes>
                 <Route path='/login' element={<LoginPage/>}/>
-                <Route path='/monitor' element={<SensorsMiniContainer facility={selectedFacility} sensors={sensors} alarmedSensors={alarmedSensors}/>}/>
                 <Route path='/sensors/pressure/:imei' element={<PressureSensor sensors={sensors} sensorOnDisalarm={sensorOnDisalarm}/>}/>
                 <Route path='/users' element={<UsersPage/>}/>
-                <Route path='/groups' element={<GroupPage facility={selectedFacility} alarmedSensors={alarmedSensors} sensors={sensors} setFacility={setSelectedFacility}/>}/>
+                <Route path='/monitor' element={<GroupPage facility={selectedFacility} alarmedSensors={alarmedSensors} sensors={sensors} setFacility={setSelectedFacility}/>}/>
                 <Route path='/sensors-to-add' element={<SensorsToAddPage disabledSensors={disabledSensors} 
                 facilitiesMetadata={facilitiesMeta}
                 setDisabledSensors={setDisabledSensors}
@@ -211,10 +210,9 @@ export default function App(){
                     onSelectEvent={onFacilitySelect}
                     onClick={facilitiesMetaInit}
                 />
-                <NavButton navPath='/groups' title='Группы'/>
-                <NavButton navPath='/map' title='Карта'/>
-                <NavButton navPath='/sensors-to-add' title='Датчики на добавление'/>
                 <NavButton navPath='/monitor' title='Мониторинг'/>
+                <NavButton navPath='/map' title='Карта'/>
+                <NavButton navPath='/sensors-to-add' title='Отключенные датчики'/>
                 <NavButton navPath='/users' title='Пользователи'/>
             </div>
         </Router>
