@@ -8,7 +8,7 @@ interface AlarmNotificationProps {
 
 export default function AlarmNotification({measurement1, measurement2, date, onCheck}:AlarmNotificationProps){
     return (
-        <div onClick={onCheck}>
+        <div className='alarm-notification' onClick={onCheck}>
             <p>Измерение1: {measurement1}, Измерение2: {measurement2}, Дата: {new Date(date).toLocaleString()}</p>
         </div>
     )

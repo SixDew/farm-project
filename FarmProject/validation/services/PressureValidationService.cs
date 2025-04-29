@@ -9,11 +9,5 @@ namespace FarmProject.validation.services
             var sensor = await sensorProvider.GetByImeiAsync(imei);
             return sensor is not null && sensor.IsActive;
         }
-
-        public bool IsValidated(string imei)
-        {
-            var sensor = sensorProvider.GetByImei(imei);
-            return sensor is not null && sensor.IsActive;
-        }
     }
 }

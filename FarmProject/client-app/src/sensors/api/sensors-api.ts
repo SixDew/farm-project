@@ -37,6 +37,10 @@ export async function getUncheckedAlarmedMeasurements(imei:string) {
     return await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/measurements/alarms/unchecked/${imei}`)
 }
 
+export async function getCheckedAlarmedMeasurements(imei:string) {
+    return await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/measurements/alarms/checked/${imei}`)
+}
+
 export async function getPressureSensorData(imei, redirect){
     const response = await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/${imei}`)
     if(response.status === 401){

@@ -86,13 +86,13 @@ export default function PressureSensorSettings({imei, role}:PressureSensorSettin
     }, [settings])
 
     return(
-        <div id='main-container'>
+        <div id='main-settings-container'>
             {
                 settings ? (
                     <>
                     {
                         role === 'admin' && (
-                            <div id='internal-settings-container'>
+                            <>
                                 <SettingsMenuNumElemet title='Позитивное отклонение' value={settings.deviationSpanPositive as number} changeEvent={(event)=>{setSettings((prev)=>{
                                         if(prev){
                                             prev.deviationSpanPositive=Number(event.target.value)
@@ -140,7 +140,7 @@ export default function PressureSensorSettings({imei, role}:PressureSensorSettin
                                         }
                                     })
                                 }}/>
-                                <SettingsMenuBoolElemet title='Первый сенсор' value={settings.firstSensorIsActive as boolean} changeEvent={(event)=>{
+                                <SettingsMenuBoolElemet title='Первый канал' value={settings.firstSensorIsActive as boolean} changeEvent={(event)=>{
                                     setSettings((prev)=>{
                                         if(prev){
                                             prev.firstSensorIsActive = event.target.checked
@@ -151,7 +151,7 @@ export default function PressureSensorSettings({imei, role}:PressureSensorSettin
                                         }
                                     })
                                 }}/>
-                                <SettingsMenuBoolElemet title='Второй сенсор' value={settings.secondSensorIsActive as boolean} changeEvent={(event)=>{
+                                <SettingsMenuBoolElemet title='Второй канал' value={settings.secondSensorIsActive as boolean} changeEvent={(event)=>{
                                     setSettings((prev)=>{
                                         if(prev){
                                             prev.secondSensorIsActive = event.target.checked
@@ -167,12 +167,12 @@ export default function PressureSensorSettings({imei, role}:PressureSensorSettin
                                 {showSaveErrorMessage && <p className='error-message'>Ошибка сохранения настроек</p>}
                                 <button onClick={saveAdminSettings}>Сохранить</button>
                                 <button onClick={()=>setSensorActive(false, imei)}>ДЕАКТИВИРОВАТЬ</button>
-                            </div>
+                            </>
                         )
                     }
                     {
                         role === 'user' && (
-                            <div id='internal-settings-container'>
+                            <>
                                 <SettingsMenuBoolElemet title='Отправка предупреждений' value={settings.alarmActivated} changeEvent={(event)=>{
                                     setSettings((prev)=>{
                                         if(prev){
@@ -187,7 +187,7 @@ export default function PressureSensorSettings({imei, role}:PressureSensorSettin
                                 {showSaveOkMessage && <p className='ok-message'>Настройки успешно сохранены</p>}
                                 {showSaveErrorMessage && <p className='error-message'>Ошибка сохранения настроек</p>}
                                 <button onClick={saveSettings}>Сохранить</button>
-                            </div>
+                            </>
                         )
                     }
                     </>

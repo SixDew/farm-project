@@ -1,0 +1,31 @@
+.measurements-statisitc-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background-color: rgb(150, 150, 150);
+    border-radius: 10px;
+    box-shadow: 0 0 5px gray;
+    height: fit-content;
+    margin: 10px;
+}
+
+.history-data-button{
+    border: solid 0px gray;
+    border-radius: 5px;
+    background-color: rgb(100, 180, 200);
+
+    min-width: 50px;
+    min-height: 30px;
+
+    color: aliceblue;
+    cursor: pointer;
+}
+
+.statistic-chart-contaier{
+    margin: 10px;
+    border-radius: 10px;
+    width: 300px;
+    height: 300px;
+    background-color: aliceblue;
+}

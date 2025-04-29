@@ -1,0 +1,17 @@
+.alarm-notification{
+    background-color: rgb(226, 40, 15);
+    border: 2px solid aliceblue;
+    border-radius: 10px;
+    width: 300px;
+    margin: 10px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.alarm-notification:hover{
+    background-color: rgb(195, 33, 12);
+}
+
+.alarm-notification:active{
+    background-color: rgb(164, 28, 10);
+}

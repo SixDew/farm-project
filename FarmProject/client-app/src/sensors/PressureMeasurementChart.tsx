@@ -7,6 +7,7 @@ interface MeasurementsChartProps{
   measurements?:PressureMeasurements,
   legacyMeasurements:PressureMeasurements[],
   alarmedMeasurements:PressureAlarmDto[],
+  checkedAlarmedMeasurements?:PressureAlarmDto[],
   alarmCheckedEvent:(id:number) => {}
 }
 
@@ -16,22 +17,20 @@ interface MarkPointsData{
   alarmMeasurementId:number
 }
 
-export default function PressureMeasurementChart({measurements, legacyMeasurements, alarmedMeasurements,
+export default function PressureMeasurementChart({measurements, legacyMeasurements, alarmedMeasurements, checkedAlarmedMeasurements,
    alarmCheckedEvent}:MeasurementsChartProps){
     const [measurements1, setMeasurements1] = useState<number[]>([])
     const [measurements2, setMeasurements2] = useState<number[]>([])
     const [dates, setDates] = useState<string[]>([])
     const [markPointsData, setMarkPointsData] = useState<MarkPointsData[]>([])
+    const [checkedMarkPointsData, setCheckedMarkPointsData] = useState<MarkPointsData[]>([])
     const chart = useRef<ReactECharts>(null)
 
     const initOption = useMemo(()=>{
       return {
-        title: {
-          text: 'График давления'
-        },
         tooltip: {},
         legend: {
-          data: ['Измерения 1', 'Измерения 2', 'Предупреждения']
+          data: ['Измерения 1', 'Измерения 2', 'Предупреждения', 'Проверенные предупреждения']
         },
         xAxis: {
           data: []
@@ -49,14 +48,23 @@ export default function PressureMeasurementChart({measurements, legacyMeasuremen
             data: []
           },
           {
+            name: 'Проверенные предупреждения',
+            type: 'scatter',
+            data: [],
+            markPoint:{
+              data: checkedMarkPointsData,
+              symbolSize: 30
+            },
+          },
+          {
             name:'Предупреждения',
             type: 'scatter',
             data:[],
             markPoint:{
               data: markPointsData,
               symbolSize: 30
-            }
-          }
+            },
+          },
         ],
         dataZoom:[
             {
@@ -94,8 +102,16 @@ export default function PressureMeasurementChart({measurements, legacyMeasuremen
     }, [alarmedMeasurements])
 
     useEffect(()=>{
-      setOption(measurements1, measurements2, chart, dates, markPointsData)
-    }, [measurements1, measurements2, dates, markPointsData])
+      if(checkedAlarmedMeasurements){
+        setCheckedMarkPointsData(checkedAlarmedMeasurements.map(d=>{
+          return { coord:[new Date(d.measurementsTime).toLocaleString(), 0], y:'20%', alarmMeasurementId:d.id }
+        }))
+      }
+    }, [checkedAlarmedMeasurements])
+
+    useEffect(()=>{
+      setOption(measurements1, measurements2, chart, dates, markPointsData, checkedMarkPointsData)
+    }, [measurements1, measurements2, dates, markPointsData, checkedMarkPointsData])
 
     useEffect(()=>{
       chart?.current?.getEchartsInstance().on('click', {seriesName: 'Предупреждения', componentType:'markPoint'}, (params)=>{
@@ -112,7 +128,7 @@ export default function PressureMeasurementChart({measurements, legacyMeasuremen
 }
 
 function setOption(measurements1:number[], measurements2:number[], chart:React.RefObject<ReactECharts>,
-   dates:string[], markPointsData:MarkPointsData[]){
+   dates:string[], markPointsData:MarkPointsData[], checkedMarkPointsData:MarkPointsData[]){
   const option = {
     series: [
       {
@@ -126,14 +142,23 @@ function setOption(measurements1:number[], measurements2:number[], chart:React.R
         data: measurements2
       },
       {
+        name:'Проверенные предупреждения',
+        type: 'scatter',
+        data:[],
+        markPoint:{
+          data: checkedMarkPointsData,
+          symbolSize: 30
+        },
+      },
+      {
         name:'Предупреждения',
         type: 'scatter',
         data:[],
         markPoint:{
           data: markPointsData,
           symbolSize: 30
-        }
-      }
+        },
+      },
     ],
     xAxis:{
       data: dates
