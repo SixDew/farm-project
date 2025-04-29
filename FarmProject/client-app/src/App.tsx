@@ -1,6 +1,5 @@
 import './App.css'
-import SensorsMiniContainer from './sensors/SensorsMiniContainer'
-import {BrowserRouter as Router, Route, Routes, data } from 'react-router-dom'
+import {BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import PressureSensor from './sensors/PressureSensor'
 import LoginPage from './LoginPage'
 import UsersPage from './admin-panels/UsersPage'
@@ -184,9 +183,17 @@ export default function App(){
         <Router>
             <Routes>
                 <Route path='/login' element={<LoginPage/>}/>
-                <Route path='/sensors/pressure/:imei' element={<PressureSensor sensors={sensors} sensorOnDisalarm={sensorOnDisalarm}/>}/>
+                <Route path='/sensors/pressure/:imei' element={
+                    <PressureSensor sensors={sensors} sensorOnDisalarm={sensorOnDisalarm}
+                        onDisableSensor={async ()=>{
+                            const response = await getDisabledSensors()
+                            if(response.ok){
+                                setDisabledSensors(await response.json())
+                            }
+                        }}
+                    />}/>
                 <Route path='/users' element={<UsersPage/>}/>
-                <Route path='/monitor' element={<GroupPage facility={selectedFacility} alarmedSensors={alarmedSensors} sensors={sensors} setFacility={setSelectedFacility}/>}/>
+                <Route path='/monitor' element={<GroupPage facility={selectedFacility} alarmedSensors={alarmedSensors} sensors={sensors} disabledSensors={disabledSensors} setFacility={setSelectedFacility}/>}/>
                 <Route path='/sensors-to-add' element={<SensorsToAddPage disabledSensors={disabledSensors} 
                 facilitiesMetadata={facilitiesMeta}
                 setDisabledSensors={setDisabledSensors}

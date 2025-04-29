@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { AlarmablePressureSensor, FacilityDto, SensorGroupDto, SensorSectionDto } from "../../interfaces/DtoInterfaces"
+import { AlarmablePressureSensor, FacilityDto, PressureSensorDto, SensorGroupDto, SensorSectionDto } from "../../interfaces/DtoInterfaces"
 import SectionElement from "./SectionElement"
 import "./GroupPage.css"
 import MultiplyAccordion, { AccordingSector } from "./MultiplyAccordion"
@@ -14,6 +14,7 @@ interface GroupPageProps{
     facility:FacilityDto|undefined
     alarmedSensors:AlarmablePressureSensor[],
     sensors:AlarmablePressureSensor[],
+    disabledSensors:PressureSensorDto[]
     setFacility:React.Dispatch<React.SetStateAction<FacilityDto | undefined>>
 }
 
@@ -33,7 +34,7 @@ function moveItem(arr:any[], fromIndex:number, toIndex:number):any[]{
     return copy
 }
 
-export default function GroupPage({facility, alarmedSensors, sensors, setFacility}:GroupPageProps){
+export default function GroupPage({facility, alarmedSensors, sensors, disabledSensors, setFacility}:GroupPageProps){
     const [visibleGroups, setVisibleGroups] = useState<VisibleSensorGroup[]>([])
     const [showEditGroupDialog, setShowEditGroupDialog] = useState<boolean>(false)
     const [showCreateGroupDialog, setShowCreateGroupDialog] = useState<boolean>(false)
@@ -127,6 +128,7 @@ export default function GroupPage({facility, alarmedSensors, sensors, setFacilit
                         isOpen={showEditGroupDialog}
                         group={groupToEdit}
                         sensors={sensors}
+                        disabledSensors={disabledSensors}
                         onEnd={()=>{
                             setShowEditGroupDialog(false)
                             setGroupToEdit(undefined)
@@ -340,6 +342,7 @@ export default function GroupPage({facility, alarmedSensors, sensors, setFacilit
                                                 name={group.name}
                                                 sensors={group.sensors.map(s=>sensors.find(sensor=>sensor.imei == s.imei))}
                                                 key={group.id}
+                                                disabledSensors={disabledSensors}
                                             >
                                             </SectionElement>
                                         </>
@@ -356,6 +359,7 @@ export default function GroupPage({facility, alarmedSensors, sensors, setFacilit
                                                 name={section.name}
                                                 sensors={section.sensors.map(s=>sensors.find(sensor=>sensor.imei == s.imei))}
                                                 key={section.id}
+                                                disabledSensors={disabledSensors}
                                             >
                                                 {
                                                     section.groups.map(group=>{
@@ -365,6 +369,7 @@ export default function GroupPage({facility, alarmedSensors, sensors, setFacilit
                                                                     name={group.name}
                                                                     sensors={group.sensors.map(s=>sensors.find(sensor=>sensor.imei == s.imei))}
                                                                     key={"section-group"+group.id}
+                                                                    disabledSensors={disabledSensors}
                                                                 ></SectionElement>
                                                             )
                                                         }

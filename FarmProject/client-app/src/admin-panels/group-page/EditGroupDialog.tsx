@@ -9,13 +9,14 @@ interface EditGroupDialogProps{
     isOpen:boolean
     group:SensorGroupDto
     sensors:PressureSensorDto[] | AlarmablePressureSensor[]
+    disabledSensors:PressureSensorDto[]
     onEnd?:()=>void
     onGroupChange?:(group:SensorGroupDto)=>void
     onGroupMetadataChange?:(groupMetadata:SensorGroupMetaDto)=>void
     onGroupDeleted?:(group:SensorGroupDto | SensorGroupMetaDto)=>void
 }
 
-export default function EditGroupDialog({isOpen, onEnd, group, sensors, onGroupChange, onGroupDeleted, onGroupMetadataChange}:EditGroupDialogProps){
+export default function EditGroupDialog({isOpen, onEnd, group, sensors, disabledSensors, onGroupChange, onGroupDeleted, onGroupMetadataChange}:EditGroupDialogProps){
     const [sensorsImeiToAdd, setSensorImeiToAdd] = useState<string[]>([])
     const [groupName, setGroupName] = useState(group.name)
     const [nameChangeMod, setNameChangeMod] = useState(false)
@@ -100,7 +101,7 @@ export default function EditGroupDialog({isOpen, onEnd, group, sensors, onGroupC
             {
                 <div className='dialog-group-sensors-container'>
                     {
-                        sensors.map(sensor=>
+                        sensors.filter(s=>!disabledSensors.find(ds=>ds.imei == s.imei)).map(sensor=>
                             <div key={sensor.imei} className={sensorsImeiToAdd?.includes(sensor.imei) ? 'selcted-dialog-sensor-container' : 'dialog-sensor-container'} onClick={()=>{
                                 if(sensorsImeiToAdd.includes(sensor.imei)){
                                     setSensorImeiToAdd([...sensorsImeiToAdd.filter(imei=>imei != sensor.imei)])

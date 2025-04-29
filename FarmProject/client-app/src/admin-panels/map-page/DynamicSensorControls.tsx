@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { MapContainer, TileLayer, FeatureGroup, useMap, GeoJSON, Marker, Tooltip, Popup} from "react-leaflet";
+import React, { useEffect, useState, useCallback} from "react";
+import { TileLayer, FeatureGroup, useMap, GeoJSON, Marker, Popup} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "./SelectedSectionMenu.css"
 import "leaflet-draw/dist/leaflet.draw.css";
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-import { GeomanControls, layerEvents } from 'react-leaflet-geoman-v2';
+import { layerEvents } from 'react-leaflet-geoman-v2';
 import L from "leaflet"
 import geo, { Position } from "geojson"
 import { Geometry, Feature} from "geojson"

@@ -11,9 +11,10 @@ import MeasurementsStatistic from "./MeasurementsStatistic";
 interface PressureSensorProps{
     sensors:AlarmablePressureSensor[]
     sensorOnDisalarm?:(sensor:AlarmablePressureSensor)=>void
+    onDisableSensor?:()=>void
 }
 
-export default function PressureSensor({sensors, sensorOnDisalarm}:PressureSensorProps){
+export default function PressureSensor({sensors, sensorOnDisalarm, onDisableSensor}:PressureSensorProps){
     const navigate = useNavigate()
     const {imei} = useParams()
     const [sensor, setSensor] = useState<AlarmablePressureSensor>()
@@ -53,7 +54,7 @@ export default function PressureSensor({sensors, sensorOnDisalarm}:PressureSenso
 
                 <div id='settings-container'>
                     <button id='show-settings' onClick={()=>setShowSettings((prev)=>!prev)}>Настройки</button>
-                    {showSettings? <PressureSensorSettings imei={imei as string} role={localStorage.getItem('role') as string}/> : null}
+                    {showSettings? <PressureSensorSettings imei={imei as string} role={localStorage.getItem('role') as string} onDisableSensor={onDisableSensor}/> : null}
                 </div>
 
                 <MeasurementsStatistic 

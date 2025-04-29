@@ -67,7 +67,7 @@ public class ApplicationDbContext : DbContext
             Id = 4,
             GPS = "56.15 36.141",
             IMEI = "4",
-            IsActive = true,
+            IsActive = false,
             SectionId = 2,
         };
         modelBuilder.Entity<PressureSensor>().HasData([s1, s2, s3, s4]);
@@ -92,13 +92,13 @@ public class ApplicationDbContext : DbContext
         {
             Id = 1,
             FacilityId = 1,
-            Name = "Секция 1"
+            Name = "Поле 1"
         },
         new Section()
         {
             Id = 2,
             FacilityId = 1,
-            Name = "Секция 2"
+            Name = "Поле 2"
         }]);
 
         modelBuilder.Entity<SensorGroup>().HasData([new SensorGroup()

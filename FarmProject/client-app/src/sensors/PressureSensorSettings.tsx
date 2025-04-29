@@ -8,10 +8,11 @@ import { PressureSensorSettingsDto } from '../interfaces/DtoInterfaces'
  
 interface PressureSensorSettingProps{
     imei:string,
-    role:string
+    role:string,
+    onDisableSensor?:()=>void
 }
 
-export default function PressureSensorSettings({imei, role}:PressureSensorSettingProps){
+export default function PressureSensorSettings({imei, role, onDisableSensor}:PressureSensorSettingProps){
     const [settings, setSettings] = useState<PressureSensorSettingsDto | null>(null)
     const [showSaveOkMessage, setShowSaveOkMessage] = useState<boolean>(false)
     const [showSaveErrorMessage, setShowSaveErrorMessage] = useState<boolean>(false)
@@ -166,7 +167,13 @@ export default function PressureSensorSettings({imei, role}:PressureSensorSettin
                                 {showSaveOkMessage && <p className='ok-message'>Настройки успешно сохранены</p>}
                                 {showSaveErrorMessage && <p className='error-message'>Ошибка сохранения настроек</p>}
                                 <button onClick={saveAdminSettings}>Сохранить</button>
-                                <button onClick={()=>setSensorActive(false, imei)}>ДЕАКТИВИРОВАТЬ</button>
+                                <button onClick={async ()=>{
+                                    const response = await setSensorActive(false, imei)
+                                    if(response.ok){
+                                        onDisableSensor && onDisableSensor()
+                                        nav('/sensors-to-add')
+                                    }
+                                }}>ДЕАКТИВИРОВАТЬ</button>
                             </>
                         )
                     }
