@@ -1,4 +1,6 @@
 import './GroupAccordingElement.css'
+import eyeimg from './images/eye.png';
+import hidden from './images/hidden.png'
 
 export interface GroupAccordingElementProps{
     name:string,
@@ -32,7 +34,7 @@ export default function GroupAccordingElement({name, groupSensorsCount,
             <button onClick={(e)=>{
                 e.stopPropagation()
                 onChangeVisible && onChangeVisible(e)
-            }}>{isVisible ? <>O</> : <>=</>}</button>
+            }}>{isVisible ? <><img src={eyeimg} width={'10px'} height={'10px'}></img></> : <img src={hidden} width={'10px'} height={'10px'}></img>}</button>
             {
                 groupAlarmedSensorsCount > 0 && (<span className='alarm-counter'><span>!</span> <span>{groupAlarmedSensorsCount}/{groupSensorsCount}</span></span>)
             }

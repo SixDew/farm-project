@@ -1,5 +1,7 @@
 import { ReactElement } from "react"
 import { GroupAccordingElementProps } from "./GroupAccordingElement"
+import eyeimg from './images/eye.png';
+import hidden from './images/hidden.png'
 
 interface SectionAccordingElementProps{
     className?:string
@@ -31,7 +33,7 @@ export default function SectionAccordingElement({className, children, sectionNam
             <button onClick={(e)=>{
                 e.stopPropagation()
                 onChangeVisible && onChangeVisible(e)
-            }}>{isVisible ? <>O</> : <>=</>}</button>
+            }}>{isVisible ? <><img src={eyeimg} width={'10px'} height={'10px'}></img></> : <img src={hidden} width={'10px'} height={'10px'}></img>}</button>
         </div>
     )
 }
