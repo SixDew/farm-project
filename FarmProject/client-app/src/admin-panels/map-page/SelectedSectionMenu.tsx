@@ -1,9 +1,7 @@
 import Control from "react-leaflet-custom-control"
 import "./SelectedSectionMenu.css"
-import { ZoneProperties } from "./MapPage"
 import { PressureSensorDto, SensorGroupDto, SensorSectionDto } from "../../interfaces/DtoInterfaces"
-import { useEffect, useState } from "react"
-import { useMap } from "react-leaflet"
+import MultiplyAccordion, { AccordingSector } from "../group-page/MultiplyAccordion"
 
 interface SelectedZoneMenuProps{
     selectedSection:SensorSectionDto | null,
@@ -19,26 +17,6 @@ interface GroupSelectedMarker{
 }
 
 export default function SelectedSectionMenu({selectedSection, sections, groups, onSectionSelect, onSensorSelect}:SelectedZoneMenuProps){
-    const map = useMap()
-    const [groupSelecetedMarkers, setGroupSelectedMarkers] = useState<GroupSelectedMarker[]>([])
-
-    useEffect(()=>{
-        const groupArrayBuffer:GroupSelectedMarker[] = []
-        groups.map(group=>{
-            groupArrayBuffer.push({groupId:group.id, isSelected:false})
-        })
-        setGroupSelectedMarkers(groupArrayBuffer)
-    },[selectedSection])
-
-    function onGroupSelect(groupId:number){
-        var selectedMarker = groupSelecetedMarkers.find(m=>m.groupId == groupId)
-        if(selectedMarker){
-            selectedMarker.isSelected = !selectedMarker.isSelected
-        }
-        setGroupSelectedMarkers(prev=>[...prev])
-    }
-    
-
     return (
         <Control prepend position="topright">
           <div className="selected-zone-menu">
@@ -61,40 +39,51 @@ export default function SelectedSectionMenu({selectedSection, sections, groups, 
             </select>
             {
                 selectedSection && (
-                    <div className="selected-section-groups">
-                        <p>-Группы-</p>
-                        {
-                            groups.map(group=>{
-                                return (
-                                    <div className="selected-section-group">
-                                        <button className="group-button" onClick={()=>onGroupSelect(group.id)}>{group.name}</button>
-                                        {
-                                            groupSelecetedMarkers.find(m=>m.groupId == group.id)?.isSelected && (
-                                                <div className="group-sensors-section">
-                                                    <p>-Датчики-</p>
-                                                    {
-                                                        group.sensors.map(sensor=>{
-                                                            if(selectedSection.sensors.find(s=>s.imei == sensor.imei)){
-                                                                return (
-                                                                    <>
-                                                                      <button onClick={()=>{
-                                                                         onSensorSelect && onSensorSelect(sensor)
-                                                                     }}>
-                                                                         Сенсор: {sensor.imei}
-                                                                     </button>
-                                                                    </>
-                                                                 )
-                                                            }
-                                                        })
-                                                    }
-                                                </div>
-                                            )
-                                        }
-                                    </div>
-                                )
-                            })
-                        }
-                    </div>
+                    <MultiplyAccordion>
+                        <AccordingSector title="Группы" className="map-groups-according-sector">
+                            <MultiplyAccordion>
+                                {
+                                    groups.filter(group=>group.sensors.find(s=>selectedSection.sensors.find(sectionSensor=>s.imei == sectionSensor.imei)))
+                                    .map(group=>{
+                                        return (
+                                            <AccordingSector title={group.name}>
+                                                {
+                                                    group.sensors.map(sensor=>{
+                                                        if(selectedSection.sensors.find(s=>s.imei == sensor.imei)){
+                                                            return (
+                                                                <div>
+                                                                    <button className="select-menu-sensor-button" onClick={()=>{
+                                                                        onSensorSelect && onSensorSelect(sensor)
+                                                                    }}>
+                                                                        Сенсор: {sensor.imei}
+                                                                    </button>
+                                                                </div>
+                                                                )
+                                                        }
+                                                    })
+                                                }
+                                            </AccordingSector>
+                                        )
+                                    })
+                                }
+                            </MultiplyAccordion>
+                        </AccordingSector>
+                        <AccordingSector title="Все датчики" className="map-groups-according-sector">
+                            {
+                                selectedSection.sensors.map(sensor=>{
+                                    return (
+                                        <div>
+                                            <button className="select-menu-sensor-button" onClick={()=>{
+                                                onSensorSelect && onSensorSelect(sensor)
+                                            }}>
+                                                Сенсор: {sensor.imei}
+                                            </button>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </AccordingSector>
+                    </MultiplyAccordion>
                 )
             }
           </div>
