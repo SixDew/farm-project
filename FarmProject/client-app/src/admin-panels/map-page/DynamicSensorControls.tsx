@@ -9,7 +9,7 @@ import L from "leaflet"
 import geo, { Position } from "geojson"
 import { Geometry, Feature} from "geojson"
 
-import { deleteZone, sendZone } from "../../sensors/api/sensors-api";
+import { deleteZone, editZone, sendZone } from "../../sensors/api/sensors-api";
 import { FacilityDto, MapZoneDto, SensorGroupDto, SensorSectionDto, AlarmablePressureSensor, PressureSensorDto, PressureMeasurements } from "../../interfaces/DtoInterfaces";
 import SelectedSectionMenu from "./SelectedSectionMenu";
 import AdvancedGeomanControls from "./AdvancedGeomanControls";
@@ -88,6 +88,8 @@ export default function DynamicSensorControls({facility, sensors, alarmedSensors
     e.layer.remove() 
   }, [selectedSection])
 
+
+
   useEffect(()=>{
     if(facility){
       setSections(facility.sections)
@@ -158,20 +160,6 @@ export default function DynamicSensorControls({facility, sensors, alarmedSensors
     console.log("Selected section:", zoneSection)
   }
 
-  const zoneRemoveHandler:L.PM.RemoveEventHandler = async (e)=>{
-    if(e.layer instanceof L.Polygon){
-      var featureLayer = e.layer as FeatureLayer
-      var zoneId = featureLayer.feature.properties.id
-      var response = await deleteZone(zoneId)
-      if(response.ok){
-        setZones(zones.filter(z=>z.id != zoneId))
-      }
-      else{
-        console.error('Ошибка удаления зоны', response)
-      }
-    }
-  }
-
   function flyToSensor(sensor:AlarmablePressureSensor | PressureSensorDto){
     const coordX:number = Number(sensor.gps.split(' ').at(0))
     const coordY:number = Number(sensor.gps.split(' ').at(1))
@@ -199,18 +187,35 @@ export default function DynamicSensorControls({facility, sensors, alarmedSensors
                 click: (e)=>onZoneClick(e.layer.feature.properties)
             }}
             onEachFeature={(_feature, layer)=>{
-              var featureLayer = layer as FeatureLayer
+              const featureLayer = layer as FeatureLayer
               featureLayer.feature.properties = {id:zone.id, sectionId:zone.sectionId}
 
               layerEvents(layer, {
                 onLayerRemove: async (e) => {
-                  var zoneId = (e.layer as FeatureLayer).feature.properties.id
-                  var response = await deleteZone(zoneId)
+                  const zoneId = (e.layer as FeatureLayer).feature.properties.id
+                  const response = await deleteZone(zoneId)
                   if(response.ok){
                     setZones(zones.filter(z=>z.id != zoneId))
                   }
                   else{
                     console.error('Ошибка удаления зоны', response)
+                  }
+                },
+                onEdit: async (e)=>{
+                  const zoneId = (e.layer as FeatureLayer).feature.properties.id
+                  const sectionId = (e.layer as FeatureLayer).feature.properties.sectionId
+                  const geoJsoLayer = e.layer as GeoJsonLayer
+                  const response = await editZone({geometry:geoJsoLayer.toGeoJSON().geometry}, sectionId, zoneId)
+                  const newZone = await response.json()
+                  if(response.ok){
+                    setZones(zones.map(z=>{
+                      if(z.id != newZone.id){
+                        return z
+                      }
+                      else{
+                        return newZone
+                      }
+                    }))
                   }
                 }
               }, 'on')

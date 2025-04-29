@@ -74,15 +74,17 @@ export default function SelectedSectionMenu({selectedSection, sections, groups, 
                                                     <p>-Датчики-</p>
                                                     {
                                                         group.sensors.map(sensor=>{
-                                                            return (
-                                                               <>
-                                                                 <button onClick={()=>{
-                                                                    onSensorSelect && onSensorSelect(sensor)
-                                                                }}>
-                                                                    Сенсор: {sensor.imei}
-                                                                </button>
-                                                               </>
-                                                            )
+                                                            if(selectedSection.sensors.find(s=>s.imei == sensor.imei)){
+                                                                return (
+                                                                    <>
+                                                                      <button onClick={()=>{
+                                                                         onSensorSelect && onSensorSelect(sensor)
+                                                                     }}>
+                                                                         Сенсор: {sensor.imei}
+                                                                     </button>
+                                                                    </>
+                                                                 )
+                                                            }
                                                         })
                                                     }
                                                 </div>

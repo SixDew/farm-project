@@ -30,10 +30,7 @@ namespace FarmProject.controllers
         public async Task<IActionResult> GetZone([FromRoute] int id)
         {
             var zone = await _zones.GetAsync(id);
-            if (zone is null)
-            {
-                return BadRequest();
-            }
+            if (zone is null) return BadRequest("zone is not exist");
             return Ok(_zoneConverter.ConvertToClient(zone));
         }
         [HttpDelete("zones/{id}")]
@@ -41,13 +38,20 @@ namespace FarmProject.controllers
         public async Task<IActionResult> DeleteZone([FromRoute] int id)
         {
             var zone = await _zones.GetAsync(id);
-            if (zone is null)
-            {
-                return Ok();
-            }
+            if (zone is null) return Ok();
             _zones.Delete(zone);
             _zones.SaveChanges();
             return Ok();
+        }
+        [HttpPut("zones/{id}")]
+        [Authorize(Roles = $"{UserRoles.ADMIN}")]
+        public async Task<IActionResult> EditZone([FromRoute] int id, [FromBody] MapZoneFromClientDto data)
+        {
+            var zone = await _zones.GetAsync(id);
+            if (zone is null) return BadRequest("zone is not exist");
+            zone.Geometry = data.Geometry;
+            await _zones.SaveChangesAsync();
+            return Ok(_zoneConverter.ConvertToClient(zone));
         }
     }
 }

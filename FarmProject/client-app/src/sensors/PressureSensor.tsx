@@ -44,7 +44,7 @@ export default function PressureSensor({sensors, sensorOnDisalarm}:PressureSenso
             <div id='main-info-container'>
                 <div id='base-info-container'>
                     <button onClick={()=>navigate('/')} id="back-button">Назад</button>
-                    <div className="imei-container"><p>Imei:<p>{imei}</p></p></div>
+                    <div className="imei-container"><p>Датчик:<p>{imei}</p></p></div>
                     <div className="measurement-channels-container">
                     <p>Канал 1:</p><p>{sensor?.lastMeasurement?.measurement1}</p>
                     <p>Канал 2:</p><p>{sensor?.lastMeasurement?.measurement2}</p>

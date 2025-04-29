@@ -280,7 +280,6 @@ export async function sendZone(zone, sectionId:number) {
             'Content-Type':'application/json',
             'Authorization':AuthorizathionHeader
         },
-        // TODO
         body: JSON.stringify({
             ...zone, SectionId:sectionId
         })
@@ -296,6 +295,19 @@ export async function deleteZone(id) {
             'Content-Type':'application/json',
             'Authorization':AuthorizathionHeader
         },
+    })
+    return response
+}
+
+export async function editZone(zone, sectionId:number, zoneId:number) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/map/zones/${zoneId}`,{
+        method:'PUT',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+        body:JSON.stringify({...zone, SectionId:sectionId})
     })
     return response
 }

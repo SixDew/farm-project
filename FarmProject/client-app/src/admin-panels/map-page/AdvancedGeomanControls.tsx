@@ -23,7 +23,18 @@ export default function AdvancedGeomanControls({zoneCreateHandler,id}:AdvancedGe
       return (
         <GeomanControls
                 key={id}
-                options={{ position: 'topleft' }}
+                options={{ 
+                  position: 'topleft',
+                  drawMarker:false,
+                  drawPolyline:false,
+                  drawRectangle:false,
+                  drawCircle:false,
+                  drawCircleMarker:false,
+                  drawText:false,
+                  dragMode:false,
+                  cutPolygon:false,
+                  rotateMode:false
+                 }}
                 globalOptions={{ continueDrawing: false }}
                 onCreate={zoneCreateHandler}
         />
