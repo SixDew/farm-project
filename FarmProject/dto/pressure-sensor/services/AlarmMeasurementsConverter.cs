@@ -4,7 +4,7 @@ namespace FarmProject.db.services;
 
 public class AlarmMeasurementsConverter
 {
-    public AlarmedPressureMeasurements ConvertToAlarmMeasurements(PressureMeasurements measurements)
+    public AlarmedMeasurements ConvertToAlarmMeasurements(Measurements measurements)
     {
         return new()
         {

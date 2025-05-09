@@ -6,10 +6,10 @@ using FarmProject.hubs.services;
 
 namespace FarmProject.alarm.services
 {
-    public class AlarmPressureSensorService(PressureSensorProvider _sensors, PressureAlarmDtoConvertService _alarmConverter,
+    public class AlarmPressureSensorService(SensorsProvider _sensors, PressureAlarmDtoConvertService _alarmConverter,
         MeasurementsHubService _measurementsHubService, AlarmMeasurementsConverter _converter)
     {
-        public async Task<AlarmedPressureMeasurements?> AddAlarmMeasurementAsync(PressureMeasurements measurements)
+        public async Task<AlarmedMeasurements?> AddAlarmMeasurementAsync(Measurements measurements)
         {
             var alarmedMeasurements = _converter.ConvertToAlarmMeasurements(measurements);
             var alarmedMeasurementsList = await _sensors.GetAlarmedMeasurementsAsync(alarmedMeasurements.Imei);
@@ -23,13 +23,13 @@ namespace FarmProject.alarm.services
 
         }
 
-        public async Task SendAlarmNotifyAsync(PressureMeasurements measurements)
+        public async Task SendAlarmNotifyAsync(Measurements measurements)
         {
             await _measurementsHubService.SendAlarmNotifyAsync(_alarmConverter.ConvertToHubAlarmToClientDto(measurements),
                                         measurements.IMEI);
         }
 
-        public async Task SendAlarmNotifyAsync(AlarmedPressureMeasurements measurements)
+        public async Task SendAlarmNotifyAsync(AlarmedMeasurements measurements)
         {
             await _measurementsHubService.SendAlarmNotifyAsync(_alarmConverter.ConvertToHubAlarmToClientDto(measurements),
                                         measurements.Imei);

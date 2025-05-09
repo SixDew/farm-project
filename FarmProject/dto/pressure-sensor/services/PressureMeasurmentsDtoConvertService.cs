@@ -4,7 +4,7 @@ namespace FarmProject.dto.servisces
 {
     public class PressureMeasurmentsDtoConvertService
     {
-        public PressureMeasurementsToClientDto ConvertToClientDto(PressureMeasurements measurments)
+        public PressureMeasurementsToClientDto ConvertToClientDto(Measurements measurments)
         {
             return new PressureMeasurementsToClientDto()
             {
@@ -15,9 +15,9 @@ namespace FarmProject.dto.servisces
             };
         }
 
-        public PressureMeasurements ConvertToModel(PressureMeasurementsFromSensorDto measurments)
+        public Measurements ConvertToModel(PressureMeasurementsFromSensorDto measurments)
         {
-            return new PressureMeasurements()
+            return new Measurements()
             {
                 IMEI = measurments.IMEI,
                 PRR1 = measurments.PRR1,

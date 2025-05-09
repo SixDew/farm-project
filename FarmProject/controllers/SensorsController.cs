@@ -13,7 +13,7 @@ namespace FarmProject.controllers;
 
 [ApiController]
 [Route("sensors/pressure")]
-public class PressureMeasurementsController(PressureSensorProvider sensorProvider,
+public class SensorsController(SensorsProvider sensorProvider,
     PressureMeasurmentsDtoConvertService dtoConverter, MqttBrokerService sensorsBroker) : ControllerBase
 {
     [HttpGet("measurements/{imei}")]
@@ -28,7 +28,7 @@ public class PressureMeasurementsController(PressureSensorProvider sensorProvide
     }
     [HttpPost("measurements")]
     public async Task<IActionResult> PostPressureMeasurments([FromBody] PressureMeasurementsFromSensorDto measurements,
-        [FromServices] PressureValidationService validationService)
+        [FromServices] SensorsValidationService validationService)
     {
         if (!await validationService.IsValidatedAsync(measurements.IMEI)) return NotFound(new { message = "Sensor is invalid" });
 

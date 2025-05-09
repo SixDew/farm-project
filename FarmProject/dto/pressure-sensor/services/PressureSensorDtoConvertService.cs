@@ -5,9 +5,9 @@ namespace FarmProject.dto.servisces
     public class PressureSensorDtoConvertService(PressureMeasurmentsDtoConvertService measurementsConverter,
             PressureSettingsDtoConvertService settingsConverter)
     {
-        public PressureSensor ConvertToModel(AddSensorFromClientDto sensor)
+        public Sensor ConvertToModel(AddSensorFromClientDto sensor)
         {
-            return new PressureSensor()
+            return new Sensor()
             {
                 GPS = sensor.GPS,
                 IMEI = sensor.IMEI,
@@ -16,7 +16,7 @@ namespace FarmProject.dto.servisces
             };
         }
 
-        public PressureSensorToClientDto ConvertToClient(PressureSensor sensor)
+        public PressureSensorToClientDto ConvertToClient(Sensor sensor)
         {
             return new PressureSensorToClientDto()
             {

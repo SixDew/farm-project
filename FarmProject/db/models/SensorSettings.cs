@@ -2,7 +2,7 @@
 
 namespace FarmProject.db.models
 {
-    public class PressureSensorSettings : BaseModel
+    public class SensorSettings : BaseModel
     {
         public double DeviationSpanPositive { get; set; }
         public double DeviationSpanNegative { get; set; }

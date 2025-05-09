@@ -24,7 +24,7 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
         using (var scope = _serviceProvider.CreateScope())
         {
             string topic = e.ApplicationMessage.Topic;
-            var sensorProvider = scope.ServiceProvider.GetRequiredService<PressureSensorProvider>();
+            var sensorProvider = scope.ServiceProvider.GetRequiredService<SensorsProvider>();
 
             switch (topic)
             {
@@ -34,7 +34,7 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
                         {
                             var data = JsonSerializer.Deserialize<PressureMeasurementsFromSensorDto>(Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
 
-                            var validationService = scope.ServiceProvider.GetRequiredService<PressureValidationService>();
+                            var validationService = scope.ServiceProvider.GetRequiredService<SensorsValidationService>();
                             var dtoConverter = scope.ServiceProvider.GetRequiredService<PressureMeasurmentsDtoConvertService>();
                             var alarmChecker = scope.ServiceProvider.GetRequiredService<AlarmPressureMeasurementsChecker>();
 

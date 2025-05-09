@@ -9,7 +9,7 @@ namespace FarmProject.controllers
 {
     [ApiController]
     [Route("/groups")]
-    public class GroupsController(PressureSensorProvider _sensorProvider, SensorGroupsProvider _groups, GroupConverter _converter) : ControllerBase
+    public class GroupsController(SensorsProvider _sensorProvider, SensorGroupsProvider _groups, GroupConverter _converter) : ControllerBase
     {
         [HttpGet()]
         [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]

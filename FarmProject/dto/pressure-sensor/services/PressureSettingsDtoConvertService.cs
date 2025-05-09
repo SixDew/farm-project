@@ -5,7 +5,7 @@ namespace FarmProject.dto.servisces
 {
     public class PressureSettingsDtoConvertService
     {
-        public PressureSensorSettingsToAdminClientDto ConvertToAdminClient(PressureSensorSettings settings)
+        public PressureSensorSettingsToAdminClientDto ConvertToAdminClient(SensorSettings settings)
         {
             return new PressureSensorSettingsToAdminClientDto()
             {
@@ -20,7 +20,7 @@ namespace FarmProject.dto.servisces
             };
         }
 
-        public PressureSensorSettingsToClientDto ConvertToClient(PressureSensorSettings settings)
+        public PressureSensorSettingsToClientDto ConvertToClient(SensorSettings settings)
         {
             return new PressureSensorSettingsToClientDto()
             {
@@ -30,18 +30,18 @@ namespace FarmProject.dto.servisces
         }
 
 
-        public PressureSensorSettings ConvertFromClient(PressureSensorSettingsFromClientDto settings, string imei)
+        public SensorSettings ConvertFromClient(PressureSensorSettingsFromClientDto settings, string imei)
         {
-            return new PressureSensorSettings
+            return new SensorSettings
             {
                 IMEI = imei,
                 AlarmActivated = settings.AlarmActivated,
             };
         }
 
-        public PressureSensorSettings ConvertFromAdminClient(PressureSensorSettingsFromAdminClientDto settings, string imei)
+        public SensorSettings ConvertFromAdminClient(PressureSensorSettingsFromAdminClientDto settings, string imei)
         {
-            return new PressureSensorSettings
+            return new SensorSettings
             {
                 Sensitivity = settings.Sensitivity,
                 SecondSensorIsActive = settings.SecondSensorIsActive,
@@ -54,15 +54,15 @@ namespace FarmProject.dto.servisces
             };
         }
 
-        public PressureSensorSettings ConvertFromClient(PressureSensorSettingsFromClientDto settingsFromClient,
-            PressureSensorSettings settingsToUpdate)
+        public SensorSettings ConvertFromClient(PressureSensorSettingsFromClientDto settingsFromClient,
+            SensorSettings settingsToUpdate)
         {
             settingsToUpdate.AlarmActivated = settingsFromClient.AlarmActivated;
             return settingsToUpdate;
         }
 
-        public PressureSensorSettings ConvertFromAdminClient(PressureSensorSettingsFromAdminClientDto settingsFromClient,
-            PressureSensorSettings settingsToUpdate)
+        public SensorSettings ConvertFromAdminClient(PressureSensorSettingsFromAdminClientDto settingsFromClient,
+            SensorSettings settingsToUpdate)
         {
             settingsToUpdate.Sensitivity = settingsFromClient.Sensitivity;
             settingsToUpdate.SecondSensorIsActive = settingsFromClient.SecondSensorIsActive;
@@ -75,7 +75,7 @@ namespace FarmProject.dto.servisces
             return settingsToUpdate;
         }
 
-        public PressureSettingsToSensorDto ConvertToSensor(PressureSensorSettings settings)
+        public PressureSettingsToSensorDto ConvertToSensor(SensorSettings settings)
         {
             return new()
             {

@@ -5,38 +5,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FarmProject.db.services.providers;
 
-public class PressureSensorProvider(ApplicationDbContext db) : DbProvider<PressureSensor>(db)
+public class SensorsProvider(ApplicationDbContext db) : DbProvider<Sensor>(db)
 {
-    public async Task<PressureSensor?> GetByImeiAsync(string imei)
+    public async Task<Sensor?> GetByImeiAsync(string imei)
     {
         return await _dbSet.FirstOrDefaultAsync(s => s.IMEI == imei);
     }
-    public async Task<List<PressureMeasurements>?> GetMeasurmentsByImeiAync(string imei)
+    public async Task<List<Measurements>?> GetMeasurmentsByImeiAync(string imei)
     {
         var sensor = await _dbSet.Include(s => s.Measurements).FirstOrDefaultAsync(s => s.IMEI == imei);
         return sensor?.Measurements;
     }
-    public async Task<PressureSensorSettings?> GetSettingsByImeiAsync(string imei)
+    public async Task<SensorSettings?> GetSettingsByImeiAsync(string imei)
     {
         var sensor = await _dbSet.Include(s => s.Settings).FirstOrDefaultAsync(s => s.IMEI == imei);
         return sensor?.Settings;
     }
-    public async Task<PressureSensor?> GetByImeiWithMeasurementsAndSettingsAsync(string imei)
+    public async Task<Sensor?> GetByImeiWithMeasurementsAndSettingsAsync(string imei)
     {
         return await _dbSet.Include(s => s.Measurements).Include(s => s.Settings).FirstOrDefaultAsync(s => s.IMEI == imei);
     }
 
-    public async Task<List<PressureSensor>?> GetAllAsync()
+    public async Task<List<Sensor>?> GetAllAsync()
     {
         return await _dbSet.ToListAsync();
     }
 
-    public async Task<List<PressureSensor>> GetDisabled()
+    public async Task<List<Sensor>> GetDisabled()
     {
         return await _dbSet.Where(s => s.IsActive == false).ToListAsync();
     }
 
-    public async Task<List<AlarmedPressureMeasurements>?> GetAlarmedMeasurementsAsync(string imei)
+    public async Task<List<AlarmedMeasurements>?> GetAlarmedMeasurementsAsync(string imei)
     {
         var sensor = await _dbSet.Include(s => s.AlarmedMeasurements).ThenInclude(am => am.Measurements).FirstOrDefaultAsync(x => x.IMEI == imei);
         return sensor?.AlarmedMeasurements;
@@ -52,14 +52,14 @@ public class PressureSensorProvider(ApplicationDbContext db) : DbProvider<Pressu
         return sensor.Groups;
     }
 
-    public async Task<List<AlarmedPressureMeasurements>?> GetCheckedAlarmedMeasurementsAsync(string imei)
+    public async Task<List<AlarmedMeasurements>?> GetCheckedAlarmedMeasurementsAsync(string imei)
     {
         var sensor = await _dbSet.Include(s => s.AlarmedMeasurements.Where(am => am.isChecked)).ThenInclude(am => am.Measurements)
             .FirstOrDefaultAsync(s => s.IMEI == imei);
         return sensor?.AlarmedMeasurements;
     }
 
-    public async Task<List<AlarmedPressureMeasurements>?> GetUncheckedAlarmedMeasurementsAsync(string imei)
+    public async Task<List<AlarmedMeasurements>?> GetUncheckedAlarmedMeasurementsAsync(string imei)
     {
         var sensor = await _dbSet.Include(s => s.AlarmedMeasurements.Where(am => !am.isChecked)).ThenInclude(am => am.Measurements)
             .FirstOrDefaultAsync(s => s.IMEI == imei);

@@ -6,7 +6,7 @@ namespace FarmProject.group_feature.group
     public class SensorGroup : BaseModel
     {
         public string Name { get; set; } = "";
-        public List<PressureSensor> Sensors { get; set; } = new();
+        public List<Sensor> Sensors { get; set; } = new();
         public int FacilityId { get; set; }
     }
 }

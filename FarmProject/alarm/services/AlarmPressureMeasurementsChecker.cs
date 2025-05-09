@@ -3,9 +3,9 @@ using FarmProject.db.services.providers;
 
 namespace FarmProject.alarm.services
 {
-    public class AlarmPressureMeasurementsChecker(PressureSensorProvider _sensors)
+    public class AlarmPressureMeasurementsChecker(SensorsProvider _sensors)
     {
-        public async Task<bool> isAlarmRequredAsync(PressureMeasurements measurements)
+        public async Task<bool> isAlarmRequredAsync(Measurements measurements)
         {
             var settings = await _sensors.GetSettingsByImeiAsync(measurements.IMEI);
             if (settings.AlarmActivated)

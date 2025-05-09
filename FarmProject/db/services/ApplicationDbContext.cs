@@ -30,15 +30,15 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfiguration(new PressureSensorConfiguration());
+        modelBuilder.ApplyConfiguration(new SensorConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
-        modelBuilder.ApplyConfiguration(new PressureAlarmMeasurementsConfiguration());
+        modelBuilder.ApplyConfiguration(new AlarmMeasurementsConfiguration());
         modelBuilder.ApplyConfiguration(new SectionConfiguration());
         modelBuilder.ApplyConfiguration(new FacilityConfiguration());
 
         modelBuilder.Entity<MapZone>().ToTable("MapZones");
 
-        PressureSensor s1 = new PressureSensor()
+        Sensor s1 = new Sensor()
         {
             Id = 1,
             GPS = "53.36 38.123",
@@ -46,7 +46,7 @@ public class ApplicationDbContext : DbContext
             IsActive = true,
             SectionId = 1,
         };
-        PressureSensor s2 = new PressureSensor()
+        Sensor s2 = new Sensor()
         {
             Id = 2,
             GPS = "55.15 35.141",
@@ -54,7 +54,7 @@ public class ApplicationDbContext : DbContext
             IsActive = true,
             SectionId = 1,
         };
-        PressureSensor s3 = new PressureSensor()
+        Sensor s3 = new Sensor()
         {
             Id = 3,
             GPS = "54.15 34.141",
@@ -62,7 +62,7 @@ public class ApplicationDbContext : DbContext
             IsActive = true,
             SectionId = 2,
         };
-        PressureSensor s4 = new PressureSensor()
+        Sensor s4 = new Sensor()
         {
             Id = 4,
             GPS = "56.15 36.141",
@@ -70,10 +70,10 @@ public class ApplicationDbContext : DbContext
             IsActive = false,
             SectionId = 2,
         };
-        modelBuilder.Entity<PressureSensor>().HasData([s1, s2, s3, s4]);
+        modelBuilder.Entity<Sensor>().HasData([s1, s2, s3, s4]);
 
-        modelBuilder.Entity<PressureMeasurements>().ToTable("PressureMeaserments").HasData(
-                new PressureMeasurements()
+        modelBuilder.Entity<Measurements>().ToTable("PressureMeaserments").HasData(
+                new Measurements()
                 {
                     Id = 1,
                     IMEI = "1",
@@ -114,13 +114,13 @@ public class ApplicationDbContext : DbContext
             FacilityId = 1
         }]);
 
-        modelBuilder.Entity<PressureSensorSettings>().ToTable("PressureSensorSettings").HasData(
-                new PressureSensorSettings()
+        modelBuilder.Entity<SensorSettings>().ToTable("PressureSensorSettings").HasData(
+                new SensorSettings()
                 {
                     Id = 1,
                     IMEI = "1"
                 },
-                new PressureSensorSettings()
+                new SensorSettings()
                 {
                     Id = 2,
                     IMEI = "2"

@@ -39,7 +39,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddConnections();
 
 builder.Services.AddDbContext<ApplicationDbContext>();
-builder.Services.AddScoped<PressureSensorProvider>();
+builder.Services.AddScoped<SensorsProvider>();
 builder.Services.AddScoped<SensorGroupsProvider>();
 builder.Services.AddScoped<UserProvider>();
 builder.Services.AddTransient<UserDtoConverter>();
@@ -47,7 +47,7 @@ builder.Services.AddTransient<AlarmMeasurementsConverter>();
 builder.Services.AddTransient<PressureMeasurmentsDtoConvertService>();
 builder.Services.AddTransient<PressureSettingsDtoConvertService>();
 builder.Services.AddTransient<PressureSensorDtoConvertService>();
-builder.Services.AddScoped<PressureValidationService>();
+builder.Services.AddScoped<SensorsValidationService>();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<MeasurementsHubService>();
 builder.Services.AddScoped<AlarmPressureMeasurementsChecker>();
