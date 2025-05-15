@@ -1,3 +1,20 @@
 .user-element{
-    border: solid 5px teal;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background-color: aliceblue;
+    width: 255px;
+    border-radius: 10px;
+}
+
+.user-facility-name{
+    background-color: rgb(225, 230, 235);
+    padding: 10px;
+    border: 1px solid gray;
+    border-radius: 5px;
+}
+
+.user-element > *{
+    margin: 10px;
 }

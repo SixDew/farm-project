@@ -3,16 +3,17 @@ import "./UsersPage.css"
 import { getUsers, createUser } from "../sensors/users-api"
 import { useNavigate } from "react-router-dom"
 import UserElement from "../UserElement"
-import { AdminUserDto } from "../interfaces/DtoInterfaces"
+import { AdminUserDto, FacilityDeepMetaDto } from "../interfaces/DtoInterfaces"
+import CreateUserDialog from "./CreateUserDialog"
 
-export default function UsersPage(){
+interface UserPageProps{
+    facilitiesMetadata:FacilityDeepMetaDto[]
+}
+
+export default function UsersPage({facilitiesMetadata}:UserPageProps){
     const [users, setUsers] = useState<AdminUserDto[]>()
     const [addMode, setAddMode] = useState<boolean>(false)
     const nav = useNavigate()
-
-    const passInput = useRef<HTMLInputElement>(null)
-    const nameInput = useRef<HTMLInputElement>(null)
-    const phoneInput = useRef<HTMLInputElement>(null)
     
     async function getUsersData(){
         const response = await getUsers()
@@ -28,34 +29,32 @@ export default function UsersPage(){
         getUsersData()
     }, [])
 
-    async function addUser() {
-        const response = await createUser({
-            Key:passInput?.current?.value,
-            Name:nameInput?.current?.value,
-            Phone:phoneInput?.current?.value,
-            Role:"user"
-        })
-        if(response.ok){
-            setAddMode(false)
-            getUsersData()
-        }
-    }
-
     return (
         <div id="main-admin-container">
+            {
+                addMode && <CreateUserDialog 
+                    isOpen={addMode}
+                    facilitiesMetadata={facilitiesMetadata} 
+                    OnCreateUser={()=>{
+                        getUsersData()
+                    }}
+                    OnEnd={()=>setAddMode(false)}
+                />
+            }
             <h1>Операторы</h1>
-            <div id="users-container">
-                {users && users.map((user, index)=><UserElement key={index} pass={user.key} name={user.name} phone={user.phone} role={user.role} userId={user.id}/>)}
-            </div>
-            {addMode ? <div>
-                <input type="text" ref={passInput}></input>
-                <input type="text" ref={nameInput}></input>
-                <input type="text" ref={phoneInput}></input>
-                <div>
-                    <button onClick={addUser}>Сохранить</button>
-                    <button onClick={()=>setAddMode(false)}>Отмена</button>
+            <div id="users-menu">
+                <div id="users-container">{users && users.map((user, index)=><UserElement 
+                    key={index} 
+                    pass={user.key} 
+                    name={user.name} 
+                    contactData={user.contactData} 
+                    role={user.role} 
+                    userId={user.id}
+                    userFacilityId={user.facilityId}
+                    facilitiesMetadata={facilitiesMetadata}/>)}
                 </div>
-            </div> : <button onClick={()=>setAddMode(true)}>Добавить оператора</button>}
+                <div><button onClick={()=>setAddMode(!addMode)}>Добавить оператора</button></div>
+            </div>
         </div>
     )
 }

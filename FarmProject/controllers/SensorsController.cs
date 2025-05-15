@@ -26,19 +26,6 @@ public class SensorsController(SensorsProvider sensorProvider,
 
         return Ok(measurmentsDtoList);
     }
-    [HttpPost("measurements")]
-    public async Task<IActionResult> PostPressureMeasurments([FromBody] PressureMeasurementsFromSensorDto measurements,
-        [FromServices] SensorsValidationService validationService)
-    {
-        if (!await validationService.IsValidatedAsync(measurements.IMEI)) return NotFound(new { message = "Sensor is invalid" });
-
-        var sensorMeasurementsList = await sensorProvider.GetMeasurmentsByImeiAync(measurements.IMEI);
-        var measurementsModel = dtoConverter.ConvertToModel(measurements);
-        sensorMeasurementsList.Add(measurementsModel);
-        await sensorProvider.SaveChangesAsync();
-
-        return Created($"sensors/pressure/measurements/{measurements.IMEI}", dtoConverter.ConvertToClientDto(measurementsModel));
-    }
 
     [HttpGet("settings/{imei}")]
     [Authorize(Roles = UserRoles.USER)]

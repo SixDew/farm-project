@@ -127,8 +127,8 @@ public class ApplicationDbContext : DbContext
                 }
             );
         modelBuilder.Entity<User>().ToTable("Users").HasData(
-            [new User() { Id = 1, Key = "test", Role = UserRoles.USER, Name="testName", Phone="88888888888" },
-            new User(){ Id= 2, Key = "admintest", Role = UserRoles.ADMIN, Name="testName", Phone="88888888888"}
+            [new User() { Id = 1, Key = "password", Role = UserRoles.USER, Name="Булгаков Алексей Романович", ContactData="+79910876841", FacilityId=1 },
+            new User(){ Id= 2, Key = "admin-password", Role = UserRoles.ADMIN, Name="Парадный Анатолий Сергеевич", ContactData="+79910593465", FacilityId=1}
         ]
             );
     }

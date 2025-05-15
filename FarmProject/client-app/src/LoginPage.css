@@ -2,11 +2,14 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+    text-align: center;
+
+    width: 350px;
+    height: 350px;
     
 
-    margin: 50vh auto;
-    width: fit-content;
-    background-color: gray;
+    margin: auto;
+    background-color: rgb(225, 230, 235);
     border-radius: 10px;
     padding: 20px;
 }

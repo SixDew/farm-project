@@ -1,9 +1,22 @@
 #main-admin-container{
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 #users-container{
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    width: 1475px;
+}
+
+#users-menu{
+    background-color: rgb(225, 230, 235);
+    border-radius: 10px;
+    box-shadow: 0 0 10px gray;
+    padding: 10px;
+}
+
+#users-container > *{
+    margin: 10px;
 }

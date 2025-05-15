@@ -6,19 +6,19 @@ public class UserDtoConverter
 {
     public UserToAdminClientDto ConvertToAdminClientDto(User user)
     {
-        return new() { Key = user.Key, Role = user.Role, Name = user.Name, Phone = user.Phone, Id = user.Id };
+        return new() { Key = user.Key, Role = user.Role, Name = user.Name, ContactData = user.ContactData, Id = user.Id, FacilityId=user.FacilityId };
     }
 
     public User ConvertFromAdminClientDto(UserFromAdminClientDto userDto)
     {
-        return new() { Key = userDto.Key, Role = userDto.Role, Name = userDto.Name, Phone = userDto.Phone };
+        return new() { Key = userDto.Key, Role = userDto.Role, Name = userDto.Name, ContactData = userDto.ContactData, FacilityId=userDto.FacilityId };
     }
     public User ConvertFromAdminClientDto(UserFromAdminClientDto userDto, User updateUser)
     {
         updateUser.Key = userDto.Key;
         updateUser.Role = userDto.Role;
         updateUser.Name = userDto.Name;
-        updateUser.Phone = userDto.Phone;
+        updateUser.ContactData = userDto.ContactData;
         return updateUser;
     }
 }

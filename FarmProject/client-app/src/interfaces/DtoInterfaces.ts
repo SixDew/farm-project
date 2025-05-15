@@ -77,8 +77,9 @@ export interface AdminUserDto{
     key:string,
     role:string,
     name:string,
-    phone:string,
-    id:number
+    contactData:string,
+    id:number,
+    facilityId:number
 }
 
 export interface MapZoneDto{

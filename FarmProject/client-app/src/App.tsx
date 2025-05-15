@@ -59,6 +59,10 @@ export default function App(){
     const [disabledSensors, setDisabledSensors] = useState<PressureSensorDto[]>([])
 
     useEffect(()=>{
+        facilitiesMetaInit()
+    }, [])
+
+    useEffect(()=>{
         console.log('alarmed sensors on mainapp:', alarmedSensors)
     }, [alarmedSensors])
 
@@ -192,7 +196,7 @@ export default function App(){
                             }
                         }}
                     />}/>
-                <Route path='/users' element={<UsersPage/>}/>
+                <Route path='/users' element={<UsersPage facilitiesMetadata={facilitiesMeta}/>}/>
                 <Route path='/monitor' element={<GroupPage facility={selectedFacility} alarmedSensors={alarmedSensors} sensors={sensors} disabledSensors={disabledSensors} setFacility={setSelectedFacility}/>}/>
                 <Route path='/sensors-to-add' element={<SensorsToAddPage disabledSensors={disabledSensors} 
                 facilitiesMetadata={facilitiesMeta}
@@ -220,7 +224,7 @@ export default function App(){
                 <NavButton navPath='/monitor' title='Мониторинг'/>
                 <NavButton navPath='/map' title='Карта'/>
                 <NavButton navPath='/sensors-to-add' title='Отключенные датчики'/>
-                <NavButton navPath='/users' title='Пользователи'/>
+                <NavButton navPath='/users' title='Операторы'/>
             </div>
         </Router>
         </div>

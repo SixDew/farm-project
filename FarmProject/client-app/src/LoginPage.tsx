@@ -50,6 +50,7 @@ export default function LoginPage(){
 
     return (
         <div id="login-main-container">
+            <h1>Для получения доступа введите ключ</h1>
             <input type="password" ref={passInput}></input>
             <button onClick={()=>login(passInput?.current?.value)}>Войти</button>
             <button onClick={()=>adminLogin(passInput?.current?.value)}>Войти как администратор</button>
