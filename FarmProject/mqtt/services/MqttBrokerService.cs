@@ -7,6 +7,7 @@ using FarmProject.dto.pressure_sensor.measurements;
 using FarmProject.dto.pressure_sensor.settings;
 using FarmProject.dto.servisces;
 using FarmProject.hubs.services;
+using FarmProject.predict;
 using FarmProject.validation.services;
 using MQTTnet;
 using MQTTnet.Protocol;
@@ -62,7 +63,11 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
                                     {
                                         await alarmService.SendAlarmNotifyAsync(alarmedMeasurements);
                                     }
+                                    break;
                                 }
+
+                                var forecastService = scope.ServiceProvider.GetRequiredService<ForecastService>();
+                                await forecastService.DriftAnalize(measurementsModel);
                             }
                         }
                         catch (Exception ex)

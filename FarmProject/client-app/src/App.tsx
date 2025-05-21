@@ -6,12 +6,14 @@ import UsersPage from './admin-panels/UsersPage'
 import GroupPage from './admin-panels/group-page/GroupPage'
 import SensorsToAddPage from './admin-panels/SensorsToAddPage'
 import MapPage from './admin-panels/map-page/MapPage'
-import { AlarmablePressureSensor, FacilityDeepMetaDto, FacilityDto, PressureAlarmDto, PressureMeasurements, PressureSensorDto } from './interfaces/DtoInterfaces'
+import { AlarmablePressureSensor, DriftNotificationData, FacilityDeepMetaDto, FacilityDto, PressureAlarmDto, PressureMeasurements, PressureSensorDto } from './interfaces/DtoInterfaces'
 import { useEffect, useState } from 'react'
 import { getDisabledSensors, getFacilitiesDeppMeta, getFacility, getUncheckedAlarmedMeasurements } from './sensors/api/sensors-api'
 import FacilitySelect from './main-menu/FacilitySelect'
 import connection from "./sensors/api/measurements-hub-connection.js"
 import NavButton from './main-menu/NavButton'
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function convertSensorsFromServerData(data:PressureSensorDto[] | undefined):AlarmablePressureSensor[]{
     if(data){
@@ -57,6 +59,28 @@ export default function App(){
     const [sensors, setSensors] = useState<AlarmablePressureSensor[]>([])
     const [alarmedSensors, setAlarmedSensors] = useState<AlarmablePressureSensor[]>([])
     const [disabledSensors, setDisabledSensors] = useState<PressureSensorDto[]>([])
+
+
+    function onDriftNotification(data:DriftNotificationData){
+
+        const parts = data.warningInterval.split(':');
+
+        toast.warning(
+        <div>
+            <h5>Обнаружен дрифт измерений</h5>
+            <p>Обнаружено постепенное изменение значений, которые могут достигнуть порога через {data.warningInterval}</p>
+            <NavButton navPath={`/sensors/pressure/${data.imei}`} title='Перейти'></NavButton>
+        </div>)
+    }
+
+    function parseTimeSpan(timeSpanStr:string) {
+    const parts = timeSpanStr.split(':');
+    const hours = parseInt(parts[0], 10);
+    const minutes = parseInt(parts[1], 10);
+    const seconds = parseFloat(parts[2]);
+
+    return ((hours * 3600) + (minutes * 60) + seconds) * 1000;
+}
 
     useEffect(()=>{
         facilitiesMetaInit()
@@ -127,6 +151,8 @@ export default function App(){
                 console.log('add new disabled sensor', data)
                 setDisabledSensors(prev=>[...prev, data])
             })
+
+            connection.on("ReciveForecastWarningNotify", onDriftNotification)
         }
         setConnection()
 
@@ -134,6 +160,7 @@ export default function App(){
             connection.off('ReciveMeasurements')
             connection.off('ReciveAlarmNotify')
             connection.off('ReciveAddSensorNotify')
+             connection.off("ReciveForecastWarningNotify")
             if(connection.state === 'Connected'){
                 sensors.forEach(sensor=>connection.invoke('RemovePressureClientFromGroup', sensor.imei))
                 connection.invoke("RemoveUserFromUsersGroup").catch((err)=>console.error("remove from users group error", err))
@@ -226,6 +253,9 @@ export default function App(){
                 <NavButton navPath='/sensors-to-add' title='Отключенные датчики'/>
                 <NavButton navPath='/users' title='Операторы'/>
             </div>
+            <ToastContainer
+            position='bottom-right'
+            autoClose={10000}/>
         </Router>
         </div>
         

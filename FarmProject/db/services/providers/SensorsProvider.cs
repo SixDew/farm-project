@@ -16,6 +16,11 @@ public class SensorsProvider(ApplicationDbContext db) : DbProvider<Sensor>(db)
         var sensor = await _dbSet.Include(s => s.Measurements).FirstOrDefaultAsync(s => s.IMEI == imei);
         return sensor?.Measurements;
     }
+    public async Task<List<Measurements>?> GetLastMeasurmentsByImeiAync(string imei, int num)
+    {
+        var sensor = await _dbSet.Include(s => s.Measurements.OrderByDescending(m => m.Id).Take(num).OrderBy(m => m.Id)).FirstOrDefaultAsync(s => s.IMEI == imei);
+        return sensor?.Measurements;
+    }
     public async Task<SensorSettings?> GetSettingsByImeiAsync(string imei)
     {
         var sensor = await _dbSet.Include(s => s.Settings).FirstOrDefaultAsync(s => s.IMEI == imei);

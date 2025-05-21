@@ -77,7 +77,7 @@ public class ApplicationDbContext : DbContext
                 {
                     Id = 1,
                     IMEI = "1",
-                    PRR1 = 25.3,
+                    PRR1 = 25.3F,
                     PRR2 = 26,
                 }
             );

@@ -95,3 +95,9 @@ export interface AlarmablePressureSensor{
     isAlarmed:boolean,
     alarmedMeasurements:PressureAlarmDto[]
 }
+
+export interface DriftNotificationData{
+    imei:string,
+    warningInterval:string,
+    measurementId:number
+}

@@ -4,13 +4,13 @@ namespace FarmProject.db.models
 {
     public class SensorSettings : BaseModel
     {
-        public double DeviationSpanPositive { get; set; }
-        public double DeviationSpanNegative { get; set; }
-        public double Sensitivity { get; set; }
+        public float DeviationSpanPositive { get; set; } = 100;
+        public float DeviationSpanNegative { get; set; } = 30;
+        public float Sensitivity { get; set; }
         public bool AlarmActivated { get; set; } = true;
-        public bool FirstSensorIsActive { get; set; }
-        public bool SecondSensorIsActive { get; set; }
-        public double DataSendingSpan { get; set; } = 10;
+        public bool FirstSensorIsActive { get; set; } = true;
+        public bool SecondSensorIsActive { get; set; } = true;
+        public float DataSendingSpan { get; set; } = 5;
 
         public required string IMEI { get; set; }
 

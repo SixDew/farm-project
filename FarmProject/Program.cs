@@ -1,4 +1,5 @@
-﻿using FarmProject.alarm.services;
+﻿using System.Text;
+using FarmProject.alarm.services;
 using FarmProject.auth;
 using FarmProject.db.services;
 using FarmProject.db.services.providers;
@@ -10,12 +11,12 @@ using FarmProject.dto.users.services;
 using FarmProject.hubs;
 using FarmProject.hubs.services;
 using FarmProject.mqtt.services;
+using FarmProject.predict;
 using FarmProject.validation.services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using MQTTnet.AspNetCore;
 using NetTopologySuite.IO.Converters;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddAuthorization();
 builder.Services.AddConnections();
 
+builder.Services.AddMemoryCache();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<SensorsProvider>();
 builder.Services.AddScoped<SensorGroupsProvider>();
@@ -60,6 +62,9 @@ builder.Services.AddScoped<MapZonesProvider>();
 builder.Services.AddTransient<MapZoneConverter>();
 builder.Services.AddTransient<FacilityConverter>();
 builder.Services.AddScoped<FacilityProvider>();
+
+builder.Services.AddSingleton<IPredictService, EwmaPredictService>();
+builder.Services.AddSingleton<ForecastService>();
 
 builder.Services.AddMqttConnectionHandler();
 builder.Services.AddHostedMqttServer(OptionsBuilder =>

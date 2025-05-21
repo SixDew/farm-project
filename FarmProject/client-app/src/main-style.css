@@ -8,8 +8,13 @@
     --main-accent-color: #1f7e22;
     --second-accent-color: #175f1a;
     --alarm-color: rgb(200, 35, 10);
+    --alarm-element-color: rgb(226, 40, 15);
+    --alarm-element-accent-color: rgb(186, 40, 15);
+    --alarm-element-active-color: rgb(146, 40, 15);
     --main-text-color: #333333;
     --second-text-color: #666666;
     --main-border-color: #E0E0E0;
+    --warning-main-color: rgb(197, 140, 17);
+    --warning-accent-color: orange;
     --text-font: "Roboto", sans-serif;
 }

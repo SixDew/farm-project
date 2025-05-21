@@ -1,5 +1,7 @@
+@import '../../main-style.css';
+
 .alarmed-sensors-menu{
-    background-color: rgb(200, 35, 10);
+    background-color: var(--alarm-color);
     color: aliceblue;
     /* border: 2px solid black; */
     box-shadow: 0 5px 5px gray;
@@ -15,16 +17,17 @@
 .alarmed-sensor-element{
     color: aliceblue;
     padding: 10px;
-    background-color: rgb(226, 40, 15);
+    background-color: var(--alarm-element-color);
     border: 2px solid aliceblue;
     border-radius: 10px;
     font-size: medium;
+    cursor: pointer;
 }
 
 .alarmed-sensor-element:hover{
-    background-color: rgb(186, 40, 15);
+    background-color: var(--alarm-element-acces-color);
 }
 
 .alarmed-sensor-element:active{
-    background-color: rgb(146, 40, 15);
+    background-color: var(--alarm-element-active-color);
 }
