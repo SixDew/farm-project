@@ -1,17 +1,43 @@
+@import '../../main-style.css';
+
 .section-element{
-    padding-bottom: 30px;
     margin: 20px;
     border-radius: 10px;
     font-size: medium;
     display: flex;
     flex-direction: column;
-    background-color: aliceblue;
-    border: 1px solid gray;
+    background-color: var(--second-back-color);
+    border: 2px solid var(--main-border-color);
+    color: var(--main-text-color);
+    padding: 10px;
+    text-align: left;
 }
 
 .sensors{
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
+    padding: 10px;
+}
+
+.alarm-section-element{
+    min-width: 10vw;
+    border-radius: 10px;
+    font-size: medium;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--second-back-color);
+    border: 2px solid var(--main-border-color);
+    color: var(--main-text-color);
+    padding: 10px;
+    text-align: center;
+}
+
+.alarm-sensors{
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 10px;
+    overflow: auto;
 }

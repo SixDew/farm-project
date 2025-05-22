@@ -3,10 +3,11 @@
 
 
 *{
-    --main-back-color:#F4F6F8;
-    --second-back-color:#FFFFFF;
-    --main-accent-color: #1f7e22;
-    --second-accent-color: #175f1a;
+    --main-back-color:#E0E0E0;
+    --second-back-color:white;
+    --main-hover-color: rgb(235, 235, 235);
+    --main-active-color: #E0E0E0;
+    --main-accent-color:#E0E0E0;
     --alarm-color: rgb(200, 35, 10);
     --alarm-element-color: rgb(226, 40, 15);
     --alarm-element-accent-color: rgb(186, 40, 15);
@@ -16,5 +17,21 @@
     --main-border-color: #E0E0E0;
     --warning-main-color: rgb(197, 140, 17);
     --warning-accent-color: orange;
+    --main-accent-color: rgb(1, 147, 154);
+    --second-accent-color: 	rgb(29, 112, 116);
+    --accent-active-color:rgb(22, 85, 88);
+    --text-accent-color:white;
+    --border-accent-color: aliceblue;
     --text-font: "Roboto", sans-serif;
+    font-weight: 500;
+}
+
+.page-container{
+    display: flex;
+    height: 85vh;
+    width: 100%;
+    margin: auto 50px;
+    padding: 20px;
+    background-color: var(--second-back-color);
+    border-radius: 10px;
 }

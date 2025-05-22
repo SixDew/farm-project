@@ -3,7 +3,6 @@
 .alarmed-sensors-menu{
     background-color: var(--alarm-color);
     color: aliceblue;
-    /* border: 2px solid black; */
     box-shadow: 0 5px 5px gray;
     border-radius: 10px;
     margin: 10px;

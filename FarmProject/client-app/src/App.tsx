@@ -15,6 +15,11 @@ import NavButton from './main-menu/NavButton'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import mapImage from './images/white-map.png';
+import peopleImage from './images/white-people.png'
+import sensorImage from './images/white-sensor.png'
+import disabledSensorImage from './images/white-disabled2.png'
+
 function convertSensorsFromServerData(data:PressureSensorDto[] | undefined):AlarmablePressureSensor[]{
     if(data){
         return data.map(sensor=>{
@@ -62,9 +67,6 @@ export default function App(){
 
 
     function onDriftNotification(data:DriftNotificationData){
-
-        const parts = data.warningInterval.split(':');
-
         toast.warning(
         <div>
             <h5>Обнаружен дрифт измерений</h5>
@@ -72,15 +74,6 @@ export default function App(){
             <NavButton navPath={`/sensors/pressure/${data.imei}`} title='Перейти'></NavButton>
         </div>)
     }
-
-    function parseTimeSpan(timeSpanStr:string) {
-    const parts = timeSpanStr.split(':');
-    const hours = parseInt(parts[0], 10);
-    const minutes = parseInt(parts[1], 10);
-    const seconds = parseFloat(parts[2]);
-
-    return ((hours * 3600) + (minutes * 60) + seconds) * 1000;
-}
 
     useEffect(()=>{
         facilitiesMetaInit()
@@ -212,47 +205,52 @@ export default function App(){
     return (
         <div className='main-app-container'>
         <Router>
-            <Routes>
-                <Route path='/login' element={<LoginPage/>}/>
-                <Route path='/sensors/pressure/:imei' element={
-                    <PressureSensor sensors={sensors} sensorOnDisalarm={sensorOnDisalarm}
-                        onDisableSensor={async ()=>{
-                            const response = await getDisabledSensors()
-                            if(response.ok){
-                                setDisabledSensors(await response.json())
-                            }
-                        }}
-                    />}/>
-                <Route path='/users' element={<UsersPage facilitiesMetadata={facilitiesMeta}/>}/>
-                <Route path='/monitor' element={<GroupPage facility={selectedFacility} alarmedSensors={alarmedSensors} sensors={sensors} disabledSensors={disabledSensors} setFacility={setSelectedFacility}/>}/>
-                <Route path='/sensors-to-add' element={<SensorsToAddPage disabledSensors={disabledSensors} 
-                facilitiesMetadata={facilitiesMeta}
-                setDisabledSensors={setDisabledSensors}
-                onDeleteSensor={(sensor)=>{
-                    if(selectedFacility){
-                        selectedFacility.sections.forEach(section=>{
-                            section.sensors = section.sensors.filter(s=>s.imei != sensor.imei)
-                        })
-                        selectedFacility.groups.forEach(group=>{
-                            group.sensors = group.sensors.filter(s=>s.imei != sensor.imei)
-                        })
-                        setSelectedFacility({...selectedFacility})
-                    }
-                }}/>}/>
-                <Route path='/map' element={<MapPage facility={selectedFacility} sensors={sensors} alarmedSenosrs={alarmedSensors}/>}/>
-            </Routes>
-
-            <div className='main-menu'>
+            <div className='header'>
                 <FacilitySelect 
                     facilitiesMeta={facilitiesMeta}
                     onSelectEvent={onFacilitySelect}
                     onClick={facilitiesMetaInit}
                 />
-                <NavButton navPath='/monitor' title='Мониторинг'/>
-                <NavButton navPath='/map' title='Карта'/>
-                <NavButton navPath='/sensors-to-add' title='Отключенные датчики'/>
-                <NavButton navPath='/users' title='Операторы'/>
             </div>
+           <div className='middle-part'>
+                <div className='main-menu'>
+                    <NavButton navPath='/monitor' image={sensorImage}/>
+                    <NavButton navPath='/map' image={mapImage}/>
+                    <NavButton navPath='/sensors-to-add' image={disabledSensorImage}/>
+                    <NavButton navPath='/users' image={peopleImage}/>
+                </div>
+                <div className='page-window'>
+                    <Routes>
+                    <Route path='/login' element={<LoginPage/>}/>
+                    <Route path='/sensors/pressure/:imei' element={
+                        <PressureSensor sensors={sensors} sensorOnDisalarm={sensorOnDisalarm}
+                            onDisableSensor={async ()=>{
+                                const response = await getDisabledSensors()
+                                if(response.ok){
+                                    setDisabledSensors(await response.json())
+                                }
+                            }}
+                        />}/>
+                    <Route path='/users' element={<UsersPage facilitiesMetadata={facilitiesMeta}/>}/>
+                    <Route path='/monitor' element={<GroupPage facility={selectedFacility} alarmedSensors={alarmedSensors} sensors={sensors} disabledSensors={disabledSensors} setFacility={setSelectedFacility}/>}/>
+                    <Route path='/sensors-to-add' element={<SensorsToAddPage disabledSensors={disabledSensors} 
+                    facilitiesMetadata={facilitiesMeta}
+                    setDisabledSensors={setDisabledSensors}
+                    onDeleteSensor={(sensor)=>{
+                        if(selectedFacility){
+                            selectedFacility.sections.forEach(section=>{
+                                section.sensors = section.sensors.filter(s=>s.imei != sensor.imei)
+                            })
+                            selectedFacility.groups.forEach(group=>{
+                                group.sensors = group.sensors.filter(s=>s.imei != sensor.imei)
+                            })
+                            setSelectedFacility({...selectedFacility})
+                        }
+                    }}/>}/>
+                    <Route path='/map' element={<MapPage facility={selectedFacility} sensors={sensors} alarmedSenosrs={alarmedSensors}/>}/>
+                </Routes>
+                </div>
+           </div>
             <ToastContainer
             position='bottom-right'
             autoClose={10000}/>

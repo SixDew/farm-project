@@ -239,6 +239,7 @@ export default function GroupPage({facility, alarmedSensors, sensors, disabledSe
                                     )
                                 }
                                 <button
+                                    className="add-element-button"
                                     onClick={()=>{
                                         setShowCreateGroupDialog(true)
                                     }}
@@ -323,6 +324,7 @@ export default function GroupPage({facility, alarmedSensors, sensors, disabledSe
                                     )
                                 }
                                 <button
+                                    className="add-element-button"
                                     onClick={()=>setShowCreateSectionDialog(true)}
                                 >
                                     +
@@ -383,6 +385,16 @@ export default function GroupPage({facility, alarmedSensors, sensors, disabledSe
                             })
                         }
                     </div>
+
+                    <SectionElement 
+                        name="Аварийные датчики"
+                        sensors={alarmedSensors} 
+                        disabledSensors={disabledSensors}
+                        className="alarm-section-element"
+                        sensorsContainerClassName="alarm-sensors"
+                        >
+
+                    </SectionElement>
                 </div>
             )
         }

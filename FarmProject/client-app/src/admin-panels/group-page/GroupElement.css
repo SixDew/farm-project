@@ -1,3 +1,5 @@
+@import '../../main-style.css';
+
 .sensor-info-element{
     background-color: azure;
     margin: 10px auto 10px 10px;

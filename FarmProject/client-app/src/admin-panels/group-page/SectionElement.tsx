@@ -8,14 +8,16 @@ interface SectionElementProps{
     name:string,
     sensors:(AlarmablePressureSensor|undefined)[]
     children?:ReactNode,
-    disabledSensors:PressureSensorDto[]
+    disabledSensors:PressureSensorDto[],
+    className?:string,
+    sensorsContainerClassName?:string
 }
 
-export default function SectionElement({name, sensors,children, disabledSensors}:SectionElementProps){
+export default function SectionElement({name, sensors,children, disabledSensors, className, sensorsContainerClassName}:SectionElementProps){
     return(
-        <div className='section-element'>
+        <div className={className?`${className}`:"section-element"}>
         <h3>{name}</h3>
-        <div className='sensors'>
+        <div className={sensorsContainerClassName?`${sensorsContainerClassName}`:"sensors"}>
             {
                 sensors?.filter(s=>s && !disabledSensors.find(ds=>ds.imei == s.imei)).map(s=>s && <SensorMini gps={s.gps} imei={s.imei} isAlarmed={s.isAlarmed} 
                     measurement1={s.lastMeasurement?.measurement1} 

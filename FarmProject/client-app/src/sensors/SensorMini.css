@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import '../main-style.css';
 
 .sensor-mini{
     border-radius: 10px;
 
-    background-color: rgb(100, 180, 200);
+    background-color: var(--main-accent-color);
 
-    box-shadow: 3px 3px 5px gray;
+    /* box-shadow: 3px 3px 5px gray; */
 
     min-width: 100px;
     min-height: 100px;
@@ -17,15 +17,18 @@
     padding: 5px;
     text-align: center;
 
-    font-family: "Poppins";
-    color: rgb(224, 255, 255);
+    color: var(--text-accent-color);
 
-    transition: 0.15s ease-in-out;
+    transition: 0.1s ease-in-out;
     cursor: pointer;
 }
 .sensor-mini:hover{
-    transform: scale(1.1);
+    background-color: var(--second-accent-color);
 }
-.alarmed{
-    background-color: rgb(150, 40, 40);
+.sensor-mini.alarmed{
+    background-color: var(--alarm-color);
+}
+
+.sensor-mini.alarmed:hover{
+    background-color: var(--alarm-element-accent-color);
 }

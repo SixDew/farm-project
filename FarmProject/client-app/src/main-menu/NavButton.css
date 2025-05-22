@@ -1,25 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-
+@import '../main-style.css';
 
 .nav-button-container{
-    width: 200px;
     display: flex;
+    margin: 15px;
 }
 
 .nav-button{
-    width: 200px;
     font-size: medium;
-    box-shadow: 0 5px 5px gray;
-    background-color: aliceblue;
-    border: 1px solid gray;
+    /* box-shadow: 0 5px 5px gray; */
+    background-color: var(--main-accent-color);
+    border: 2px solid var(--border-accent-color);
     border-radius: 5px;
     text-align: center;
     cursor: pointer;
 }
 
 .nav-button:hover{
-    background-color: rgb(235, 235, 235)
+    background-color: var(--second-accent-color)
 }
 .nav-button:active{
-    background-color: rgb(220, 220, 220)
+    background-color: var(--accent-active-color)
 }

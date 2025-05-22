@@ -4,7 +4,8 @@ import "leaflet/dist/leaflet.css";
 import "./SelectedSectionMenu.css"
 import "leaflet-draw/dist/leaflet.draw.css";
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-import L from "leaflet"
+import L from "leaflet";
+import '../../main-style.css';
 
 import { FacilityDto, AlarmablePressureSensor } from "../../interfaces/DtoInterfaces";
 import DynamicSensorControls from "./DynamicSensorControls";
@@ -29,13 +30,15 @@ export default function MapPage({facility, sensors, alarmedSenosrs}:MapPageProps
     return 13
   },[])
   return (
-    <MapContainer
-      center={centerInit}
-      zoom={zoomInit}
-      style={{height:"100%", width: "100%", zIndex:1 }}
-      closePopupOnClick={false}
-    >
-     <DynamicSensorControls facility={facility} sensors={sensors} alarmedSensors={alarmedSenosrs}></DynamicSensorControls>
-    </MapContainer>
+    <div className="page-container">
+      <MapContainer
+        center={centerInit}
+        zoom={zoomInit}
+        style={{height:"100%", width: "100%", zIndex:1 }}
+        closePopupOnClick={false}
+      >
+      <DynamicSensorControls facility={facility} sensors={sensors} alarmedSensors={alarmedSenosrs}></DynamicSensorControls>
+      </MapContainer>
+    </div>
   );
 }
