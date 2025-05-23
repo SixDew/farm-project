@@ -70,7 +70,15 @@ public class ApplicationDbContext : DbContext
             IsActive = false,
             SectionId = 2,
         };
-        modelBuilder.Entity<Sensor>().HasData([s1, s2, s3, s4]);
+        Sensor s5 = new Sensor()
+        {
+            Id = 5,
+            GPS = "58.15 34.141",
+            IMEI = "5",
+            IsActive = false,
+            SectionId = 1,
+        };
+        modelBuilder.Entity<Sensor>().HasData([s1, s2, s3, s4, s5]);
 
         modelBuilder.Entity<Measurements>().ToTable("PressureMeaserments").HasData(
                 new Measurements()

@@ -9,6 +9,7 @@ import CreateGroupDialog from "./CreateGroupDialog"
 import SectionAccordingElement from "./SectionAccordingElement"
 import CreateSectionDialog from "./CreateSectionDialog"
 import EditSectionDialog from "./EditSectionDialog"
+import PageContentBase from "../../PageContentBase"
 
 interface GroupPageProps{
     facility:FacilityDto|undefined
@@ -120,9 +121,10 @@ export default function GroupPage({facility, alarmedSensors, sensors, disabledSe
 
     return(
         <>
-        {
-            facility && (
-                <div className="main-group-page-container">
+            {
+                facility && 
+            (
+                <PageContentBase title="Мониторинг">
                     {
                         groupToEdit && <EditGroupDialog 
                         isOpen={showEditGroupDialog}
@@ -395,9 +397,9 @@ export default function GroupPage({facility, alarmedSensors, sensors, disabledSe
                         >
 
                     </SectionElement>
-                </div>
+                </PageContentBase>
             )
-        }
+            }
         </>
     )
 

@@ -13,6 +13,10 @@
     overflow: auto;
 }
 
+.alarmed-sensors-menu *{
+    color: var(--text-accent-color);
+}
+
 .alarmed-sensor-element{
     color: aliceblue;
     padding: 10px;

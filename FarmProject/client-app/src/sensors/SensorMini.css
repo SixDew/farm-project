@@ -32,3 +32,7 @@
 .sensor-mini.alarmed:hover{
     background-color: var(--alarm-element-accent-color);
 }
+
+.sensor-mini *{
+    color: var(--text-accent-color);
+}

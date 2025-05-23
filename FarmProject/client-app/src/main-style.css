@@ -23,15 +23,34 @@
     --text-accent-color:white;
     --border-accent-color: aliceblue;
     --text-font: "Roboto", sans-serif;
+    --page-title-height: 50px;
+    --page-content-margin: 50px;
     font-weight: 500;
+}
+
+.page-content-container{
+    display: flex;
+    height: 100%;
+    margin: 0 var(--page-content-margin);
+    margin-bottom:var(--page-content-margin);
+    padding: 20px;
+    background-color: var(--second-back-color);
+    border-radius: 10px;
 }
 
 .page-container{
     display: flex;
-    height: 85vh;
+    flex-direction: column;
     width: 100%;
-    margin: auto 50px;
-    padding: 20px;
-    background-color: var(--second-back-color);
-    border-radius: 10px;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.page-title{
+    color: var(--main-text-color);
+    min-height: var(--page-title-height);
+    height: var(--page-title-height);
+    padding-left: 50px;
+    margin-bottom: 0;
 }

@@ -1,3 +1,5 @@
+@import '../main-style.css';
+
 .disabled-sensor{
     background-color: gray;
     border-radius: 10px;
@@ -11,4 +13,68 @@
     padding: 10px;
     border-radius: 10px;
     margin: 0 10px;
+}
+
+.table-row > *{
+    text-align: center;
+    padding: 10px;
+    border-top: 2px solid var(--main-border-color);
+}
+
+.table-row *{
+    color: var(--second-text-color);
+}
+
+.table-select{
+    background-color: var(--main-accent-color);
+    border: 0;
+    color: var(--text-accent-color);
+    border-radius: 5px;
+    text-align: center;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.table-select:hover{
+    background-color: var(--second-accent-color);
+}
+
+.table-select *{
+    color: var(--text-accent-color);
+}
+
+.table-button{
+    margin: 5px;
+    background-color: var(--main-accent-color);
+    border: 0;
+    color: var(--text-accent-color);
+    border-radius: 5px;
+    text-align: center;
+    padding: 5px;
+    cursor: pointer;  
+}
+
+.table-button:hover{
+    background-color: var(--second-accent-color);
+}
+
+.table-button:active{
+    background-color: var(--accent-active-color);
+}
+
+.row-buttons-container{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.table-button.delete{
+    background-color: var(--alarm-color);
+}
+
+.table-button.delete:hover{
+    background-color: var(--alarm-element-accent-color);
+}
+
+.table-button.delete:active{
+    background-color: var(--alarm-element-active-color);
 }

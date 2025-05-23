@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react"
 import { addToGroup, deleteSensor, getGroupsMetadata, removeFromGroup, setSensorActive } from "../sensors/api/sensors-api";
 import './DisabledSensor.css';
+import '../main-style.css';
 import SettingsMenuBoolElemet from "../sensors/SettingsMenuBoolElemet";
 import { FacilityDeepMetaDto, PressureSensorDto, SensorGroupMetaDto, SensorSectionMetaDto } from "../interfaces/DtoInterfaces";
+
+import deleteImage from '../images/trash.png';
+import activateImage from '../images/activate.png'
 
 interface DisabledSensorsProps{
     imei:string,
     gps:string,
     facilitiesMeta:FacilityDeepMetaDto[],
+    selectedFacilityId:number,
     setDisabledSensors:React.Dispatch<React.SetStateAction<PressureSensorDto[]>>,
     onDeleteSensor?:(sensor:PressureSensorDto)=>void
 }
 
-export default function DisabledSensors({imei, gps, facilitiesMeta, setDisabledSensors, onDeleteSensor}:DisabledSensorsProps){
+export default function DisabledSensors({imei, gps, facilitiesMeta,selectedFacilityId, setDisabledSensors, onDeleteSensor}:DisabledSensorsProps){
     const [sensorGroups, setSensorGroups] = useState<SensorGroupMetaDto[]>([])
     const [selectedFacility, setSelectedFacility] = useState<FacilityDeepMetaDto>()
     const [selectedSection, setSelectedSection] = useState<SensorSectionMetaDto>()
@@ -56,50 +61,107 @@ export default function DisabledSensors({imei, gps, facilitiesMeta, setDisabledS
     }
 
     return (
-        <div className="disabled-sensor">
-            <div className="disabled-sensor-info-container">
-                <p>Imei:{imei}</p>
-                <p>GPS:{gps}</p>
-                {
-                    selectedFacility && selectedSection && <button onClick={()=>activateSensor(selectedSection.id)}>Активировать</button>
-                }
-                <button onClick={deleteSensorAsyc}>УДАЛИТЬ</button>
-            </div>
-            <div className="disabled-sensor-info-container">
-                <p>Предприятие:</p>
-                <select onChange={(e)=>{
-                        setSelectedFacility(facilitiesMeta.find(f=>f.id == Number(e.target.value)))
-                    }}>
-                        <option value={undefined}>Выберете предприятие</option>
-                        {
-                            facilitiesMeta.map(facility=><option value={facility.id}>{facility.name}</option>)
-                        }
-                </select>
-                {
-                    selectedFacility &&
+        <>
+            {/* <div className="disabled-sensor">
+                <div className="disabled-sensor-info-container">
+                    <p>Imei:{imei}</p>
+                    <p>GPS:{gps}</p>
+                    {
+                        selectedFacility && selectedSection && <button onClick={()=>activateSensor(selectedSection.id)}>Активировать</button>
+                    }
+                    <button onClick={deleteSensorAsyc}>УДАЛИТЬ</button>
+                </div>
+                <div className="disabled-sensor-info-container">
+                    <p>Предприятие:</p>
                     <select onChange={(e)=>{
-                        setSelectedSection(selectedFacility.sections.find(s=>s.id == Number(e.target.value)))
-                    }}>
-                        <option value={undefined}>Выберете секцию</option>
-                        {
-                            selectedFacility.sections.map(s=><option value={s.id}>{s.name}</option>)
-                        }
+                            setSelectedFacility(facilitiesMeta.find(f=>f.id == Number(e.target.value)))
+                        }}>
+                            <option value={undefined}>Выберете предприятие</option>
+                            {
+                                facilitiesMeta.map(facility=><option value={facility.id}>{facility.name}</option>)
+                            }
                     </select>
-                }
-                {
-                    
-                    selectedFacility && (
-                                    <div>
-                                        {
-                                        selectedFacility.groups.map(group=><div>
-                                            <SettingsMenuBoolElemet title={group.name} value={Boolean(sensorGroups.find(g=>g.id == group.id))} 
-                                                changeEvent={(event)=>groupChangeEvent(event, sensorGroups, group)} key={group.id}></SettingsMenuBoolElemet>
-                                        </div>)
-                                    }
-                                    </div>
-                                )
-                }
-            </div>
-        </div>
+                    {
+                        selectedFacility &&
+                        <select onChange={(e)=>{
+                            setSelectedSection(selectedFacility.sections.find(s=>s.id == Number(e.target.value)))
+                        }}>
+                            <option value={undefined}>Выберете секцию</option>
+                            {
+                                selectedFacility.sections.map(s=><option value={s.id}>{s.name}</option>)
+                            }
+                        </select>
+                    }
+                    {
+                        
+                        selectedFacility && (
+                                        <div>
+                                            {
+                                            selectedFacility.groups.map(group=><div>
+                                                <SettingsMenuBoolElemet title={group.name} value={Boolean(sensorGroups.find(g=>g.id == group.id))} 
+                                                    changeEvent={(event)=>groupChangeEvent(event, sensorGroups, group)} key={group.id}></SettingsMenuBoolElemet>
+                                            </div>)
+                                        }
+                                        </div>
+                                    )
+                    }
+                </div>
+            </div> */}
+            <tr className="table-row">
+                <td>{imei}</td>
+                <td>{gps}</td>
+                <td>
+                    <select
+                    className="table-select" 
+                    onChange={(e)=>{
+                            setSelectedFacility(facilitiesMeta.find(f=>f.id == Number(e.target.value)))
+                        }}>
+                            <option value={undefined}>-Выберете предприятие-</option>
+                            {
+                                facilitiesMeta.map(facility=><option value={facility.id} selected={selectedFacilityId == facility.id}>{facility.name}</option>)
+                            }
+                    </select>
+                </td>
+                <td>
+                    {
+                        
+                        selectedFacility? 
+                        (
+                            <div>
+                                {
+                                selectedFacility.groups.map(group=><div>
+                                    <SettingsMenuBoolElemet title={group.name} value={Boolean(sensorGroups.find(g=>g.id == group.id))} 
+                                        changeEvent={(event)=>groupChangeEvent(event, sensorGroups, group)} key={group.id}></SettingsMenuBoolElemet>
+                                </div>)
+                            }
+                            </div>
+                        ):<p>-</p>
+                    }
+                </td>
+                <td>
+                    {
+                        selectedFacility?
+                        <select 
+                        className="table-select"
+                        onChange={(e)=>{
+                            setSelectedSection(selectedFacility.sections.find(s=>s.id == Number(e.target.value)))
+                        }}>
+                            <option value={undefined}>Выберете секцию</option>
+                            {
+                                selectedFacility.sections.map(s=><option value={s.id}>{s.name}</option>)
+                            }
+                        </select>:<p>-</p>
+                    }
+                </td>
+                <td>
+                    <div className="row-buttons-container">
+                        {
+                            selectedFacility && selectedSection && <button className="table-button" onClick={()=>activateSensor(selectedSection.id)}><img src={activateImage} width="32px" height="32px"></img></button>
+                        }
+                        <button className="table-button delete" onClick={deleteSensorAsyc}><img src={deleteImage} width="32px" height="32px"></img></button>
+                    </div>
+                </td>
+            </tr>
+        </>
     )
 }

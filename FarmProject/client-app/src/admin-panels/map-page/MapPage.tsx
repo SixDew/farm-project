@@ -9,6 +9,7 @@ import '../../main-style.css';
 
 import { FacilityDto, AlarmablePressureSensor } from "../../interfaces/DtoInterfaces";
 import DynamicSensorControls from "./DynamicSensorControls";
+import PageContentBase from "../../PageContentBase";
 
 export interface ZoneProperties{
   name:string,
@@ -30,7 +31,7 @@ export default function MapPage({facility, sensors, alarmedSenosrs}:MapPageProps
     return 13
   },[])
   return (
-    <div className="page-container">
+    <PageContentBase title="Карта">
       <MapContainer
         center={centerInit}
         zoom={zoomInit}
@@ -39,6 +40,6 @@ export default function MapPage({facility, sensors, alarmedSenosrs}:MapPageProps
       >
       <DynamicSensorControls facility={facility} sensors={sensors} alarmedSensors={alarmedSenosrs}></DynamicSensorControls>
       </MapContainer>
-    </div>
+    </PageContentBase>
   );
 }

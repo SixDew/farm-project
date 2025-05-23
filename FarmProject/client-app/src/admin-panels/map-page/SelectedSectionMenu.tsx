@@ -46,7 +46,7 @@ export default function SelectedSectionMenu({selectedSection, sections, groups, 
                                     groups.filter(group=>group.sensors.find(s=>selectedSection.sensors.find(sectionSensor=>s.imei == sectionSensor.imei)))
                                     .map(group=>{
                                         return (
-                                            <AccordingSector title={group.name}>
+                                            <AccordingSector title={group.name} className="group-according-sector">
                                                 {
                                                     group.sensors.map(sensor=>{
                                                         if(selectedSection.sensors.find(s=>s.imei == sensor.imei)){

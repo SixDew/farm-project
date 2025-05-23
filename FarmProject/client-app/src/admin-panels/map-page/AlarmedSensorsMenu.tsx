@@ -14,7 +14,7 @@ export default function AlarmedSensorsMenu({alarmedSensors, onAlarmedSensorSelec
             {
                 alarmedSensors && alarmedSensors.length > 0 && 
                 <div className="alarmed-sensors-menu">
-                <h2>Проблемы</h2>
+                <h2>Аварийные датчики</h2>
                 {
                     alarmedSensors?.map(sensor=>{
                         return (

@@ -1,5 +1,8 @@
+@import '../../main-style.css';
+
 .selected-zone-menu{
-    background-color: rgb(225, 230, 235);
+    /* background-color: rgb(225, 230, 235); */
+    background-color: var(--second-back-color);
     border-radius: 10px;
     box-shadow: 0 0 20px gray;
     margin: 10px;
@@ -42,19 +45,24 @@
 }
 
 .section-select-button{
-    background-color: aliceblue;
+    background-color: var(--main-accent-color);
     border-radius: 5px;
     border:0;
-    box-shadow: 0px 0px 10px gray;
     text-align: center;
+    cursor: pointer;
+    color: var(--text-accent-color);
+}
+
+.section-select-button *{
+    color: var(--text-accent-color);
 }
 
 .section-select-button:hover{
-    background-color: rgb(235, 235, 235)
+    background-color: var(--second-accent-color)
 }
 
 .section-select-button:active{
-    background-color: rgb(220, 220, 220)
+    background-color: var(--accent-active-color)
 }
 
 .selected-section-groups{
@@ -72,12 +80,24 @@
     align-items: center;
     text-align: center;
     margin: 0px;
-    border: 1px solid gray;
+    border: 2px solid var(--main-border-color);
+    border-radius: 10px;
     padding: 10px;
     margin: 10px;
-    border-radius: 10px;
+}
+
+.group-according-sector{
+    border-bottom: 2px solid var(--main-border-color);
+}
+
+.group-according-sector *{
+    color: var(--second-text-color);
 }
 
 .select-menu-sensor-button{
     cursor: pointer;
+    background-color: var(--main-accent-color);
+    color: var(--text-accent-color);
+    border: 0 solid white;
+    border-radius: 5px;
 }

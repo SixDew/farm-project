@@ -81,17 +81,6 @@
     overflow: auto;
 }
 
-.main-group-page-container{
-    display: flex;
-    height: 85vh;
-    width: 100%;
-    margin: auto 50px;
-    padding: 20px;
-    overflow: hidden;
-    border-radius: 10px;
-    background-color: var(--second-back-color);
-}
-
 .group-according-element{
     display: flex;
     justify-content: space-evenly;
