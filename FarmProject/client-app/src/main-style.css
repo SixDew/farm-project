@@ -36,6 +36,7 @@
     padding: 20px;
     background-color: var(--second-back-color);
     border-radius: 10px;
+    overflow: hidden;
 }
 
 .page-container{

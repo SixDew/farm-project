@@ -30,7 +30,7 @@
 }
 
 .middle-part{
-    height: 100vh;
+    height: 93vh;
     display: flex;
     background-color: var(--main-back-color)
 }

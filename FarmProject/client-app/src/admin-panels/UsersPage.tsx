@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import UserElement from "../UserElement"
 import { AdminUserDto, FacilityDeepMetaDto } from "../interfaces/DtoInterfaces"
 import CreateUserDialog from "./CreateUserDialog"
+import PageContentBase from "../PageContentBase"
 
 interface UserPageProps{
     facilitiesMetadata:FacilityDeepMetaDto[]
@@ -30,7 +31,8 @@ export default function UsersPage({facilitiesMetadata}:UserPageProps){
     }, [])
 
     return (
-        <div id="main-admin-container">
+        <PageContentBase title="Операторы">
+            <div id="main-admin-container">
             {
                 addMode && <CreateUserDialog 
                     isOpen={addMode}
@@ -41,7 +43,6 @@ export default function UsersPage({facilitiesMetadata}:UserPageProps){
                     OnEnd={()=>setAddMode(false)}
                 />
             }
-            <h1>Операторы</h1>
             <div id="users-menu">
                 <div id="users-container">{users && users.map((user, index)=><UserElement 
                     key={index} 
@@ -56,5 +57,6 @@ export default function UsersPage({facilitiesMetadata}:UserPageProps){
                 <div><button onClick={()=>setAddMode(!addMode)}>Добавить оператора</button></div>
             </div>
         </div>
+        </PageContentBase>
     )
 }
