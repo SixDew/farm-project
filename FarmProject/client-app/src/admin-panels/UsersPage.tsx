@@ -7,6 +7,8 @@ import { AdminUserDto, FacilityDeepMetaDto } from "../interfaces/DtoInterfaces"
 import CreateUserDialog from "./CreateUserDialog"
 import PageContentBase from "../PageContentBase"
 
+import plusImage from '../images/plus.png'
+
 interface UserPageProps{
     facilitiesMetadata:FacilityDeepMetaDto[]
 }
@@ -78,6 +80,7 @@ export default function UsersPage({facilitiesMetadata}:UserPageProps){
                     facilitiesMetadata={facilitiesMetadata}/>)}
                 </tbody>
             </table>
+            <button className="standart-button bottom-left" onClick={()=>setAddMode(!addMode)}><img src={plusImage} width="48px" height="48px"></img></button>
         </div>
         </PageContentBase>
     )

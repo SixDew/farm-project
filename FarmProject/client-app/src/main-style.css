@@ -56,6 +56,36 @@
     margin-bottom: 0;
 }
 
+.standart-button{
+    background-color: var(--main-accent-color);
+    border: 0;
+    color: var(--text-accent-color);
+    border-radius: 5px;
+    text-align: center;
+    padding: 5px;
+    cursor: pointer;  
+}
+
+.standart-button:hover{
+    background-color: var(--second-accent-color);
+}
+
+.standart-button:active{
+    background-color: var(--accent-active-color);
+}
+
+.standart-button.delete{
+    background-color: var(--alarm-color);
+}
+
+.standart-button.delete:hover{
+    background-color: var(--alarm-element-accent-color);
+}
+
+.standart-button.delete:active{
+    background-color: var(--alarm-element-active-color);
+}
+
 .table-button{
     margin: 5px;
     background-color: var(--main-accent-color);

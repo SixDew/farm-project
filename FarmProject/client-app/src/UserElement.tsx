@@ -65,37 +65,6 @@ export default function UserElement({pass, name, contactData, role, userId, user
 
     return(
         <>
-        {/* {
-            !isDeleted && <div className="user-element">
-            <p>Ключ</p><UserElementField type={passwordInputType} value={password} isReadonly={isReadonly} onChange={(event)=>setPass(event.target.value)}/>
-            <p>ФИО</p><UserElementField type="text" value={userName} isReadonly={isReadonly} onChange={(event)=>setName(event.target.value)}/>
-            <p>Контактные данные</p> <UserElementField type="text" value={contact} isReadonly={isReadonly} onChange={(event)=>setContact(event.target.value)}/>
-            <p>Предприятие</p> 
-            {
-                isChanging ? 
-                <select onChange={(e)=>{setFacilityId(Number(e.target.value))}}>
-                    {
-                        facilitiesMetadata.map(fm=>{
-                            return (
-                                <option value={fm.id} selected={fm.id == facilityId}>{fm.name}</option>
-                            )
-                        })
-                    }
-                </select> : <p className="user-facility-name">{facilitiesMetadata.find(f=>f.id == facilityId)?.name}</p>
-            }
-            {isChanging ? <div>
-                <button onClick={saveUserData}>Сохранить</button>
-                <button onClick={resetValues}>Отменить</button>
-            </div> : <div>
-            <button onClick={()=>{
-                setIsReadonly(false)
-                setPasswordInputType("text")
-                setChanging(true)
-            }}>Изменить</button>
-            <button onClick={deleteUser}>Удалить</button>
-            </div>}
-        </div>
-        } */}
         {
             !isDeleted &&
             <tr className="users-table-row">
