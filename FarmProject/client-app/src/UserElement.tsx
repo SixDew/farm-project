@@ -119,7 +119,7 @@ export default function UserElement({pass, name, contactData, role, userId, user
                         {isChanging ? 
                         <>
                                 <button className="table-button" onClick={saveUserData}><img src={saveImage} width="32px" height="32px"></img></button>
-                                <button className="table-button" onClick={resetValues}><img src={cancelImage} width="32px" height="32px"></img></button>
+                                <button className="table-button delete" onClick={resetValues}><img src={cancelImage} width="32px" height="32px"></img></button>
                             </> : <div>
                             <button className="table-button" onClick={()=>{
                                 setIsReadonly(false)
