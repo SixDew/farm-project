@@ -31,6 +31,7 @@
 
 .middle-part{
     height: 93vh;
+    width: 100vw;
     display: flex;
     background-color: var(--main-back-color)
 }

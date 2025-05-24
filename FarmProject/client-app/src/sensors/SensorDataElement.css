@@ -1,0 +1,17 @@
+@import '../main-style.css';
+
+.sensor-data-element{
+    --size:300px;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    border: 2px solid var(--main-border-color);
+    margin: 15px;
+    border-radius: 10px;
+    width: var(--size);
+    height: var(--size);
+}
+
+.scrollable{
+    overflow: auto;
+}

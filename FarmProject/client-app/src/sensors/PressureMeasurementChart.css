@@ -1,0 +1,12 @@
+@import '../main-style.css';
+
+.chart-container{
+    display: block;
+    text-align: center;
+    height: 100%;
+    margin: 15px;
+    margin-top: 0;
+    border:2px solid var(--main-border-color);
+    border-radius: 10px;
+    overflow: auto;
+}

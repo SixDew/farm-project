@@ -1,12 +1,14 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import './PressureSensor.css'
 import { useNavigate, useParams } from "react-router-dom";
 import PressureMeasurementChart from "./PressureMeasurementChart";
 import {getPressureSensorData, sendAlarmedMeasurementChecked } from './api/sensors-api'
 import PressureSensorSettings from "./PressureSensorSettings";
-import AlarmNotification from "./AlarmNotification";
 import { AlarmablePressureSensor, PressureAlarmDto, PressureMeasurements, PressureSensorDto } from "../interfaces/DtoInterfaces";
 import MeasurementsStatistic from "./MeasurementsStatistic";
+import PageContentBase from "../PageContentBase";
+import SensorDataElement from "./SensorDataElement";
+import AlarmNotificationsInfo from "./AlarmNotificationsInfo";
 
 interface PressureSensorProps{
     sensors:AlarmablePressureSensor[]
@@ -21,7 +23,6 @@ export default function PressureSensor({sensors, sensorOnDisalarm, onDisableSens
     const [alarmedMeasurements, setAlarmedMeasurements] = useState<PressureAlarmDto[]>([])
     const [checkedAlarmedMeasurements, setCheckedAlarmedMeasurements] = useState<PressureAlarmDto[]>([])
     const [legacyMeasurements, setLegacyMeasurements] = useState<PressureMeasurements[]>([])
-    const [showSettings, setShowSettings] = useState(false)
 
     useEffect(()=>{
         setSensor(sensors.find(s=>s.imei == imei))
@@ -41,49 +42,47 @@ export default function PressureSensor({sensors, sensorOnDisalarm, onDisableSens
 
 
     return (
-        <Fragment>
-            <div id='main-info-container'>
-                <div id='base-info-container'>
-                    <button onClick={()=>navigate('/')} id="back-button">Назад</button>
-                    <div className="imei-container"><p>Датчик:<p>{imei}</p></p></div>
-                    <div className="measurement-channels-container">
-                    <p>Канал 1:</p><p>{sensor?.lastMeasurement?.measurement1}</p>
-                    <p>Канал 2:</p><p>{sensor?.lastMeasurement?.measurement2}</p>
-                    </div>
+        <PageContentBase title={`Датчик ${imei}`}>
+            <div className="sensor-main-container">
+                <div className="sensor-info-container">
+                    <SensorDataElement>
+                         <div className='base-info-container'>
+                            <div className="measurement-channels-container">
+                                <h3>Последнее измерение</h3>
+                                <p className="second-text bottom-border-main-color">Канал 1:</p><p className="second-text">{sensor?.lastMeasurement?.measurement1}</p>
+                                <p className="second-text bottom-border-main-color">Канал 2:</p><p className="second-text">{sensor?.lastMeasurement?.measurement2}</p>
+                            </div>
+                        </div>
+                    </SensorDataElement>
+                    <SensorDataElement scrollable={true}>
+                        <PressureSensorSettings imei={imei as string} role={localStorage.getItem('role') as string} onDisableSensor={onDisableSensor}/>
+                    </SensorDataElement>
+                    <SensorDataElement>
+                        <MeasurementsStatistic 
+                            imei={imei}
+                            onGetCheckedAlarmMeasurements={(measurements)=>{
+                                setCheckedAlarmedMeasurements(measurements)
+                            }}
+                        />
+                    </SensorDataElement>
+                    <SensorDataElement>
+                        <AlarmNotificationsInfo alarmedMeasurements={alarmedMeasurements} onNotificationCheck={(id)=>onNotificationCheck(id, imei, sensor, sensorOnDisalarm, setAlarmedMeasurements)}/>
+                    </SensorDataElement>
                 </div>
-
-                <div id='settings-container'>
-                    <button id='show-settings' onClick={()=>setShowSettings((prev)=>!prev)}>Настройки</button>
-                    {showSettings? <PressureSensorSettings imei={imei as string} role={localStorage.getItem('role') as string} onDisableSensor={onDisableSensor}/> : null}
-                </div>
-
-                <MeasurementsStatistic 
-                    imei={imei}
-                    onGetCheckedAlarmMeasurements={(measurements)=>{
-                        setCheckedAlarmedMeasurements(measurements)
-                    }}
-                />
-
-                <div id="notifucations-info-container">
-                    <h3>Предупреждения</h3>
-                    {alarmedMeasurements.map((n, index)=><AlarmNotification measurement1={n.measurement1} measurement2={n.measurement2} date={n.measurementsTime} key={index}
-                    onCheck={()=>onNotificationCheck(n.id, imei, sensor, sensorOnDisalarm, setAlarmedMeasurements)}/>)}
-                </div>
+                {
+                    sensor  && <PressureMeasurementChart 
+                    measurements={sensor.lastMeasurement ? sensor.lastMeasurement : undefined} 
+                    legacyMeasurements={legacyMeasurements} 
+                    alarmedMeasurements={sensor.alarmedMeasurements}
+                    checkedAlarmedMeasurements={checkedAlarmedMeasurements}
+                    alarmCheckedEvent={(id:number)=>onNotificationCheck(id, imei, sensor, sensorOnDisalarm, setAlarmedMeasurements)}/>
+                }
             </div>
-
-            {
-                sensor  && <PressureMeasurementChart 
-                measurements={sensor.lastMeasurement ? sensor.lastMeasurement : undefined} 
-                legacyMeasurements={legacyMeasurements} 
-                alarmedMeasurements={sensor.alarmedMeasurements}
-                checkedAlarmedMeasurements={checkedAlarmedMeasurements}
-                alarmCheckedEvent={(id:number)=>onNotificationCheck(id, imei, sensor, sensorOnDisalarm, setAlarmedMeasurements)}/>
-            }
-        </Fragment>
+        </PageContentBase>
     )
 }
 
-async function onNotificationCheck(id:number, imei:string | undefined, sensor: AlarmablePressureSensor | undefined,
+export async function onNotificationCheck(id:number, imei:string | undefined, sensor: AlarmablePressureSensor | undefined,
     sensorOnDisalarm:((sensor:AlarmablePressureSensor)=>void) | undefined,
     setAlarmedMeasurements:React.Dispatch<React.SetStateAction<PressureAlarmDto[]>>){
         if(imei && sensor){

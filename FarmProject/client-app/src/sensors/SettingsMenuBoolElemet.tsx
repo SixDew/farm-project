@@ -1,15 +1,16 @@
 interface SettingsMenuBoolElementProps{
     title:string,
     value:boolean,
+    className?:string,
     changeEvent:React.ChangeEventHandler<HTMLInputElement>
 }
 
-export default function SettingsMenuBoolElemet({title, value, changeEvent}:SettingsMenuBoolElementProps){
+export default function SettingsMenuBoolElemet({title, value,className, changeEvent}:SettingsMenuBoolElementProps){
     return (
         <div>
             <p>{title}</p> 
             {
-                <input type="checkbox" checked={value} onChange={changeEvent}/>
+                <input className={className} type="checkbox" checked={value} onChange={changeEvent}/>
             }
         </div>
     )

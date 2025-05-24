@@ -7,7 +7,6 @@
     --second-back-color:white;
     --main-hover-color: rgb(235, 235, 235);
     --main-active-color: #E0E0E0;
-    --main-accent-color:#E0E0E0;
     --alarm-color: rgb(200, 35, 10);
     --alarm-element-color: rgb(226, 40, 15);
     --alarm-element-accent-color: rgb(186, 40, 15);
@@ -115,4 +114,12 @@
 
 .table-button.delete:active{
     background-color: var(--alarm-element-active-color);
+}
+
+.second-text{
+    color: var(--second-text-color);
+}
+
+.bottom-border-main-color{
+    border-bottom: 2px solid var(--main-border-color);
 }

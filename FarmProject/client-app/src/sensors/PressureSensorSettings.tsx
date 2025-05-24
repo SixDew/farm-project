@@ -5,6 +5,10 @@ import SettingsMenuNumElemet from './SettingsMenuNumElement'
 import SettingsMenuBoolElemet from './SettingsMenuBoolElemet'
 import { useNavigate } from 'react-router-dom'
 import { PressureSensorSettingsDto } from '../interfaces/DtoInterfaces'
+import '../main-style.css'
+
+import saveImage from '../images/save.png'
+import disableImage from '../images/white-disabled2.png'
  
 interface PressureSensorSettingProps{
     imei:string,
@@ -88,13 +92,14 @@ export default function PressureSensorSettings({imei, role, onDisableSensor}:Pre
 
     return(
         <div id='main-settings-container'>
+            <h3>Настройки</h3>
             {
                 settings ? (
                     <>
                     {
                         role === 'admin' && (
                             <>
-                                <SettingsMenuNumElemet title='Позитивное отклонение' value={settings.deviationSpanPositive as number} changeEvent={(event)=>{setSettings((prev)=>{
+                                <SettingsMenuNumElemet className='setting-input-field' title='Позитивное отклонение' value={settings.deviationSpanPositive as number} changeEvent={(event)=>{setSettings((prev)=>{
                                         if(prev){
                                             prev.deviationSpanPositive=Number(event.target.value)
                                             return {...prev}
@@ -102,7 +107,7 @@ export default function PressureSensorSettings({imei, role, onDisableSensor}:Pre
                                             return null
                                         }
                                 })}}/>
-                                <SettingsMenuNumElemet title='Негативное отклонение' value={settings.deviationSpanNegative as number} changeEvent={(event)=>{setSettings((prev)=>{
+                                <SettingsMenuNumElemet className='setting-input-field' title='Негативное отклонение' value={settings.deviationSpanNegative as number} changeEvent={(event)=>{setSettings((prev)=>{
                                         if(prev){
                                             prev.deviationSpanNegative=Number(event.target.value)
                                             return {...prev}
@@ -111,7 +116,7 @@ export default function PressureSensorSettings({imei, role, onDisableSensor}:Pre
                                             return null
                                         }
                                 })}}/>
-                                <SettingsMenuNumElemet title='Чувствительность' value={settings.sensitivity as number} changeEvent={(event)=>{setSettings((prev)=>{
+                                <SettingsMenuNumElemet className='setting-input-field' title='Чувствительность' value={settings.sensitivity as number} changeEvent={(event)=>{setSettings((prev)=>{
                                         if(prev){
                                             prev.sensitivity=Number(event.target.value)
                                             return {...prev}
@@ -120,7 +125,7 @@ export default function PressureSensorSettings({imei, role, onDisableSensor}:Pre
                                             return null
                                         }
                                 })}}/>
-                                <SettingsMenuNumElemet title='Частота отправки данных' value={settings.dataSendingSpan as number} changeEvent={(event)=>{
+                                <SettingsMenuNumElemet className='setting-input-field' title='Частота отправки данных' value={settings.dataSendingSpan as number} changeEvent={(event)=>{
                                     setSettings((prev)=>{
                                         if(prev){
                                             prev.dataSendingSpan=Number(event.target.value)
@@ -166,14 +171,16 @@ export default function PressureSensorSettings({imei, role, onDisableSensor}:Pre
 
                                 {showSaveOkMessage && <p className='ok-message'>Настройки успешно сохранены</p>}
                                 {showSaveErrorMessage && <p className='error-message'>Ошибка сохранения настроек</p>}
-                                <button onClick={saveAdminSettings}>Сохранить</button>
-                                <button onClick={async ()=>{
-                                    const response = await setSensorActive(false, imei)
-                                    if(response.ok){
-                                        onDisableSensor && onDisableSensor()
-                                        nav('/sensors-to-add')
-                                    }
-                                }}>ДЕАКТИВИРОВАТЬ</button>
+                                <div className='setting-button-container'>
+                                    <button className='standart-button' onClick={saveAdminSettings}><img src={saveImage} width="32px" height="32px"></img></button>
+                                    <button className='standart-button delete' onClick={async ()=>{
+                                        const response = await setSensorActive(false, imei)
+                                        if(response.ok){
+                                            onDisableSensor && onDisableSensor()
+                                            nav('/sensors-to-add')
+                                        }
+                                    }}><img src={disableImage} width="32px" height="32px"></img></button>
+                                </div>
                             </>
                         )
                     }
@@ -193,7 +200,7 @@ export default function PressureSensorSettings({imei, role, onDisableSensor}:Pre
                                 }}/>
                                 {showSaveOkMessage && <p className='ok-message'>Настройки успешно сохранены</p>}
                                 {showSaveErrorMessage && <p className='error-message'>Ошибка сохранения настроек</p>}
-                                <button onClick={saveSettings}>Сохранить</button>
+                                <button className='standart-button' onClick={saveSettings}><img src={saveImage} width="32px" height="32px"></img></button>
                             </>
                         )
                     }

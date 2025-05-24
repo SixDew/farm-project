@@ -1,101 +1,20 @@
-#main-info-container{
+@import '../main-style.css';
+
+.base-info-container{
     display: flex;
-    flex-direction: row;
-
-    background-color: rgb(190, 190, 190);
-    border-radius: 10px;
-    box-shadow: 5px 5px 10px gray;
-    padding: 10px;
-    margin: 5px;
-    max-height: 400px;
-}
-
-#main-info-container > *{
-    margin: 10px;
-}
-
-#base-info-container{
-    background-color: rgb(150, 150, 150);
-    border-radius: 10px;
-    box-shadow: 5px 5px 10px gray;
-    padding: 10px;
-    
-    display: flex;
+    margin: auto;
     flex-direction: column;
-
     align-items: center;
-
-    max-height: 100%;
     overflow: auto;
     text-align: center;
     height: fit-content;
 }
 
-#notifucations-info-container{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: auto;
-    background-color: rgb(200, 35, 10);
-    color: aliceblue;
-    box-shadow: 0 5px 5px gray;
-    border-radius: 10px;
-    padding: 20px;
-    margin: 10px;
-    margin-left: auto;
-}
-
-#settings-container{
-    display: flex;
-    padding: 10px;
-    height: fit-content;
-    max-height: 310px;
-    background-color: rgb(150, 150, 150);
-    border-radius: 10px;
-    box-shadow: 5px 5px 10px gray;
-    align-items: center;
-    flex-direction: column;
-}
-
-#show-settings{
-    border: solid 0px gray;
-    border-radius: 5px;
-    background-color: rgb(100, 180, 200);
-
-    min-width: 50px;
-    min-height: 30px;
-
-    color: aliceblue;
-    cursor: pointer;
-}
-
-#back-button{
-    border: solid 0px gray;
-    border-radius: 5px;
-    background-color: rgb(100, 180, 200);
-
-    min-width: 50px;
-    min-height: 30px;
-
-    color: aliceblue;
-    cursor: pointer;
-}
-
 .imei-container{
-    background-color: aliceblue;
-    border-radius: 10px;
-    min-width: 100px;
-    min-height: 100px;
-    margin: 10px;
     font-size: large;
 }
 
 .measurement-channels-container{
-    background-color: aliceblue;
-    border-radius: 10px;
-    padding: 10px;
-    min-width: 100px;
-    min-height: 100px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -104,4 +23,18 @@
 .measurement-channels-container *{
     margin-top: 3px;
     margin-bottom: 3px;
+}
+
+.sensor-main-container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid var(--main-border-color);
+    border-radius: 10px;
+}
+
+.sensor-info-container{
+    display: flex;
+    justify-content: space-evenly;
 }

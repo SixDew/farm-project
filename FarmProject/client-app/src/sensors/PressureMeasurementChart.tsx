@@ -1,7 +1,7 @@
 import ReactECharts from 'echarts-for-react'
-//импортировать только нужное в будущем
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { PressureAlarmDto, PressureMeasurements } from '../interfaces/DtoInterfaces';
+import './PressureMeasurementChart.css';
 
 interface MeasurementsChartProps{
   measurements?:PressureMeasurements,
@@ -123,7 +123,10 @@ export default function PressureMeasurementChart({measurements, legacyMeasuremen
     }, [])
 
     return (
-        <ReactECharts option={initOption} ref={chart}></ReactECharts>
+        <div className='chart-container'>
+          <h4>График</h4>
+          <ReactECharts option={initOption} ref={chart}></ReactECharts>
+        </div>
     )
 }
 
