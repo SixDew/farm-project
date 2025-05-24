@@ -19,7 +19,7 @@ export default function AlarmedSensorsMenu({alarmedSensors, onAlarmedSensorSelec
                     alarmedSensors?.map(sensor=>{
                         return (
                             <button key={'alarmed-sensor'+sensor.imei} className="alarmed-sensor-element" onClick={()=>onAlarmedSensorSelect && onAlarmedSensorSelect(sensor)}>
-                                <h5>Сенсор: {sensor.imei}</h5>
+                                <h5>Номер: {sensor.imei}</h5>
                                 <h5>Координаты: {sensor.gps}</h5>
                             </button>
                         )
