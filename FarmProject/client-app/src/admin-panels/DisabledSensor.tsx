@@ -146,7 +146,7 @@ export default function DisabledSensors({imei, gps, facilitiesMeta,selectedFacil
                         onChange={(e)=>{
                             setSelectedSection(selectedFacility.sections.find(s=>s.id == Number(e.target.value)))
                         }}>
-                            <option value={undefined}>Выберете секцию</option>
+                            <option value={undefined}>-Выберете секцию-</option>
                             {
                                 selectedFacility.sections.map(s=><option value={s.id}>{s.name}</option>)
                             }

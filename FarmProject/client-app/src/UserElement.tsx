@@ -1,8 +1,13 @@
 import {useState } from "react"
-import "./UserElement.css"
 import UserElementField from "./UserElementField"
 import { updateUserData, removeUser } from "./sensors/users-api"
 import { FacilityDeepMetaDto } from "./interfaces/DtoInterfaces"
+import "./UserElement.css"
+
+import cancelImage from './images/white-cancel.png';
+import changeImage from './images/white-change.png';
+import deleteImage from './images/trash.png';
+import saveImage from './images/save.png';
 
 interface UserElementProps{
     pass:string,
@@ -60,7 +65,7 @@ export default function UserElement({pass, name, contactData, role, userId, user
 
     return(
         <>
-        {
+        {/* {
             !isDeleted && <div className="user-element">
             <p>Ключ</p><UserElementField type={passwordInputType} value={password} isReadonly={isReadonly} onChange={(event)=>setPass(event.target.value)}/>
             <p>ФИО</p><UserElementField type="text" value={userName} isReadonly={isReadonly} onChange={(event)=>setName(event.target.value)}/>
@@ -90,6 +95,42 @@ export default function UserElement({pass, name, contactData, role, userId, user
             <button onClick={deleteUser}>Удалить</button>
             </div>}
         </div>
+        } */}
+        {
+            !isDeleted &&
+            <tr className="users-table-row">
+                <td><UserElementField type="text" value={userName} isReadonly={isReadonly} onChange={(event)=>setName(event.target.value)}/></td>
+                <td><UserElementField type="text" value={contact} isReadonly={isReadonly} onChange={(event)=>setContact(event.target.value)}/></td>
+                <td>{
+                    isChanging ? 
+                    <select className="user-facility-select" onChange={(e)=>{setFacilityId(Number(e.target.value))}}>
+                        {
+                            facilitiesMetadata.map(fm=>{
+                                return (
+                                    <option value={fm.id} selected={fm.id == facilityId}>{fm.name}</option>
+                                )
+                            })
+                        }
+                    </select> : <p className="user-facility-name">{facilitiesMetadata.find(f=>f.id == facilityId)?.name}</p>
+                }</td>
+                <td><UserElementField type={passwordInputType} value={password} isReadonly={isReadonly} onChange={(event)=>setPass(event.target.value)}/></td>
+                <td>
+                    <div className="row-buttons-container">
+                        {isChanging ? 
+                        <>
+                                <button className="table-button" onClick={saveUserData}><img src={saveImage} width="32px" height="32px"></img></button>
+                                <button className="table-button" onClick={resetValues}><img src={cancelImage} width="32px" height="32px"></img></button>
+                            </> : <div>
+                            <button className="table-button" onClick={()=>{
+                                setIsReadonly(false)
+                                setPasswordInputType("text")
+                                setChanging(true)
+                            }}><img src={changeImage} width="32px" height="32px"></img></button>
+                            <button className="table-button delete" onClick={deleteUser}><img src={deleteImage} width="32px" height="32px"></img></button>
+                        </div>}
+                    </div>
+                </td>
+            </tr>
         }
         </>
     )

@@ -32,7 +32,7 @@ export default function UsersPage({facilitiesMetadata}:UserPageProps){
 
     return (
         <PageContentBase title="Операторы">
-            <div id="main-admin-container">
+            <div id="main-users-table-container">
             {
                 addMode && <CreateUserDialog 
                     isOpen={addMode}
@@ -43,7 +43,7 @@ export default function UsersPage({facilitiesMetadata}:UserPageProps){
                     OnEnd={()=>setAddMode(false)}
                 />
             }
-            <div id="users-menu">
+            {/* <div id="users-menu">
                 <div id="users-container">{users && users.map((user, index)=><UserElement 
                     key={index} 
                     pass={user.key} 
@@ -55,7 +55,29 @@ export default function UsersPage({facilitiesMetadata}:UserPageProps){
                     facilitiesMetadata={facilitiesMetadata}/>)}
                 </div>
                 <div><button onClick={()=>setAddMode(!addMode)}>Добавить оператора</button></div>
-            </div>
+            </div> */}
+            <table className="users-table">
+                <thead>
+                    <tr className="table-head">
+                        <th>ФИО</th>
+                        <th>Контактные данные</th>
+                        <th>Предприятие</th>
+                        <th>Ключ</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {users && users.map((user, index)=><UserElement 
+                    key={index} 
+                    pass={user.key} 
+                    name={user.name} 
+                    contactData={user.contactData} 
+                    role={user.role} 
+                    userId={user.id}
+                    userFacilityId={user.facilityId}
+                    facilitiesMetadata={facilitiesMetadata}/>)}
+                </tbody>
+            </table>
         </div>
         </PageContentBase>
     )
