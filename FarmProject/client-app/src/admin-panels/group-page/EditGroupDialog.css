@@ -1,3 +1,5 @@
+@import '../../main-style.css';
+
 .add-sensor-dialog{
     width: 50vw;
     height: 50vh;
@@ -8,7 +10,7 @@
 }
 
 .selcted-dialog-sensor-container{
-    background-color: rgb(116, 187, 219);
+    background-color: var(--main-accent-color);
     width: fit-content;
     height: fit-content;
     border-radius: 10px;
