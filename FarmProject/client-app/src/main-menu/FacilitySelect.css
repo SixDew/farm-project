@@ -2,22 +2,7 @@
     display: flex;
 }
 
-.facility-select-element{
-    width: 200px;
-    display: flex;
-    box-shadow: 0 5px 10px gray;
-    font-size: medium;
-    background-color: aliceblue;
-    border: 1px solid gray;
-    border-radius: 5px;
-    text-align: center;
-    cursor: pointer;
-}
-
-.facility-select-element:hover{
-    background-color: rgb(235, 235, 235)
-}
-
-.facility-select-element:active{
-    background-color: rgb(220, 220, 220)
+.facility-select-container *{
+    font-size: larger;
+    appearance: none;
 }

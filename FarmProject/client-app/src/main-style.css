@@ -24,6 +24,7 @@
     --text-font: "Roboto", sans-serif;
     --page-title-height: 50px;
     --page-content-margin: 50px;
+    --main-menu-width:100px;
     font-weight: 500;
 }
 
@@ -122,4 +123,27 @@
 
 .bottom-border-main-color{
     border-bottom: 2px solid var(--main-border-color);
+}
+
+.accent-select{
+    background-color: var(--main-accent-color);
+    border: 0;
+    color: var(--text-accent-color);
+    border-radius: 5px;
+    text-align: center;
+    padding: 5px;
+    cursor: pointer;
+}
+
+
+.bordered-accent{
+    border: 2px solid var(--border-accent-color);
+}
+
+.accent-select:hover{
+    background-color: var(--second-accent-color);
+}
+
+.accent-select *{
+    color: var(--text-accent-color);
 }

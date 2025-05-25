@@ -14,7 +14,7 @@
     flex-direction: column;
 }
 .main-menu{
-    width: 100px;
+    width: var(--main-menu-width);
     height: 100%;
     background-color: var(--main-accent-color);
     display: flex;
@@ -41,4 +41,10 @@
     background-color: var(--main-accent-color);
     display: flex;
     align-items: center;
+}
+
+.angle-header-element{
+    width: var(--main-menu-width);
+    margin: 0;
+    padding: 0;
 }

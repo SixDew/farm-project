@@ -206,6 +206,7 @@ export default function App(){
         <div className='main-app-container'>
         <Router>
             <div className='header'>
+                <div className='angle-header-element'></div>
                 <FacilitySelect 
                     facilitiesMeta={facilitiesMeta}
                     onSelectEvent={onFacilitySelect}

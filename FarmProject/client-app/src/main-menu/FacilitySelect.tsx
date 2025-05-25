@@ -1,5 +1,6 @@
 import { FacilityDeepMetaDto } from "../interfaces/DtoInterfaces"
 import "./FacilitySelect.css"
+import '../main-style.css'
 
 interface FacilitySelectProps{
     facilitiesMeta:FacilityDeepMetaDto[],
@@ -10,9 +11,9 @@ interface FacilitySelectProps{
 export default function FacilitySelect({facilitiesMeta, onSelectEvent, onClick}:FacilitySelectProps){
     return (
         <div className="facility-select-container">
-            <select onClick={(e)=>{
+            <select className="bordered-accent accent-select" onClick={(e)=>{
                 onClick && onClick(e)
-            }} className="facility-select-element" onChange={onSelectEvent}>
+            }} onChange={onSelectEvent}>
                 <option value={0} selected>-Выбрать предприятие-</option>
                 {
                     facilitiesMeta.map(f=><option key={f.id} value={f.id}>{f.name}</option>)
