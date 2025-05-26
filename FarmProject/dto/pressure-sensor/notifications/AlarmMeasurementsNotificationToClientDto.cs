@@ -1,6 +1,9 @@
-﻿namespace FarmProject.dto.pressure_sensor.alarm
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace FarmProject.dto.pressure_sensor.alarm
 {
-    public class PressureAlarmToClientDto
+    [Owned]
+    public class AlarmMeasurementsNotificationToClientDto
     {
         public required int Id { get; set; }
         public double Measurement1 { get; init; }

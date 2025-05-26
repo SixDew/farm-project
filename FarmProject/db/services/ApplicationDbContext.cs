@@ -35,6 +35,8 @@ public class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new AlarmMeasurementsConfiguration());
         modelBuilder.ApplyConfiguration(new SectionConfiguration());
         modelBuilder.ApplyConfiguration(new FacilityConfiguration());
+        modelBuilder.ApplyConfiguration(new WarningMeasurementsNotificationConfiguration());
+        modelBuilder.ApplyConfiguration(new AlarmMeasurementsNotificationConfiguration());
 
         modelBuilder.Entity<MapZone>().ToTable("MapZones");
 

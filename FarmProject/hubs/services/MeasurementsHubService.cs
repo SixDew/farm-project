@@ -1,6 +1,7 @@
 ﻿using FarmProject.dto;
 using FarmProject.dto.pressure_sensor.alarm;
 using FarmProject.dto.pressure_sensor.measurements;
+using FarmProject.dto.pressure_sensor.notifications;
 using Microsoft.AspNetCore.SignalR;
 
 namespace FarmProject.hubs.services;
@@ -14,9 +15,9 @@ public class MeasurementsHubService(IHubContext<MeasurementsHub> hubContext)
         await _hubContext.Clients.Group(GroupNameComposer.GetPressureGroup(imei)).SendAsync("ReciveMeasurements", data);
     }
 
-    public async Task SendAlarmNotifyAsync(PressureAlarmToClientDto data, string imei)
+    public async Task SendAlarmNotifyAsync(AlarmMeasurementsNotificationToClientDto data, int userId)
     {
-        await _hubContext.Clients.Group(GroupNameComposer.GetPressureGroup(imei)).SendAsync("ReciveAlarmNotify", data);
+        await _hubContext.Clients.User(userId.ToString()).SendAsync("ReciveAlarmNotify", data);
     }
 
     public async Task SendAddSensorNotifyAsync(PressureSensorToClientDto sensor)
@@ -24,9 +25,8 @@ public class MeasurementsHubService(IHubContext<MeasurementsHub> hubContext)
         await _hubContext.Clients.Group(GroupNameComposer.GetUsersGroup()).SendAsync("ReciveAddSensorNotify", sensor);
     }
 
-    public async Task SendForecastWarningNotifyAsync(string sensorIMei, TimeSpan warningInterval, int measurementId)
+    public async Task SendForecastWarningNotifyAsync(WarningMeasurementsNotificationData data, int userId)
     {
-        await _hubContext.Clients.Group(GroupNameComposer.GetUsersGroup()).SendAsync("ReciveForecastWarningNotify",
-            new { imei = sensorIMei, warningInterval = warningInterval, measurementId = measurementId });
+        await _hubContext.Clients.User(userId.ToString()).SendAsync("ReciveForecastWarningNotify", data);
     }
 }

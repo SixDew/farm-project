@@ -1,6 +1,7 @@
 ﻿using FarmProject.db.models;
 using FarmProject.db.services.providers;
-using FarmProject.hubs.services;
+using FarmProject.dto.pressure_sensor.notifications;
+using FarmProject.notifications;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace FarmProject.predict;
@@ -34,15 +35,15 @@ public class ForecastService(IPredictService _predictService, IServiceProvider _
 
         if (predictData.isWarning1 && predictData.Slope1 != 0)
         {
-            await sendDriftNotify(settings, measurements.PRR1, predictData, measurements.Id);
+            await sendDriftNotify(settings, measurements.PRR1, predictData, measurements);
         }
         if (predictData.isWarning2 && predictData.Slope2 != 0)
         {
-            await sendDriftNotify(settings, measurements.PRR2, predictData, measurements.Id);
+            await sendDriftNotify(settings, measurements.PRR2, predictData, measurements);
         }
     }
 
-    private async Task sendDriftNotify(SensorSettings settings, float lastMeasurement, PredictOutputData predictData, int measurementId)
+    private async Task sendDriftNotify(SensorSettings settings, float lastMeasurement, PredictOutputData predictData, Measurements measurements)
     {
         var intervalSeconds = _Interval.TotalSeconds;
         float secondsToTreshold = 0;
@@ -68,10 +69,21 @@ public class ForecastService(IPredictService _predictService, IServiceProvider _
             {
                 using (var scope = _services.CreateScope())
                 {
-                    var measurementsHubService = scope.ServiceProvider.GetRequiredService<MeasurementsHubService>();
+                    var notificationService = scope.ServiceProvider.GetRequiredService<NotificationService>();
+                    var sensors = scope.ServiceProvider.GetRequiredService<SensorsProvider>();
+                    var sensor = await sensors.GetByImeiAsync(measurements.IMEI);
+                    var sections = scope.ServiceProvider.GetRequiredService<SectionsProvider>();
+                    var section = await sections.GetAsync((int)sensor.SectionId);
+
                     _memoryCache.Set(cacheKey, DateTime.UtcNow, notifyWindow);
-                    await measurementsHubService.SendForecastWarningNotifyAsync(settings.IMEI, timeSpanToTranshold, measurementId);
-                    Console.WriteLine("Send warning");
+                    await notificationService.SendWarningForecastedMeasurementsNotificationToAllAsync(
+                        new WarningMeasurementsNotificationData()
+                        {
+                            Imei = measurements.IMEI,
+                            MeasurementId = measurements.Id,
+                            WarningInterval = timeSpanToTranshold
+                        }
+                        , section.FacilityId);
                 }
             }
         }

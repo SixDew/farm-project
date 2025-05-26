@@ -8,6 +8,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
+        builder.HasMany(u => u.Notifications).WithOne().HasForeignKey(n => n.UserId);
         builder.ToTable("Users");
     }
 }

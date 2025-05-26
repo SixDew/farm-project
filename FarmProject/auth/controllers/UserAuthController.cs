@@ -26,7 +26,7 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
             return Unauthorized("Invalid key");
         }
 
-        var claims = new List<Claim> { new UserKeyClaim(key), new UserRoleClaim() };
+        var claims = GetUserClaim(Roles.USER, key, user.Id);
         var jwt = new JwtSecurityToken(
                 issuer: AuthenticationJwtOptions.ISSUER,
                 audience: AuthenticationJwtOptions.AUDIENCE,
@@ -45,7 +45,7 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
         {
             return Unauthorized();
         }
-        var claims = new List<Claim> { new UserKeyClaim(key), new AdminRoleClaim() };
+        var claims = GetUserClaim(Roles.ADMIN, key, user.Id);
         var jwt = new JwtSecurityToken(
                 issuer: AuthenticationJwtOptions.ISSUER,
                 audience: AuthenticationJwtOptions.AUDIENCE,
@@ -103,5 +103,30 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
         users.Delete(user);
         await users.SaveChangesAsync();
         return Ok(user);
+    }
+
+    private static List<Claim> GetUserClaim(Roles role, string key, int userId)
+    {
+        switch (role)
+        {
+            case Roles.ADMIN:
+                {
+                    return new List<Claim> { new UserKeyClaim(key), new AdminRoleClaim(), new UserIdClaim(userId) };
+                }
+            case Roles.USER:
+                {
+                    return new List<Claim> { new UserKeyClaim(key), new UserRoleClaim(), new UserIdClaim(userId) };
+                }
+            default:
+                {
+                    throw new ArgumentException();
+                }
+        }
+    }
+
+    private enum Roles
+    {
+        ADMIN,
+        USER
     }
 }

@@ -2,12 +2,10 @@
 using FarmProject.db.services;
 using FarmProject.db.services.providers;
 using FarmProject.dto.pressure_sensor.services;
-using FarmProject.hubs.services;
 
 namespace FarmProject.alarm.services
 {
-    public class AlarmPressureSensorService(SensorsProvider _sensors, PressureAlarmDtoConvertService _alarmConverter,
-        MeasurementsHubService _measurementsHubService, AlarmMeasurementsConverter _converter)
+    public class AlarmPressureSensorService(SensorsProvider _sensors, PressureAlarmDtoConvertService _alarmConverter, AlarmMeasurementsConverter _converter)
     {
         public async Task<AlarmedMeasurements?> AddAlarmMeasurementAsync(Measurements measurements)
         {
@@ -21,18 +19,6 @@ namespace FarmProject.alarm.services
             }
             return null;
 
-        }
-
-        public async Task SendAlarmNotifyAsync(Measurements measurements)
-        {
-            await _measurementsHubService.SendAlarmNotifyAsync(_alarmConverter.ConvertToHubAlarmToClientDto(measurements),
-                                        measurements.IMEI);
-        }
-
-        public async Task SendAlarmNotifyAsync(AlarmedMeasurements measurements)
-        {
-            await _measurementsHubService.SendAlarmNotifyAsync(_alarmConverter.ConvertToHubAlarmToClientDto(measurements),
-                                        measurements.Imei);
         }
     }
 }

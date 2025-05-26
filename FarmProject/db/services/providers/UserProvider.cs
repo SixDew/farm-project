@@ -41,5 +41,16 @@ namespace FarmProject.db.services.providers
         {
             return await _dbSet.FirstOrDefaultAsync(x => x.Role == UserRoles.ADMIN && x.Id == id);
         }
+
+        public async Task<List<Notification>?> GetNotificationsAsync(int id)
+        {
+            var user = await _dbSet.Include(u => u.Notifications).FirstOrDefaultAsync(u => u.Id == id);
+            return user?.Notifications;
+        }
+
+        public async Task<List<User>?> GetAllFacilityUsersWithNotificationsAsync(int facilityId)
+        {
+            return await _dbSet.Include(u => u.Notifications).Where(u => u.FacilityId == facilityId).ToListAsync();
+        }
     }
 }

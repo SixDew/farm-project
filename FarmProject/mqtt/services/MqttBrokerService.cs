@@ -4,9 +4,11 @@ using FarmProject.alarm.services;
 using FarmProject.db.services.providers;
 using FarmProject.dto;
 using FarmProject.dto.pressure_sensor.measurements;
+using FarmProject.dto.pressure_sensor.services;
 using FarmProject.dto.pressure_sensor.settings;
 using FarmProject.dto.servisces;
 using FarmProject.hubs.services;
+using FarmProject.notifications;
 using FarmProject.predict;
 using FarmProject.validation.services;
 using MQTTnet;
@@ -26,6 +28,7 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
         {
             string topic = e.ApplicationMessage.Topic;
             var sensorProvider = scope.ServiceProvider.GetRequiredService<SensorsProvider>();
+            var notificationService = scope.ServiceProvider.GetRequiredService<NotificationService>();
 
             switch (topic)
             {
@@ -41,7 +44,8 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
 
                             if (await validationService.IsValidatedAsync(data.IMEI))
                             {
-                                var sensorMeasurementsList = await sensorProvider.GetMeasurmentsByImeiAync(data.IMEI);
+                                var sensor = await sensorProvider.GetByImeiWithMeasurementsAndSettingsAsync(data.IMEI);
+                                var sensorMeasurementsList = sensor.Measurements;
 
                                 var measurementsModel = dtoConverter.ConvertToModel(data);
                                 sensorMeasurementsList.Add(measurementsModel);
@@ -61,7 +65,15 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
                                     var alarmedMeasurements = await alarmService.AddAlarmMeasurementAsync(measurementsModel);
                                     if (alarmedMeasurements is not null)
                                     {
-                                        await alarmService.SendAlarmNotifyAsync(alarmedMeasurements);
+                                        var sections = scope.ServiceProvider.GetRequiredService<SectionsProvider>();
+                                        var section = await sections.GetAsync((int)sensor.SectionId!);
+                                        var alarmHubConverter = scope.ServiceProvider.GetRequiredService<PressureAlarmDtoConvertService>();
+                                        if (section is not null)
+                                        {
+                                            await notificationService.SendAlarmMeasurementsNotificationToAllAsync(
+                                                alarmHubConverter.ConvertToHubAlarmToClientDto(measurementsModel),
+                                                section.FacilityId);
+                                        }
                                     }
                                     break;
                                 }

@@ -9,4 +9,5 @@ public class User : BaseModel
     public required string Key { get; set; }
     public required string Role { get; set; }
     public required int FacilityId { get; set; }
+    public List<Notification> Notifications { get; set; } = new();
 }
