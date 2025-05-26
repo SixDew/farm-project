@@ -44,13 +44,33 @@ namespace FarmProject.db.services.providers
 
         public async Task<List<Notification>?> GetNotificationsAsync(int id)
         {
-            var user = await _dbSet.Include(u => u.Notifications).FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _dbSet.Include(u => u.Notifications.OrderByDescending(n => n.CreatedDate)).FirstOrDefaultAsync(u => u.Id == id);
+            return user?.Notifications;
+        }
+
+        public async Task<List<Notification>?> GetNotificationsAsync(int id, int limit, int offset = 0)
+        {
+            var user = await _dbSet.Include(u => u.Notifications.OrderByDescending(n => n.CreatedDate)
+                .Skip(offset).Take(limit))
+                .FirstOrDefaultAsync(u => u.Id == id);
+            return user?.Notifications;
+        }
+
+        public async Task<List<Notification>?> GetCheckedNotificationsAsync(int id)
+        {
+            var user = await _dbSet.Include(u => u.Notifications.OrderByDescending(n => n.CreatedDate).Where(n => n.IsChecked)).FirstOrDefaultAsync(u => u.Id == id);
+            return user?.Notifications;
+        }
+
+        public async Task<List<Notification>?> GetUncheckedNotificationsAsync(int id)
+        {
+            var user = await _dbSet.Include(u => u.Notifications.OrderByDescending(n => n.CreatedDate).Where(n => !n.IsChecked)).FirstOrDefaultAsync(u => u.Id == id);
             return user?.Notifications;
         }
 
         public async Task<List<User>?> GetAllFacilityUsersWithNotificationsAsync(int facilityId)
         {
-            return await _dbSet.Include(u => u.Notifications).Where(u => u.FacilityId == facilityId).ToListAsync();
+            return await _dbSet.Include(u => u.Notifications.OrderByDescending(n => n.CreatedDate)).Where(u => u.FacilityId == facilityId).ToListAsync();
         }
     }
 }

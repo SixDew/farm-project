@@ -1,0 +1,15 @@
+@import './main-style.css';
+
+.notification-menu-element{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    margin: 10px;
+    border: 2px solid var(--main-border-color);
+    border-radius: 10px;
+}
+
+.notification-time-span-element{
+    color: var(--second-text-color);
+    font-size: small;
+}

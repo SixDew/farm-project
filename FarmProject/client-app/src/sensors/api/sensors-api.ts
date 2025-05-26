@@ -29,6 +29,18 @@ export async function getPressureMeasurements(imei){
 //     }
 // }
 
+export async function getCheckedNotifications(userId:number) {
+    return await sendRequestWithAuthorize(`${serverUrl}/notifications/checked/${userId}`)
+}
+
+export async function getUncheckedNotifications(userId:number) {
+    return await sendRequestWithAuthorize(`${serverUrl}/notifications/unchecked/${userId}`)
+}
+
+export async function getNotifications(userId:number, offset?:number, limit?:number) {
+    return await sendRequestWithAuthorize(`${serverUrl}/notifications/${userId}?offset=${offset}&limit=${limit}`)
+}
+
 export async function getAlarmedMeasurements(imei) {
     return await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/measurements/alarms/${imei}`)
 }

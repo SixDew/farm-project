@@ -47,4 +47,32 @@
     width: var(--main-menu-width);
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.notifications-menu{
+    width: 300px;
+    height: 300px;
+    overflow: auto;
+    background-color: var(--second-back-color);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    border: 2px solid var(--main-border-color);
+    padding: 10px;
+}
+
+.load-notifications-button{
+    background-color: var(--second-back-color);
+    border: 0;
+    cursor: pointer;
+    width: fit-content;
+    margin: auto;
+    color: var(--second-text-color);
+}
+
+.notification-menu-button{
+    margin: 10px;
 }

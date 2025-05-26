@@ -7,6 +7,7 @@ namespace FarmProject.db.models
         public bool IsChecked { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public int UserId { get; set; }
+        public string Text { get; set; } = "";
 
     }
 }

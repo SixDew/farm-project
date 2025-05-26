@@ -6,9 +6,9 @@ import UsersPage from './admin-panels/UsersPage'
 import GroupPage from './admin-panels/group-page/GroupPage'
 import SensorsToAddPage from './admin-panels/SensorsToAddPage'
 import MapPage from './admin-panels/map-page/MapPage'
-import { AlarmablePressureSensor, DriftNotificationData, FacilityDeepMetaDto, FacilityDto, PressureAlarmDto, PressureMeasurements, PressureSensorDto } from './interfaces/DtoInterfaces'
+import { AlarmablePressureSensor, MeasurementsDriftData, FacilityDeepMetaDto, FacilityDto, NotificationData, PressureAlarmDto, PressureMeasurements, PressureSensorDto, ForecastWarningNotificationData, AlarmMeasurementsNotificationData } from './interfaces/DtoInterfaces'
 import { useEffect, useState } from 'react'
-import { getDisabledSensors, getFacilitiesDeppMeta, getFacility, getUncheckedAlarmedMeasurements } from './sensors/api/sensors-api'
+import {getDisabledSensors, getFacilitiesDeppMeta, getFacility, getNotifications, getUncheckedAlarmedMeasurements, getUncheckedNotifications } from './sensors/api/sensors-api'
 import FacilitySelect from './main-menu/FacilitySelect'
 import connection from "./sensors/api/measurements-hub-connection.js"
 import NavButton from './main-menu/NavButton'
@@ -19,6 +19,11 @@ import mapImage from './images/white-map.png';
 import peopleImage from './images/white-people.png'
 import sensorImage from './images/white-sensor.png'
 import disabledSensorImage from './images/white-disabled2.png'
+import Popup from 'reactjs-popup'
+import NotificationMenuElement from './NotificationMenuElement'
+
+import bellImage from './images/bell-white.png'
+import logoImage from './images/logo.png'
 
 function convertSensorsFromServerData(data:PressureSensorDto[] | undefined):AlarmablePressureSensor[]{
     if(data){
@@ -58,6 +63,8 @@ function alarmEvent(sensors:AlarmablePressureSensor[], alarmedSensors:AlarmableP
         }
 }
 
+const notificationsLimit = 5;
+
 export default function App(){
     const [facilitiesMeta, setFacilitiesMeta] = useState<FacilityDeepMetaDto[]>([])
     const [selectedFacility, setSelectedFacility] = useState<FacilityDto>()
@@ -65,13 +72,41 @@ export default function App(){
     const [alarmedSensors, setAlarmedSensors] = useState<AlarmablePressureSensor[]>([])
     const [disabledSensors, setDisabledSensors] = useState<PressureSensorDto[]>([])
 
+    const [notifications, setNotifications] = useState<NotificationData[]>([])
 
-    function onDriftNotification(data:DriftNotificationData){
+
+    async function loadNotifications() {
+        var userIdString:string | null = localStorage.getItem("userId")
+        if(userIdString){
+            var response = await getNotifications(Number.parseInt(userIdString), notifications.length, notificationsLimit)
+            var notificationsData = await response.json()
+            setNotifications(prev=>[...prev, ...notificationsData])
+        }
+    }
+
+    function addNotification(data:NotificationData){
+        setNotifications(prev=>[data, ...prev])
+    }
+
+    useEffect(()=>{
+        loadNotifications()
+    }, [])
+
+    function showDriftNotification(measurementData:MeasurementsDriftData, notificationData:NotificationData){
         toast.warning(
         <div>
-            <h5>Обнаружен дрифт измерений</h5>
-            <p>Обнаружено постепенное изменение значений, которые могут достигнуть порога через {data.warningInterval}</p>
-            <NavButton navPath={`/sensors/pressure/${data.imei}`} title='Перейти'></NavButton>
+            <h3>Обнаружен дрифт измерений</h3>
+            <p>{notificationData.text}</p>
+            <NavButton navPath={`/sensors/pressure/${measurementData.imei}`} title='Перейти'></NavButton>
+        </div>)
+    }
+
+    function showAlarmMeasurementNotification(measurementData:PressureAlarmDto, notificationData:NotificationData){
+        toast.error(
+        <div>
+            <h3>Выход за границы допустимых значений!</h3>
+            <p>{notificationData.text}</p>
+            <NavButton navPath={`/sensors/pressure/${measurementData.imei}`} title='Перейти'></NavButton>
         </div>)
     }
 
@@ -136,16 +171,20 @@ export default function App(){
                 setSensors(updateSensors)
             })
 
-            connection.on('ReciveAlarmNotify', (data:PressureAlarmDto)=>{
-                alarmEvent(sensors, alarmedSensors, data, setAlarmedSensors)
-            })
-
             connection.on('ReciveAddSensorNotify', (data:PressureSensorDto)=>{
-                console.log('add new disabled sensor', data)
                 setDisabledSensors(prev=>[...prev, data])
             })
 
-            connection.on("ReciveForecastWarningNotify", onDriftNotification)
+            connection.on('ReciveAlarmNotify', (data:AlarmMeasurementsNotificationData)=>{
+                addNotification(data.notificationData)
+                showAlarmMeasurementNotification(data.measurementData, data.notificationData)
+                alarmEvent(sensors, alarmedSensors, data.measurementData, setAlarmedSensors)
+            })
+
+            connection.on("ReciveForecastWarningNotify", (data:ForecastWarningNotificationData)=>{
+                addNotification(data.notificationData)
+                showDriftNotification(data.measurementData, data.notificationData)
+            })
         }
         setConnection()
 
@@ -206,12 +245,32 @@ export default function App(){
         <div className='main-app-container'>
         <Router>
             <div className='header'>
-                <div className='angle-header-element'></div>
+                <div className='angle-header-element'><img src={logoImage} width="80px" height="80px"></img></div>
                 <FacilitySelect 
                     facilitiesMeta={facilitiesMeta}
                     onSelectEvent={onFacilitySelect}
                     onClick={facilitiesMetaInit}
                 />
+                <Popup 
+                    trigger={<button className='bordered-accent standart-button notification-menu-button'>
+                        <img src={bellImage} width="32px" height="32px"></img>
+                    </button>}
+                    >
+                        <div className='notifications-menu'>
+                            <div className='bottom-border-main-color'>
+                                <h3>Уведомления</h3>
+                            </div>
+                            {
+                                notifications.map(n=>
+                                <NotificationMenuElement createTime={n.createdDate}>
+                                    <div>
+                                        <p>{n.text}</p>
+                                    </div>
+                                </NotificationMenuElement>)
+                            }
+                            <button className='load-notifications-button' onClick={loadNotifications}>Ещё</button>
+                        </div>
+                    </Popup>
             </div>
            <div className='middle-part'>
                 <div className='main-menu'>
@@ -254,7 +313,8 @@ export default function App(){
            </div>
             <ToastContainer
             position='bottom-right'
-            autoClose={10000}/>
+            autoClose={10000}
+            limit={2}/>
         </Router>
         </div>
         

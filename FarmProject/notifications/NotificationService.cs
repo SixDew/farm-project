@@ -2,11 +2,12 @@
 using FarmProject.db.services.providers;
 using FarmProject.dto.pressure_sensor.alarm;
 using FarmProject.dto.pressure_sensor.notifications;
+using FarmProject.dto.users.services;
 using FarmProject.hubs.services;
 
 namespace FarmProject.notifications;
 
-public class NotificationService(IServiceProvider _services, MeasurementsHubService _notifySender)
+public class NotificationService(IServiceProvider _services, MeasurementsHubService _notifySender, UserDtoConverter _converter)
 {
     public async Task SendWarningForecastedMeasurementsNotificationAsync(WarningMeasurementsNotificationData notificationData, int userId)
     {
@@ -17,13 +18,17 @@ public class NotificationService(IServiceProvider _services, MeasurementsHubServ
 
             var notification = new WarningMeasurementsNotification()
             {
-                Data = notificationData
+                Data = notificationData,
+                Text = $"Обнаружено постепенное изменение измерений. При сохранении тенденции они достигнут порога через {notificationData.WarningInterval}"
             };
 
             notifications.Add(notification);
             await users.SaveChangesAsync();
 
-            await _notifySender.SendForecastWarningNotifyAsync(notification.Data, userId);
+            await _notifySender.SendForecastWarningNotifyAsync(
+                notification.Data,
+                _converter.ConvertNotification(notification),
+                userId);
         }
     }
 
@@ -37,12 +42,16 @@ public class NotificationService(IServiceProvider _services, MeasurementsHubServ
 
             var notification = new WarningMeasurementsNotification()
             {
-                Data = notificationData
+                Data = notificationData,
+                Text = $"Обнаружено постепенное изменение измерений. При сохранении тенденции они достигнут порога через {notificationData.WarningInterval}"
             };
 
             usersWithNotifications.ForEach(u => u.Notifications.Add(notification));
             await users.SaveChangesAsync();
-            usersWithNotifications.ForEach(async u => await _notifySender.SendForecastWarningNotifyAsync(notification.Data, u.Id));
+            usersWithNotifications.ForEach(async u => await _notifySender.SendForecastWarningNotifyAsync(
+                notification.Data,
+                _converter.ConvertNotification(notification),
+                u.Id));
         }
     }
 
@@ -55,13 +64,17 @@ public class NotificationService(IServiceProvider _services, MeasurementsHubServ
 
             var notification = new AlarmMesurementsNotification()
             {
-                Data = data
+                Data = data,
+                Text = $"Пересечен порог измерений на датчике {data.Imei} !"
             };
 
             notifications.Add(notification);
             await users.SaveChangesAsync();
 
-            await _notifySender.SendAlarmNotifyAsync(notification.Data, userId);
+            await _notifySender.SendAlarmNotifyAsync(
+                notification.Data,
+                _converter.ConvertNotification(notification),
+                userId);
         }
     }
 
@@ -74,12 +87,16 @@ public class NotificationService(IServiceProvider _services, MeasurementsHubServ
 
             var notification = new AlarmMesurementsNotification()
             {
-                Data = data
+                Data = data,
+                Text = $"Пересечен порог измерений на датчике {data.Imei} !"
             };
 
             usersWithNotifications.ForEach(u => u.Notifications.Add(notification));
             await users.SaveChangesAsync();
-            usersWithNotifications.ForEach(async u => await _notifySender.SendAlarmNotifyAsync(notification.Data, u.Id));
+            usersWithNotifications.ForEach(async u => await _notifySender.SendAlarmNotifyAsync(
+                notification.Data,
+                _converter.ConvertNotification(notification),
+                u.Id));
         }
     }
 }

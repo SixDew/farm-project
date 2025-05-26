@@ -15,6 +15,7 @@ using FarmProject.notifications;
 using FarmProject.predict;
 using FarmProject.validation.services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using MQTTnet.AspNetCore;
 using NetTopologySuite.IO.Converters;
@@ -36,6 +37,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]!)),
         ClockSkew = TimeSpan.Zero
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
+    };
 });
 builder.Services.AddAuthorization();
 builder.Services.AddConnections();
@@ -52,6 +69,7 @@ builder.Services.AddTransient<PressureSettingsDtoConvertService>();
 builder.Services.AddTransient<PressureSensorDtoConvertService>();
 builder.Services.AddScoped<SensorsValidationService>();
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<IUserIdProvider, NameIdentifierUserIdProvider>();
 builder.Services.AddSingleton<MeasurementsHubService>();
 builder.Services.AddSingleton<NotificationService>();
 builder.Services.AddScoped<AlarmPressureMeasurementsChecker>();
