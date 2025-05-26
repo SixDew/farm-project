@@ -44,7 +44,7 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
 
                             if (await validationService.IsValidatedAsync(data.IMEI))
                             {
-                                var sensor = await sensorProvider.GetByImeiWithMeasurementsAndSettingsAsync(data.IMEI);
+                                var sensor = await sensorProvider.GetWithAllInnerDataAsync(data.IMEI);
                                 var sensorMeasurementsList = sensor.Measurements;
 
                                 var measurementsModel = dtoConverter.ConvertToModel(data);
@@ -65,14 +65,12 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
                                     var alarmedMeasurements = await alarmService.AddAlarmMeasurementAsync(measurementsModel);
                                     if (alarmedMeasurements is not null)
                                     {
-                                        var sections = scope.ServiceProvider.GetRequiredService<SectionsProvider>();
-                                        var section = await sections.GetAsync((int)sensor.SectionId!);
                                         var alarmHubConverter = scope.ServiceProvider.GetRequiredService<PressureAlarmDtoConvertService>();
-                                        if (section is not null)
+                                        if (sensor.Section is not null)
                                         {
                                             await notificationService.SendAlarmMeasurementsNotificationToAllAsync(
                                                 alarmHubConverter.ConvertToHubAlarmToClientDto(measurementsModel),
-                                                section.FacilityId);
+                                                sensor.Section.FacilityId);
                                         }
                                     }
                                     break;

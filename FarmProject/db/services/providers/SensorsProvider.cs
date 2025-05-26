@@ -70,4 +70,14 @@ public class SensorsProvider(ApplicationDbContext db) : DbProvider<Sensor>(db)
             .FirstOrDefaultAsync(s => s.IMEI == imei);
         return sensor?.AlarmedMeasurements;
     }
+
+    public async Task<Sensor?> GetWithSectoinAsync(string imei)
+    {
+        return await _dbSet.Include(s => s.Section).FirstOrDefaultAsync(s => s.IMEI == imei);
+    }
+
+    public async Task<Sensor?> GetWithAllInnerDataAsync(string imei)
+    {
+        return await _dbSet.Include(s => s.Measurements).Include(s => s.Settings).Include(s => s.Section).FirstOrDefaultAsync(s => s.IMEI == imei);
+    }
 }

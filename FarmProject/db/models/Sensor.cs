@@ -1,6 +1,7 @@
-﻿using DewLib.db;
+﻿using System.ComponentModel.DataAnnotations;
+using DewLib.db;
 using FarmProject.group_feature.group;
-using System.ComponentModel.DataAnnotations;
+using FarmProject.group_feature.section;
 
 namespace FarmProject.db.models
 {
@@ -15,6 +16,7 @@ namespace FarmProject.db.models
         [Required]
         public SensorSettings Settings { get; set; }
         public List<SensorGroup> Groups { get; set; } = new();
+        public Section? Section { get; set; }
         public int? SectionId { get; set; }
     }
 }

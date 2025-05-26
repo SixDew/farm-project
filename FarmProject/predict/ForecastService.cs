@@ -71,9 +71,12 @@ public class ForecastService(IPredictService _predictService, IServiceProvider _
                 {
                     var notificationService = scope.ServiceProvider.GetRequiredService<NotificationService>();
                     var sensors = scope.ServiceProvider.GetRequiredService<SensorsProvider>();
-                    var sensor = await sensors.GetByImeiAsync(measurements.IMEI);
-                    var sections = scope.ServiceProvider.GetRequiredService<SectionsProvider>();
-                    var section = await sections.GetAsync((int)sensor.SectionId);
+                    var sensor = await sensors.GetWithSectoinAsync(measurements.IMEI);
+
+                    if (sensor is null || sensor.Section is null)
+                    {
+                        throw new ArgumentNullException();
+                    }
 
                     _memoryCache.Set(cacheKey, DateTime.UtcNow, notifyWindow);
                     await notificationService.SendWarningForecastedMeasurementsNotificationToAllAsync(
@@ -83,7 +86,7 @@ public class ForecastService(IPredictService _predictService, IServiceProvider _
                             MeasurementId = measurements.Id,
                             WarningInterval = timeSpanToTranshold
                         }
-                        , section.FacilityId);
+                        , sensor!.Section!.FacilityId);
                 }
             }
         }

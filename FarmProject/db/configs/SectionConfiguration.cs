@@ -8,7 +8,7 @@ namespace FarmProject.db.configs
     {
         public void Configure(EntityTypeBuilder<Section> builder)
         {
-            builder.HasMany(s => s.Sensors).WithOne().HasForeignKey(sensor => sensor.SectionId).HasPrincipalKey(s => s.Id)
+            builder.HasMany(s => s.Sensors).WithOne(sensor => sensor.Section).HasForeignKey(sensor => sensor.SectionId).HasPrincipalKey(s => s.Id)
                 .OnDelete(DeleteBehavior.SetNull);
         }
     }
