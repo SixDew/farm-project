@@ -1,4 +1,6 @@
-#login-main-container{
+@import './main-style.css';
+
+.login-main-container{
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -9,11 +11,19 @@
     
 
     margin: auto;
-    background-color: rgb(225, 230, 235);
+    background-color: var(--main-accent-color);
+    color: var(--text-accent-color);
     border-radius: 10px;
     padding: 20px;
 }
 
-#login-main-container > * {
-    margin: 5px auto;
+.login-main-container > * {
+    margin: 10px auto;
+    color: var(--text-accent-color);
+}
+
+.key-input{
+    border: 2px solid var(--border-accent-color);
+    border-radius: 5px;
+    color: var(--main-text-color);
 }

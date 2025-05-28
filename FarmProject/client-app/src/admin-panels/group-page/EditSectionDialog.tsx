@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { AlarmablePressureSensor, PressureSensorDto, SensorSectionDto, SensorSectionMetaDto } from '../../interfaces/DtoInterfaces'
+import { SensorSectionDto, SensorSectionMetaDto } from '../../interfaces/DtoInterfaces'
 import Dialog from './Dialog'
 import './EditSectionDialog.css'
 import SensorInfoElement from './SensorInfoElement'
 import { changeSectionMetadata, deleteSection } from '../../sensors/api/sensors-api'
+import { useAuth } from '../../AuthProvider'
 
 interface EditSectionDialogProps{
     isOpen:boolean,
@@ -17,6 +18,7 @@ export default function EditSectionDialog({isOpen, section, onEnd, onSectionChan
     const sectionNameInput = useRef<HTMLInputElement>(null)
     const [sectionName, setSectionName] = useState(section.name)
     const [nameChangeMod, setNameChangeMod] = useState(false)
+    const authContext = useAuth()
 
     useEffect(()=>{
         setSectionName(section.name)
@@ -24,7 +26,7 @@ export default function EditSectionDialog({isOpen, section, onEnd, onSectionChan
 
     async function changeSectionMetadataAsync(){
         if(section.name != sectionName){
-            const response = await changeSectionMetadata(section.id, sectionName)
+            const response = await authContext.sendWithAccessCheck(()=>changeSectionMetadata(section.id, sectionName))
             if(response.ok){
                 onSectionChange && onSectionChange(await response.json())
             }
@@ -38,7 +40,7 @@ export default function EditSectionDialog({isOpen, section, onEnd, onSectionChan
     }
 
     async function sectionDelete(){
-        const response = await deleteSection(section.id)
+        const response = await authContext.sendWithAccessCheck(()=>deleteSection(section.id))
         if(response.ok){
             onSectionDelete && onSectionDelete(await response.json())
             onEnd && onEnd()

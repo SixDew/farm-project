@@ -4,6 +4,7 @@ import { addGroup } from "../../sensors/api/sensors-api"
 import {  SensorGroupDto } from "../../interfaces/DtoInterfaces"
 
 import './CreateGroupDialog.css'
+import { useAuth } from "../../AuthProvider"
 
 interface CreateGroupDialogProps{
     isOpen:boolean,
@@ -13,11 +14,12 @@ interface CreateGroupDialogProps{
 }
 
 export default function CreateGroupDialog({isOpen, OnEnd: OnEnd, facilityId, onGroupAdd}:CreateGroupDialogProps){
+    const authContext = useAuth()
     const groupNameInput = useRef<HTMLInputElement>(null)
 
     async function createGroup() {
         if(groupNameInput && groupNameInput.current){
-            var response = await addGroup(facilityId, groupNameInput.current.value)
+            var response = await authContext.sendWithAccessCheck(()=>addGroup(facilityId, groupNameInput!.current!.value))
             if(response.ok){
                 onGroupAdd && onGroupAdd(await response.json())
             }

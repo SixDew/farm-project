@@ -1,7 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import ReactECharts from 'echarts-for-react'
-import { PressureAlarmDto, PressureMeasurements } from "../interfaces/DtoInterfaces"
-import { data } from "react-router-dom"
 
 interface StatisticChartProps{
     lagacyMeasurementsCount:number,

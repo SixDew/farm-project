@@ -8,22 +8,14 @@ import SensorsToAddPage from './admin-panels/SensorsToAddPage'
 import MapPage from './admin-panels/map-page/MapPage'
 import { AlarmablePressureSensor, MeasurementsDriftData, FacilityDeepMetaDto, FacilityDto, NotificationData, PressureAlarmDto, PressureMeasurements, PressureSensorDto, ForecastWarningNotificationData, AlarmMeasurementsNotificationData } from './interfaces/DtoInterfaces'
 import { useEffect, useState } from 'react'
-import {getDisabledSensors, getFacilitiesDeppMeta, getFacility, getNotifications, getUncheckedAlarmedMeasurements, getUncheckedNotifications } from './sensors/api/sensors-api'
-import FacilitySelect from './main-menu/FacilitySelect'
+import {getDisabledSensors, getFacilitiesDeppMeta, getFacility, getNotifications, getUncheckedAlarmedMeasurements } from './sensors/api/sensors-api'
 import connection from "./sensors/api/measurements-hub-connection.js"
 import NavButton from './main-menu/NavButton'
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-import mapImage from './images/white-map.png';
-import peopleImage from './images/white-people.png'
-import sensorImage from './images/white-sensor.png'
-import disabledSensorImage from './images/white-disabled2.png'
-import Popup from 'reactjs-popup'
-import NotificationMenuElement from './NotificationMenuElement'
-
-import bellImage from './images/bell-white.png'
-import logoImage from './images/logo.png'
+import { useAuth } from './AuthProvider'
+import RequireAuth from './RequireAuth'
+import AppAuthPagesLayout from './AppAuthPagesLayout'
 
 function convertSensorsFromServerData(data:PressureSensorDto[] | undefined):AlarmablePressureSensor[]{
     if(data){
@@ -66,6 +58,7 @@ function alarmEvent(sensors:AlarmablePressureSensor[], alarmedSensors:AlarmableP
 const notificationsLimit = 5;
 
 export default function App(){
+    const authContext = useAuth()
     const [facilitiesMeta, setFacilitiesMeta] = useState<FacilityDeepMetaDto[]>([])
     const [selectedFacility, setSelectedFacility] = useState<FacilityDto>()
     const [sensors, setSensors] = useState<AlarmablePressureSensor[]>([])
@@ -78,7 +71,7 @@ export default function App(){
     async function loadNotifications() {
         var userIdString:string | null = localStorage.getItem("userId")
         if(userIdString){
-            var response = await getNotifications(Number.parseInt(userIdString), notifications.length, notificationsLimit)
+            var response = await authContext.sendWithAccessCheck(()=>getNotifications(Number.parseInt(userIdString!), notifications.length, notificationsLimit))
             var notificationsData = await response.json()
             setNotifications(prev=>[...prev, ...notificationsData])
         }
@@ -124,7 +117,7 @@ export default function App(){
 
     useEffect(()=>{
         async function getDisSensors() {
-            const response = await getDisabledSensors()
+            const response = await authContext.sendWithAccessCheck(getDisabledSensors)
             if(response.ok){
                 setDisabledSensors(await response.json())
             }
@@ -134,7 +127,7 @@ export default function App(){
 
     async function onFacilitySelect(e:React.ChangeEvent<HTMLSelectElement>){
         const facilityId = Number(e.target.value)
-        const response = await getFacility(facilityId)
+        const response = await authContext.sendWithAccessCheck(()=>getFacility(facilityId))
         if(response.ok){
             setSelectedFacility(await response.json())
         }
@@ -204,7 +197,7 @@ export default function App(){
         async function setAlarmedSensorsAsync() {
             const bufferAlarmedSensors:AlarmablePressureSensor[] = []
             for(const sensor of sensors){
-                var response = await getUncheckedAlarmedMeasurements(sensor.imei)
+                var response = await authContext.sendWithAccessCheck(()=>getUncheckedAlarmedMeasurements(sensor.imei))
                 if(response.ok){
                     var uncheckedAlarmedMeasurements:PressureAlarmDto[] = await response.json()
                     if(uncheckedAlarmedMeasurements.length > 0){
@@ -230,7 +223,7 @@ export default function App(){
     },[sensors])
 
     async function facilitiesMetaInit() {
-        var response = await getFacilitiesDeppMeta()
+        var response = await authContext.sendWithAccessCheck(getFacilitiesDeppMeta)
         if(response.ok){
             setFacilitiesMeta(await response.json())
         }
@@ -243,79 +236,46 @@ export default function App(){
 
     return (
         <div className='main-app-container'>
-        <Router>
-            <div className='header'>
-                <div className='angle-header-element'><img src={logoImage} width="80px" height="80px"></img></div>
-                <FacilitySelect 
-                    facilitiesMeta={facilitiesMeta}
-                    onSelectEvent={onFacilitySelect}
-                    onClick={facilitiesMetaInit}
-                />
-                <Popup 
-                    trigger={<button className='bordered-accent standart-button notification-menu-button'>
-                        <img src={bellImage} width="32px" height="32px"></img>
-                    </button>}
-                    >
-                        <div className='notifications-menu'>
-                            <div className='bottom-border-main-color'>
-                                <h3>Уведомления</h3>
-                            </div>
-                            {
-                                notifications.map(n=>
-                                <NotificationMenuElement createTime={n.createdDate}>
-                                    <div>
-                                        <p>{n.text}</p>
-                                    </div>
-                                </NotificationMenuElement>)
-                            }
-                            <button className='load-notifications-button' onClick={loadNotifications}>Ещё</button>
-                        </div>
-                    </Popup>
-            </div>
-           <div className='middle-part'>
-                <div className='main-menu'>
-                    <NavButton navPath='/monitor' image={sensorImage}/>
-                    <NavButton navPath='/map' image={mapImage}/>
-                    <NavButton navPath='/sensors-to-add' image={disabledSensorImage}/>
-                    <NavButton navPath='/users' image={peopleImage}/>
-                </div>
-                <div className='page-window'>
+                <Router>
                     <Routes>
-                    <Route path='/login' element={<LoginPage/>}/>
-                    <Route path='/sensors/pressure/:imei' element={
-                        <PressureSensor sensors={sensors} sensorOnDisalarm={sensorOnDisalarm}
-                            onDisableSensor={async ()=>{
-                                const response = await getDisabledSensors()
-                                if(response.ok){
-                                    setDisabledSensors(await response.json())
+                        <Route path='/login' element={<LoginPage/>}/>
+                        <Route element={<RequireAuth>
+                            <AppAuthPagesLayout 
+                            facilitiesMeta={facilitiesMeta}
+                            facilitiesMetaInit={facilitiesMetaInit}
+                            loadNotifications={loadNotifications}
+                            notifications={notifications}
+                            onFacilitySelect={onFacilitySelect}
+                            /></RequireAuth>}>
+                            <Route path='/sensors/pressure/:imei' element={
+                            <PressureSensor sensors={sensors} sensorOnDisalarm={sensorOnDisalarm}
+                                onDisableSensor={async ()=>{
+                                    const response = await authContext.sendWithAccessCheck(getDisabledSensors)
+                                    if(response.ok){
+                                        setDisabledSensors(await response.json())
+                                    }
+                                }}
+                            />}/>
+                            <Route path='/users' element={<UsersPage facilitiesMetadata={facilitiesMeta}/>}/>
+                            <Route path='/monitor' element={<GroupPage facility={selectedFacility} alarmedSensors={alarmedSensors} sensors={sensors} disabledSensors={disabledSensors} setFacility={setSelectedFacility}/>}/>
+                            <Route path='/sensors-to-add' element={<SensorsToAddPage disabledSensors={disabledSensors} 
+                            facilitiesMetadata={facilitiesMeta}
+                            setDisabledSensors={setDisabledSensors}
+                            onDeleteSensor={(sensor)=>{
+                                if(selectedFacility){
+                                    selectedFacility.sections.forEach(section=>{
+                                        section.sensors = section.sensors.filter(s=>s.imei != sensor.imei)
+                                    })
+                                    selectedFacility.groups.forEach(group=>{
+                                        group.sensors = group.sensors.filter(s=>s.imei != sensor.imei)
+                                    })
+                                    setSelectedFacility({...selectedFacility})
                                 }
-                            }}
-                        />}/>
-                    <Route path='/users' element={<UsersPage facilitiesMetadata={facilitiesMeta}/>}/>
-                    <Route path='/monitor' element={<GroupPage facility={selectedFacility} alarmedSensors={alarmedSensors} sensors={sensors} disabledSensors={disabledSensors} setFacility={setSelectedFacility}/>}/>
-                    <Route path='/sensors-to-add' element={<SensorsToAddPage disabledSensors={disabledSensors} 
-                    facilitiesMetadata={facilitiesMeta}
-                    setDisabledSensors={setDisabledSensors}
-                    onDeleteSensor={(sensor)=>{
-                        if(selectedFacility){
-                            selectedFacility.sections.forEach(section=>{
-                                section.sensors = section.sensors.filter(s=>s.imei != sensor.imei)
-                            })
-                            selectedFacility.groups.forEach(group=>{
-                                group.sensors = group.sensors.filter(s=>s.imei != sensor.imei)
-                            })
-                            setSelectedFacility({...selectedFacility})
-                        }
-                    }}/>}/>
-                    <Route path='/map' element={<MapPage facility={selectedFacility} sensors={sensors} alarmedSenosrs={alarmedSensors}/>}/>
-                </Routes>
-                </div>
-           </div>
-            <ToastContainer
-            position='bottom-right'
-            autoClose={10000}
-            limit={2}/>
-        </Router>
+                            }}/>}/>
+                            <Route path='/map' element={<MapPage facility={selectedFacility} sensors={sensors} alarmedSenosrs={alarmedSensors}/>}/>
+                        </Route>
+                    </Routes>
+                </Router>
         </div>
         
     )

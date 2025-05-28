@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import './PressureSensor.css'
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import PressureMeasurementChart from "./PressureMeasurementChart";
 import {getPressureSensorData, sendAlarmedMeasurementChecked } from './api/sensors-api'
 import PressureSensorSettings from "./PressureSensorSettings";
@@ -9,6 +9,7 @@ import MeasurementsStatistic from "./MeasurementsStatistic";
 import PageContentBase from "../PageContentBase";
 import SensorDataElement from "./SensorDataElement";
 import AlarmNotificationsInfo from "./AlarmNotificationsInfo";
+import { AuthContextType, useAuth } from "../AuthProvider";
 
 interface PressureSensorProps{
     sensors:AlarmablePressureSensor[]
@@ -17,12 +18,12 @@ interface PressureSensorProps{
 }
 
 export default function PressureSensor({sensors, sensorOnDisalarm, onDisableSensor}:PressureSensorProps){
-    const navigate = useNavigate()
     const {imei} = useParams()
     const [sensor, setSensor] = useState<AlarmablePressureSensor>()
     const [alarmedMeasurements, setAlarmedMeasurements] = useState<PressureAlarmDto[]>([])
     const [checkedAlarmedMeasurements, setCheckedAlarmedMeasurements] = useState<PressureAlarmDto[]>([])
     const [legacyMeasurements, setLegacyMeasurements] = useState<PressureMeasurements[]>([])
+    const authContext = useAuth()
 
     useEffect(()=>{
         setSensor(sensors.find(s=>s.imei == imei))
@@ -34,8 +35,10 @@ export default function PressureSensor({sensors, sensorOnDisalarm, onDisableSens
     
     useEffect(()=>{
         async function getSensorData() {
-            getPressureSensorData(imei, ()=>{navigate('/login')})
-            .then((data:PressureSensorDto)=>setLegacyMeasurements(data.measurements))
+            var response = await authContext.sendWithAccessCheck(()=>getPressureSensorData(imei))
+            if(response.ok){
+                setLegacyMeasurements((await response.json() as PressureSensorDto).measurements)
+            }
         }
         getSensorData()
     }, [imei])
@@ -66,7 +69,12 @@ export default function PressureSensor({sensors, sensorOnDisalarm, onDisableSens
                         />
                     </SensorDataElement>
                     <SensorDataElement>
-                        <AlarmNotificationsInfo alarmedMeasurements={alarmedMeasurements} onNotificationCheck={(id)=>onNotificationCheck(id, imei, sensor, sensorOnDisalarm, setAlarmedMeasurements)}/>
+                        <AlarmNotificationsInfo alarmedMeasurements={alarmedMeasurements} onNotificationCheck={(id)=>onNotificationCheck(id, 
+                            imei, 
+                            sensor, 
+                            sensorOnDisalarm, 
+                            setAlarmedMeasurements, 
+                            authContext)}/>
                     </SensorDataElement>
                 </div>
                 {
@@ -75,7 +83,7 @@ export default function PressureSensor({sensors, sensorOnDisalarm, onDisableSens
                     legacyMeasurements={legacyMeasurements} 
                     alarmedMeasurements={sensor.alarmedMeasurements}
                     checkedAlarmedMeasurements={checkedAlarmedMeasurements}
-                    alarmCheckedEvent={(id:number)=>onNotificationCheck(id, imei, sensor, sensorOnDisalarm, setAlarmedMeasurements)}/>
+                    alarmCheckedEvent={(id:number)=>onNotificationCheck(id, imei, sensor, sensorOnDisalarm, setAlarmedMeasurements, authContext)}/>
                 }
             </div>
         </PageContentBase>
@@ -84,9 +92,9 @@ export default function PressureSensor({sensors, sensorOnDisalarm, onDisableSens
 
 export async function onNotificationCheck(id:number, imei:string | undefined, sensor: AlarmablePressureSensor | undefined,
     sensorOnDisalarm:((sensor:AlarmablePressureSensor)=>void) | undefined,
-    setAlarmedMeasurements:React.Dispatch<React.SetStateAction<PressureAlarmDto[]>>){
+    setAlarmedMeasurements:React.Dispatch<React.SetStateAction<PressureAlarmDto[]>>, authContext:AuthContextType){
         if(imei && sensor){
-            const response = await sendAlarmedMeasurementChecked(id, imei)
+            const response = await authContext.sendWithAccessCheck(()=>sendAlarmedMeasurementChecked(id, imei))
             if(response.ok){
                 const newAlarmedMeasurements = sensor.alarmedMeasurements.filter(m=>m.id != id)
                 sensor.alarmedMeasurements = newAlarmedMeasurements

@@ -9,6 +9,7 @@ import '../main-style.css'
 
 import saveImage from '../images/save.png'
 import disableImage from '../images/white-disabled2.png'
+import { useAuth } from '../AuthProvider'
  
 interface PressureSensorSettingProps{
     imei:string,
@@ -21,9 +22,10 @@ export default function PressureSensorSettings({imei, role, onDisableSensor}:Pre
     const [showSaveOkMessage, setShowSaveOkMessage] = useState<boolean>(false)
     const [showSaveErrorMessage, setShowSaveErrorMessage] = useState<boolean>(false)
     const nav = useNavigate()
+    const authContext = useAuth()
 
     async function saveSettings(){
-        const response = await updatePressureSettings(imei, settings)
+        const response = await authContext.sendWithAccessCheck(()=>updatePressureSettings(imei, settings))
         .catch((err)=>{
             console.error('Update setting error', err)
             setShowSaveErrorMessage(true)
@@ -37,7 +39,7 @@ export default function PressureSensorSettings({imei, role, onDisableSensor}:Pre
     }
 
     async function saveAdminSettings() {
-        const response = await updateAdminPressureSettings(imei, settings)
+        const response = await authContext.sendWithAccessCheck(()=>updateAdminPressureSettings(imei, settings))
         .catch((err)=>{
             console.error('Update setting error', err)
             setShowSaveErrorMessage(true)
@@ -53,10 +55,7 @@ export default function PressureSensorSettings({imei, role, onDisableSensor}:Pre
     useEffect(()=>{
         async function getSettings(){
             if(!settings){
-                const response = await getPressureSettings(imei)
-                if(response.status === 401){
-                    nav('/login')
-                }
+                const response = await authContext.sendWithAccessCheck(()=>getPressureSettings(imei))
                 if(response.ok){
                     const settingsData:PressureSensorSettingsDto = await response.json()
                     setSettings(settingsData)
@@ -66,10 +65,7 @@ export default function PressureSensorSettings({imei, role, onDisableSensor}:Pre
 
         async function getAdminSettings() {
             if(!settings){
-                const response = await getAdminPressureSettings(imei)
-                if(response.status === 401){
-                    nav('/login')
-                }
+                const response = await authContext.sendWithAccessCheck(()=>getAdminPressureSettings(imei))
                 if(response.ok){
                     const settingsData:PressureSensorSettingsDto = await response.json()
                     setSettings(settingsData)
@@ -174,10 +170,12 @@ export default function PressureSensorSettings({imei, role, onDisableSensor}:Pre
                                 <div className='setting-button-container'>
                                     <button className='standart-button' onClick={saveAdminSettings}><img src={saveImage} width="32px" height="32px"></img></button>
                                     <button className='standart-button delete' onClick={async ()=>{
-                                        const response = await setSensorActive(false, imei)
+                                        const response = await authContext.sendWithAccessCheck(()=>setSensorActive(false, imei))
                                         if(response.ok){
                                             onDisableSensor && onDisableSensor()
-                                            nav('/sensors-to-add')
+                                            if(authContext.role == 'admin'){
+                                                nav('/sensors-to-add')
+                                            }
                                         }
                                     }}><img src={disableImage} width="32px" height="32px"></img></button>
                                 </div>

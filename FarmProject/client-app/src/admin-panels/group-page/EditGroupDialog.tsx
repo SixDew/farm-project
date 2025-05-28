@@ -4,6 +4,7 @@ import { AlarmablePressureSensor, PressureSensorDto, SensorGroupDto, SensorGroup
 import SensorInfoElement from './SensorInfoElement'
 import { changeGroupMetadata, deleteGroup, sendGroupChangeList } from '../../sensors/api/sensors-api'
 import Dialog from './Dialog'
+import { useAuth } from '../../AuthProvider'
 
 interface EditGroupDialogProps{
     isOpen:boolean
@@ -20,6 +21,7 @@ export default function EditGroupDialog({isOpen, onEnd, group, sensors, disabled
     const [sensorsImeiToAdd, setSensorImeiToAdd] = useState<string[]>([])
     const [groupName, setGroupName] = useState(group.name)
     const [nameChangeMod, setNameChangeMod] = useState(false)
+    const authContext = useAuth()
 
     const groupNameInput = useRef<HTMLInputElement>(null)
 
@@ -28,7 +30,7 @@ export default function EditGroupDialog({isOpen, onEnd, group, sensors, disabled
     }, [group.name])
 
     async function changeGroupSensorList(){
-        const response = await sendGroupChangeList(group.id, sensorsImeiToAdd)
+        const response = await authContext.sendWithAccessCheck(()=>sendGroupChangeList(group.id, sensorsImeiToAdd))
         if(response.ok){
             const group:SensorGroupDto = await response.json()
             onGroupChange && onGroupChange(group)
@@ -48,7 +50,7 @@ export default function EditGroupDialog({isOpen, onEnd, group, sensors, disabled
 
     async function changeGroupMetadataAsync(){
             if(group.name != groupName){
-                const response = await changeGroupMetadata(group.id, groupName)
+                const response = await authContext.sendWithAccessCheck(()=>changeGroupMetadata(group.id, groupName))
                 if(response.ok){
                     onGroupMetadataChange && onGroupMetadataChange(await response.json())
                 }
@@ -56,7 +58,7 @@ export default function EditGroupDialog({isOpen, onEnd, group, sensors, disabled
         }
 
     async function deleteGroupAsync() {
-        const response = await deleteGroup(group.id)
+        const response = await authContext.sendWithAccessCheck(()=>deleteGroup(group.id))
         if(response.ok){
             const group:SensorGroupMetaDto = await response.json()
             onGroupDeleted && onGroupDeleted(group)

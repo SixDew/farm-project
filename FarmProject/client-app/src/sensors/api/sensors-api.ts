@@ -53,14 +53,9 @@ export async function getCheckedAlarmedMeasurements(imei:string) {
     return await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/measurements/alarms/checked/${imei}`)
 }
 
-export async function getPressureSensorData(imei, redirect){
+export async function getPressureSensorData(imei){
     const response = await sendRequestWithAuthorize(`${serverUrl}/sensors/pressure/${imei}`)
-    if(response.status === 401){
-        redirect()
-    }
-    if(response.ok){
-        return await response.json()
-    }
+    return response
 }
 
 export async function getPressureSettings(imei){

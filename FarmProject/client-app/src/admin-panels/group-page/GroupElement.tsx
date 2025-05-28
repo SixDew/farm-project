@@ -1,3 +1,4 @@
+import { useAuth } from "../../AuthProvider";
 import { PressureSensorDto } from "../../interfaces/DtoInterfaces";
 import { addToGroup } from "../../sensors/api/sensors-api";
 import "./GroupElement.css"
@@ -8,6 +9,7 @@ interface GroupElementProps{
 }
 
 export default function GroupElement({name, sensors}:GroupElementProps){
+    const authContext = useAuth()
     return (
         <div className="group-info-element">
             <h3>Группа: {name}</h3>
@@ -21,7 +23,7 @@ export default function GroupElement({name, sensors}:GroupElementProps){
                     )
                 })
             }
-            <button onClick={()=>addToGroup(1, "1")}>Добавить датчик</button>
+            <button onClick={()=>authContext.sendWithAccessCheck(()=>addToGroup(1, "1"))}>Добавить датчик</button>
         </div>
     )
 }

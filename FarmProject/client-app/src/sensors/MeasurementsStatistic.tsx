@@ -1,8 +1,9 @@
 import { useState } from "react"
-import { PressureAlarmDto, PressureMeasurements } from "../interfaces/DtoInterfaces"
+import { PressureAlarmDto, PressureMeasurements, PressureSensorDto } from "../interfaces/DtoInterfaces"
 import { getCheckedAlarmedMeasurements, getPressureSensorData } from "./api/sensors-api"
 import './MeasurementsStatistic.css'
 import StatisticChart from "./StatisticChart"
+import { useAuth } from "../AuthProvider"
 
 interface MeasurementsStatisticProps{
     onGetCheckedAlarmMeasurements?:(measurements:PressureAlarmDto[])=>void,
@@ -12,18 +13,19 @@ interface MeasurementsStatisticProps{
 export default function MeasurementsStatistic({onGetCheckedAlarmMeasurements, imei}:MeasurementsStatisticProps){
     const [historyAlarmMeasurements, setHistoryAlarmMeasurements] = useState<PressureAlarmDto[]>([])
     const [legacyMeasurements, setLegacyMeasurements] = useState<PressureMeasurements[]>([])
+    const authContext = useAuth()
 
     async function getHistoryData() {
         if(imei){
-            const legacyData = await getPressureSensorData(imei, ()=>{})
-            const alarmedMeasurementsResponse = await getCheckedAlarmedMeasurements(imei)
+            const response = await authContext.sendWithAccessCheck(()=>getPressureSensorData(imei))
+            const alarmedMeasurementsResponse = await authContext.sendWithAccessCheck(()=>getCheckedAlarmedMeasurements(imei))
             if(alarmedMeasurementsResponse.ok){
                 const data = await alarmedMeasurementsResponse.json()
                 onGetCheckedAlarmMeasurements && onGetCheckedAlarmMeasurements(data)
                 setHistoryAlarmMeasurements(data)
             }
-            if(legacyData){
-                setLegacyMeasurements(legacyData.measurements)
+            if(response.ok){
+                setLegacyMeasurements((await response.json() as PressureSensorDto).measurements)
             }
         }
     }

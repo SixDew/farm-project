@@ -16,6 +16,7 @@ import AdvancedGeomanControls from "./AdvancedGeomanControls";
 import { useNavigate } from "react-router-dom";
 import { blueIcon, redIcon } from "./Icons";
 import AlarmedSensorsMenu from "./AlarmedSensorsMenu";
+import { useAuth } from "../../AuthProvider";
 
 
 interface FeatureLayer extends L.Layer{
@@ -69,12 +70,13 @@ export default function DynamicSensorControls({facility, sensors, alarmedSensors
   const mapSensorZoom:number = 15
   const map = useMap()
   const nav = useNavigate()
+  const authContext = useAuth()
 
   const zoneCreateHandler = useCallback<L.PM.CreateEventHandler>(async (e)=>{
     if(e.layer instanceof L.Polygon && selectedSection){
       console.log('add-zone')
       const geoJsoLayer = e.layer as GeoJsonLayer
-      var response = await sendZone({geometry:geoJsoLayer.toGeoJSON().geometry}, selectedSection.id)
+      var response = await authContext.sendWithAccessCheck(()=>sendZone({geometry:geoJsoLayer.toGeoJSON().geometry}, selectedSection.id))
       if(response.ok){
         var data:MapZoneDto = await response.json()
         const section = sections.find(s=>s.id == data.sectionId)
@@ -193,7 +195,7 @@ export default function DynamicSensorControls({facility, sensors, alarmedSensors
               layerEvents(layer, {
                 onLayerRemove: async (e) => {
                   const zoneId = (e.layer as FeatureLayer).feature.properties.id
-                  const response = await deleteZone(zoneId)
+                  const response = await authContext.sendWithAccessCheck(()=>deleteZone(zoneId))
                   if(response.ok){
                     setZones(zones.filter(z=>z.id != zoneId))
                   }
@@ -205,7 +207,7 @@ export default function DynamicSensorControls({facility, sensors, alarmedSensors
                   const zoneId = (e.layer as FeatureLayer).feature.properties.id
                   const sectionId = (e.layer as FeatureLayer).feature.properties.sectionId
                   const geoJsoLayer = e.layer as GeoJsonLayer
-                  const response = await editZone({geometry:geoJsoLayer.toGeoJSON().geometry}, sectionId, zoneId)
+                  const response = await authContext.sendWithAccessCheck(()=>editZone({geometry:geoJsoLayer.toGeoJSON().geometry}, sectionId, zoneId))
                   const newZone = await response.json()
                   if(response.ok){
                     setZones(zones.map(z=>{

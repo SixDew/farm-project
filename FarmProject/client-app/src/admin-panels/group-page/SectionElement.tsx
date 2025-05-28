@@ -2,7 +2,6 @@ import { ReactNode } from 'react'
 import { AlarmablePressureSensor, PressureSensorDto }from '../../interfaces/DtoInterfaces'
 import SensorMini from '../../sensors/SensorMini'
 import './SectionElement.css'
-import SensorInfoElement from './SensorInfoElement'
 
 interface SectionElementProps{
     name:string,

@@ -13,17 +13,6 @@ interface SensorsToAddPageProps{
 export default function SensorsToAddPage({disabledSensors, facilitiesMetadata, setDisabledSensors, onDeleteSensor}:SensorsToAddPageProps){
     return (
         <PageContentBase title="Отключенные датчики">
-            {/* <div>
-                {
-                    disabledSensors.map(s=><DisabledSensors imei={s.imei} 
-                        gps={s.gps} 
-                        facilitiesMeta={facilitiesMetadata} 
-                        key={s.imei}
-                        setDisabledSensors={setDisabledSensors}
-                        onDeleteSensor={onDeleteSensor}
-                        />)
-                }
-            </div> */}
             <div className="disabled-sensors-table-conteiner">
                 <table className="disabled-sensors-table">
                 <thead>

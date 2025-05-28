@@ -1,17 +1,11 @@
-import { useCallback, useEffect } from "react"
-import { MapZoneDto, SensorSectionDto } from "../../interfaces/DtoInterfaces"
+import { useEffect } from "react"
 import L from "leaflet"
-import { sendZone } from "../../sensors/api/sensors-api";
 import { GeomanControls } from "react-leaflet-geoman-v2";
 import { useMap } from "react-leaflet";
 
 interface AdvancedGeomanControlsProps{
   zoneCreateHandler?:L.PM.CreateEventHandler
   id?:number
-}
-
-interface GeoJsonLayer extends L.Layer{
-  toGeoJSON: () => GeoJSON.Feature;
 }
 
 export default function AdvancedGeomanControls({zoneCreateHandler,id}:AdvancedGeomanControlsProps) {

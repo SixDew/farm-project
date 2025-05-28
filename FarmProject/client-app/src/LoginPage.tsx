@@ -1,59 +1,45 @@
 import { useRef, useState } from "react"
-import { login as sendLogin, adminLogin as sendAdminLogin } from "./sensors/users-api"
 import { useNavigate } from "react-router-dom"
 import "./LoginPage.css"
+import { useAuth } from "./AuthProvider"
+import './main-style.css'
 
 export default function LoginPage(){
+    const authContext = useAuth()
     const passInput = useRef<HTMLInputElement>(null)
     const navigate = useNavigate()
     const [unauthorizedError, setUnauthorizedError] = useState(false)
 
     function login(pass:string|undefined){
         if(pass){
-            sendLogin(pass)
-            .then(async response=>{
-                responseHandle(response, 'user')
+            authContext.login(pass, false)
+            .then(()=>{
+                navigate("/monitor")
+            })
+            .catch(()=>{
+                setUnauthorizedError(true)
             })
         }
     }
 
     function adminLogin(pass:string|undefined){
         if(pass){
-            sendAdminLogin(pass)
-            .then(async response=>{
-                responseHandle(response, 'admin', '/admin')
+            authContext.login(pass, true)
+            .then(()=>{
+                navigate("/monitor")
+            })
+            .catch(()=>{
+                setUnauthorizedError(true)
             })
         }
     }
 
-    async function responseHandle(response:Response, role:string, nav?:string) {
-        if(response.status === 401){
-            setUnauthorizedError(true)
-        }
-        if(response.ok){
-            const data = await response.json()
-            localStorage.setItem('role', role)
-            localStorage.setItem('userKey', data.key)
-            localStorage.setItem('userId', data.userId)
-            if(nav){
-                navigate(nav)
-                return
-            }
-            if(window.history.length > 0){
-                navigate(-1)
-            }
-            else{
-                navigate('/')
-            }
-        }
-    }
-
     return (
-        <div id="login-main-container">
+        <div className="login-main-container">
             <h1>Для получения доступа введите ключ</h1>
-            <input type="password" ref={passInput}></input>
-            <button onClick={()=>login(passInput?.current?.value)}>Войти</button>
-            <button onClick={()=>adminLogin(passInput?.current?.value)}>Войти как администратор</button>
+            <input className="key-input" type="password" ref={passInput}></input>
+            <button className="standart-button bordered-accent" onClick={()=>login(passInput?.current?.value)}>Войти</button>
+            <button className="standart-button bordered-accent" onClick={()=>adminLogin(passInput?.current?.value)}>Войти как администратор</button>
             {unauthorizedError && <p>Неверный ключ</p>}
         </div>
     )

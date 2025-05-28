@@ -7,6 +7,7 @@ import { FacilityDeepMetaDto, PressureSensorDto, SensorGroupMetaDto, SensorSecti
 
 import deleteImage from '../images/trash.png';
 import activateImage from '../images/activate.png'
+import { useAuth } from "../AuthProvider";
 
 interface DisabledSensorsProps{
     imei:string,
@@ -21,24 +22,25 @@ export default function DisabledSensors({imei, gps, facilitiesMeta,selectedFacil
     const [sensorGroups, setSensorGroups] = useState<SensorGroupMetaDto[]>([])
     const [selectedFacility, setSelectedFacility] = useState<FacilityDeepMetaDto>()
     const [selectedSection, setSelectedSection] = useState<SensorSectionMetaDto>()
+    const authContext = useAuth()
 
     useEffect(()=>{
         async function getGroups() {
-            setSensorGroups(await (await getGroupsMetadata(imei)).json())
+            setSensorGroups(await (await authContext.sendWithAccessCheck(()=>getGroupsMetadata(imei))).json())
         }
 
         getGroups()
     }, [imei])
 
     async function activateSensor(sectionId?:number) {
-        var response = await setSensorActive(true, imei, sectionId)
+        var response = await authContext.sendWithAccessCheck(()=>setSensorActive(true, imei, sectionId))
         if(response.ok){
             setDisabledSensors(prev=>prev.filter(s=>s.imei != imei))
         }
     }
 
     async function deleteSensorAsyc() {
-        var response = await deleteSensor(imei)
+        var response = await authContext.sendWithAccessCheck(()=>deleteSensor(imei))
         if(response.ok){
             onDeleteSensor && onDeleteSensor(await response.json())
         }
@@ -47,13 +49,13 @@ export default function DisabledSensors({imei, gps, facilitiesMeta,selectedFacil
     async function groupChangeEvent(event:React.ChangeEvent<HTMLInputElement>,
          sensorGroups:SensorGroupMetaDto[], group:SensorGroupMetaDto){
         if(event.target.checked && !sensorGroups.find(g=>g.id == group.id)){
-            const response = await addToGroup(group.id, imei)
+            const response = await authContext.sendWithAccessCheck(()=>addToGroup(group.id, imei))
             if(response.ok){
                 setSensorGroups(prev=>[...prev, group])
             }
         }
         if(!event.target.checked && sensorGroups.find(g=>g.id==group.id)){
-            const response = await removeFromGroup(group.id, imei)
+            const response = await authContext.sendWithAccessCheck(()=>removeFromGroup(group.id, imei))
             if(response.ok){
                 setSensorGroups(prev=>prev.filter(g=>g.id != group.id))
             }
@@ -62,51 +64,6 @@ export default function DisabledSensors({imei, gps, facilitiesMeta,selectedFacil
 
     return (
         <>
-            {/* <div className="disabled-sensor">
-                <div className="disabled-sensor-info-container">
-                    <p>Imei:{imei}</p>
-                    <p>GPS:{gps}</p>
-                    {
-                        selectedFacility && selectedSection && <button onClick={()=>activateSensor(selectedSection.id)}>Активировать</button>
-                    }
-                    <button onClick={deleteSensorAsyc}>УДАЛИТЬ</button>
-                </div>
-                <div className="disabled-sensor-info-container">
-                    <p>Предприятие:</p>
-                    <select onChange={(e)=>{
-                            setSelectedFacility(facilitiesMeta.find(f=>f.id == Number(e.target.value)))
-                        }}>
-                            <option value={undefined}>Выберете предприятие</option>
-                            {
-                                facilitiesMeta.map(facility=><option value={facility.id}>{facility.name}</option>)
-                            }
-                    </select>
-                    {
-                        selectedFacility &&
-                        <select onChange={(e)=>{
-                            setSelectedSection(selectedFacility.sections.find(s=>s.id == Number(e.target.value)))
-                        }}>
-                            <option value={undefined}>Выберете секцию</option>
-                            {
-                                selectedFacility.sections.map(s=><option value={s.id}>{s.name}</option>)
-                            }
-                        </select>
-                    }
-                    {
-                        
-                        selectedFacility && (
-                                        <div>
-                                            {
-                                            selectedFacility.groups.map(group=><div>
-                                                <SettingsMenuBoolElemet title={group.name} value={Boolean(sensorGroups.find(g=>g.id == group.id))} 
-                                                    changeEvent={(event)=>groupChangeEvent(event, sensorGroups, group)} key={group.id}></SettingsMenuBoolElemet>
-                                            </div>)
-                                        }
-                                        </div>
-                                    )
-                    }
-                </div>
-            </div> */}
             <tr className="table-row">
                 <td>{imei}</td>
                 <td>{gps}</td>

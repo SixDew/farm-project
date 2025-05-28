@@ -3,6 +3,7 @@ import { SensorSectionDto } from '../../interfaces/DtoInterfaces'
 import { addSection } from '../../sensors/api/sensors-api'
 import './CreateSectionDialog.css'
 import Dialog from './Dialog'
+import { useAuth } from '../../AuthProvider'
 
 interface CreateSectionDialogProps{
     isOpen:boolean,
@@ -13,10 +14,11 @@ interface CreateSectionDialogProps{
 
 export default function CreateSectionDialog({isOpen, facilityId, onEnd, onSectionAdd}:CreateSectionDialogProps){
     const sectionNameInput = useRef<HTMLInputElement>(null)
+    const authContext = useAuth()
 
     async function createSection() {
         if(sectionNameInput && sectionNameInput.current){
-            const response = await addSection(sectionNameInput.current.value, facilityId)
+            const response = await authContext.sendWithAccessCheck(()=>addSection(sectionNameInput!.current!.value, facilityId))
             if(response.ok){
                 const section = await response.json()
                 onSectionAdd && onSectionAdd(section)

@@ -3,6 +3,7 @@ import Dialog from "./group-page/Dialog"
 import "./CreateUserDialog.css"
 import { createUser } from "../sensors/users-api"
 import { FacilityDeepMetaDto } from "../interfaces/DtoInterfaces"
+import { useAuth } from "../AuthProvider"
 
 interface CreateUserDialogProps{
     isOpen:boolean,
@@ -16,16 +17,17 @@ export default function CreateUserDialog({isOpen, facilitiesMetadata, OnEnd, OnC
     const nameInput = useRef<HTMLInputElement>(null)
     const phoneInput = useRef<HTMLInputElement>(null)
     const facilityInput = useRef<HTMLSelectElement>(null)
+    const authContext = useAuth()
 
 
         async function addUser() {
-            const response = await createUser({
+            const response = await authContext.sendWithAccessCheck(()=>createUser({
                 Key:passInput?.current?.value,
                 Name:nameInput?.current?.value,
                 ContactData:phoneInput?.current?.value,
                 Role:"user",
                 FacilityId:facilityInput?.current?.value
-            })
+            }))
             if(response.ok){
                 OnCreateUser && OnCreateUser()
             }
