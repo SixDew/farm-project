@@ -6,6 +6,7 @@ using FarmProject.dto;
 using FarmProject.dto.pressure_sensor.measurements;
 using FarmProject.dto.pressure_sensor.services;
 using FarmProject.dto.pressure_sensor.settings;
+using FarmProject.dto.sensor_things;
 using FarmProject.dto.servisces;
 using FarmProject.hubs.services;
 using FarmProject.notifications;
@@ -112,7 +113,80 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
 
                         break;
                     }
+                case "v1.0/Observations":
+                    {
+                        var obs = JsonSerializer.Deserialize<ObservationDto>(Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
+                        await ProcessPressureMeasurementAsObservation(obs, scope);
+                        break;
+                    }
             }
+        }
+    }
+
+    private async Task ProcessPressureMeasurementAsObservation(ObservationDto obs, IServiceScope scope)
+    {
+        var sensorProvider = scope.ServiceProvider.GetRequiredService<SensorsProvider>();
+        var sensor = await sensorProvider.GetByImeiWithMeasurementsAndSettingsAsync(obs.Datastream.ToString());
+        await SaveMeasurements(scope, new PressureMeasurementsFromSensorDto()
+        {
+            IMEI = obs.Datastream.ToString(),
+            PRR1 = (float)obs.Result,
+            PRR2 = (float)obs.Result,
+        });
+    }
+
+    private async Task SaveMeasurements(IServiceScope scope, PressureMeasurementsFromSensorDto data)
+    {
+        try
+        {
+            var sensorProvider = scope.ServiceProvider.GetRequiredService<SensorsProvider>();
+            var notificationService = scope.ServiceProvider.GetRequiredService<NotificationService>();
+
+            var validationService = scope.ServiceProvider.GetRequiredService<SensorsValidationService>();
+            var dtoConverter = scope.ServiceProvider.GetRequiredService<PressureMeasurmentsDtoConvertService>();
+            var alarmChecker = scope.ServiceProvider.GetRequiredService<AlarmPressureMeasurementsChecker>();
+
+            if (await validationService.IsValidatedAsync(data.IMEI))
+            {
+                var sensor = await sensorProvider.GetWithAllInnerDataAsync(data.IMEI);
+                var sensorMeasurementsList = sensor.Measurements;
+
+                var measurementsModel = dtoConverter.ConvertToModel(data);
+                sensorMeasurementsList.Add(measurementsModel);
+
+                await sensorProvider.SaveChangesAsync();
+                await _measurementsHubService.SendMeasurementsAsync(new HubPressureMeasurementsToClientDto
+                {
+                    Measurement1 = measurementsModel.PRR1,
+                    Measurement2 = measurementsModel.PRR2,
+                    MeasurementsTime = measurementsModel.MeasurementsTime,
+                    Imei = data.IMEI,
+                }, data.IMEI);
+
+                if (await alarmChecker.isAlarmRequredAsync(measurementsModel))
+                {
+                    var alarmService = scope.ServiceProvider.GetRequiredService<AlarmPressureSensorService>();
+                    var alarmedMeasurements = await alarmService.AddAlarmMeasurementAsync(measurementsModel);
+                    if (alarmedMeasurements is not null)
+                    {
+                        var alarmHubConverter = scope.ServiceProvider.GetRequiredService<PressureAlarmDtoConvertService>();
+                        if (sensor.Section is not null)
+                        {
+                            await notificationService.SendAlarmMeasurementsNotificationToAllAsync(
+                                alarmHubConverter.ConvertToHubAlarmToClientDto(measurementsModel),
+                                sensor.Section.FacilityId);
+                        }
+                    }
+                    return;
+                }
+
+                var forecastService = scope.ServiceProvider.GetRequiredService<ForecastService>();
+                await forecastService.DriftAnalize(measurementsModel);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Measurements safe error: {ex.Message}");
         }
     }
 
