@@ -10,5 +10,10 @@ namespace FarmProject.db.services.providers
         {
             return await _dbSet.ToListAsync();
         }
+
+        public async Task<MapZone?> GetWithSectionAsync(int id)
+        {
+            return await _dbSet.Include(z => z.Section).FirstOrDefaultAsync(z => z.Id == id);
+        }
     }
 }

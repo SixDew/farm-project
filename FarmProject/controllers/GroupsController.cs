@@ -1,4 +1,5 @@
-﻿using FarmProject.auth;
+﻿using System.Security.Claims;
+using FarmProject.auth;
 using FarmProject.db.services.providers;
 using FarmProject.dto.groups;
 using FarmProject.dto.groups.services;
@@ -9,7 +10,8 @@ namespace FarmProject.controllers
 {
     [ApiController]
     [Route("/groups")]
-    public class GroupsController(SensorsProvider _sensorProvider, SensorGroupsProvider _groups, GroupConverter _converter) : ControllerBase
+    public class GroupsController(SensorsProvider _sensorProvider, SensorGroupsProvider _groups,
+        GroupConverter _converter, UserAccessService _accessService) : ControllerBase
     {
         [HttpGet()]
         [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
@@ -48,6 +50,12 @@ namespace FarmProject.controllers
         [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
         public async Task<IActionResult> GetGroup([FromRoute] int id)
         {
+            if (User.FindFirstValue(ClaimTypes.Role) == UserRoles.USER &&
+                !await _accessService.CheckFacilityAffiliation(int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!), id))
+            {
+                return Forbid();
+            }
+
             var group = await _groups.GetAsync(id);
             if (group is null)
             {
@@ -57,7 +65,7 @@ namespace FarmProject.controllers
         }
 
         [HttpGet("meta")]
-        [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
+        [Authorize(Roles = $"{UserRoles.ADMIN}")]
         public async Task<IActionResult> GetGroupsMetadata()
         {
             var groups = await _groups.GetAllOnlyMetadataAsync();
@@ -68,6 +76,18 @@ namespace FarmProject.controllers
         [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
         public async Task<IActionResult> GetSensorGroupsMetadata([FromRoute] string imei)
         {
+            var sensor = await _sensorProvider.GetWithSectoinAsync(imei);
+            if (sensor is null)
+            {
+                return NotFound();
+            }
+
+            if (User.FindFirstValue(ClaimTypes.Role) == UserRoles.USER &&
+                !await _accessService.CheckFacilityAffiliation(int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!), sensor.Section!.FacilityId))
+            {
+                return Forbid();
+            }
+
             var groups = await _sensorProvider.GetGroupsAsync(imei);
             if (groups is null)
             {

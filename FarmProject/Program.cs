@@ -82,6 +82,7 @@ builder.Services.AddScoped<MapZonesProvider>();
 builder.Services.AddTransient<MapZoneConverter>();
 builder.Services.AddTransient<FacilityConverter>();
 builder.Services.AddScoped<FacilityProvider>();
+builder.Services.AddScoped<UserAccessService>();
 
 builder.Services.AddSingleton<IPredictService, EwmaPredictService>();
 builder.Services.AddSingleton<ForecastService>();

@@ -10,6 +10,7 @@ import SectionAccordingElement from "./SectionAccordingElement"
 import CreateSectionDialog from "./CreateSectionDialog"
 import EditSectionDialog from "./EditSectionDialog"
 import PageContentBase from "../../PageContentBase"
+import { useAuth } from "../../AuthProvider"
 
 interface GroupPageProps{
     facility:FacilityDto|undefined
@@ -43,7 +44,8 @@ export default function GroupPage({facility, alarmedSensors, sensors, disabledSe
     const [showEditSectionDialog, setShowEditSectionDialog] = useState<boolean>(false)
     const [groupToEdit, setGroupToEdit] = useState<SensorGroupDto>()
     const [sectionToEdit, setSectionToEdit] = useState<SensorSectionDto>()
-    const [visibleSections, setVisibleSections] = useState<VisibleSectionWithGroups[]>([]) 
+    const [visibleSections, setVisibleSections] = useState<VisibleSectionWithGroups[]>([])
+    const authContext = useAuth() 
 
     useEffect(()=>{
         const buffVisibleGroups:VisibleSensorGroup[] = []
@@ -126,7 +128,7 @@ export default function GroupPage({facility, alarmedSensors, sensors, disabledSe
             (
                 <PageContentBase title="Мониторинг">
                     {
-                        groupToEdit && <EditGroupDialog 
+                        groupToEdit && authContext.role == "admin" && <EditGroupDialog 
                         isOpen={showEditGroupDialog}
                         group={groupToEdit}
                         sensors={sensors}
@@ -157,7 +159,7 @@ export default function GroupPage({facility, alarmedSensors, sensors, disabledSe
                         ></EditGroupDialog>
                     }
                     {
-                        sectionToEdit && <EditSectionDialog
+                        sectionToEdit && authContext.role == "admin" && <EditSectionDialog
                             isOpen={showEditSectionDialog}
                             section={sectionToEdit}
                             onEnd={()=>setShowEditSectionDialog(false)}
@@ -177,26 +179,30 @@ export default function GroupPage({facility, alarmedSensors, sensors, disabledSe
                         >
                         </EditSectionDialog>
                     }
-                    <CreateGroupDialog 
-                        isOpen={showCreateGroupDialog}
-                        OnEnd={()=>setShowCreateGroupDialog(false)}
-                        facilityId={facility.id}
-                        onGroupAdd={(group)=>{
-                            facility.groups.push(group)
-                            setFacility({...facility})
-                        }}
-                        >
-                    </CreateGroupDialog>
-                    <CreateSectionDialog
-                        isOpen={showCreateSectionDialog}
-                        facilityId={facility.id}
-                        onEnd={()=>setShowCreateSectionDialog(false)}
-                        onSectionAdd={(section)=>{
-                            facility.sections.push(section)
-                            setFacility({...facility})
-                        }}
-                    >
-                    </CreateSectionDialog>
+                    {
+                        authContext.role == "admin" && <>
+                            <CreateGroupDialog 
+                                isOpen={showCreateGroupDialog}
+                                OnEnd={()=>setShowCreateGroupDialog(false)}
+                                facilityId={facility.id}
+                                onGroupAdd={(group)=>{
+                                    facility.groups.push(group)
+                                    setFacility({...facility})
+                                }}
+                                >
+                            </CreateGroupDialog>
+                            <CreateSectionDialog
+                                isOpen={showCreateSectionDialog}
+                                facilityId={facility.id}
+                                onEnd={()=>setShowCreateSectionDialog(false)}
+                                onSectionAdd={(section)=>{
+                                    facility.sections.push(section)
+                                    setFacility({...facility})
+                                }}
+                            >
+                            </CreateSectionDialog>
+                        </>
+                    }
 
                     <div className="groups-panel">
                         <MultiplyAccordion>

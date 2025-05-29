@@ -22,5 +22,10 @@ namespace FarmProject.db.services.providers
             return await _dbSet.Include(f => f.Sections).ThenInclude(s => s.Sensors).Include(f => f.Sections).ThenInclude(s => s.Zone)
                 .Include(f => f.Groups).ThenInclude(g => g.Sensors).FirstOrDefaultAsync(f => f.Id == id);
         }
+
+        public async Task<Facility?> GetDeepMetaAsync(int id)
+        {
+            return await _dbSet.Include(f => f.Sections).Include(f => f.Groups).FirstOrDefaultAsync(f => f.Id == id);
+        }
     }
 }

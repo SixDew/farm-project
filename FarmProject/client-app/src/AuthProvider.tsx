@@ -2,11 +2,12 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { login as apiLogin, adminLogin as apiAdminLogin } from './sensors/users-api';
 
-type Role = 'user' | 'admin' | null;
+export type Role = 'user' | 'admin' | null;
 export interface AuthContextType {
   token: string | null;
   role: Role;
   loading: boolean;
+  id:number|null;
   login: (pass: string, asAdmin?: boolean) => Promise<void>;
   logout: () => void;
   sendWithAccessCheck:(action: () => Promise<Response>)=>Promise<Response>;
@@ -21,13 +22,16 @@ export default function AuthProvider({ children }:AuthProviderProps){
   const [token, setToken] = useState<string | null>(null);
   const [role, setRole] = useState<Role>(null);
   const [loading, setLoading] = useState(true);
+  const [id, setId] = useState<number|null>(null);
 
   useEffect(() => {
     const t = localStorage.getItem('userKey');
     const r = localStorage.getItem('role') as Role;
-    if (t && r) {
+    const id = localStorage.getItem('userId') as number|null;
+    if (t && r && id) {
       setToken(t);
       setRole(r);
+      setId(id);
     }
     setLoading(false);
   }, []);
@@ -44,6 +48,7 @@ export default function AuthProvider({ children }:AuthProviderProps){
       localStorage.setItem('userId', data.userId);
       setToken(data.key);
       setRole(asAdmin ? 'admin' : 'user');
+      setId(data.userId);
     } else {
       throw new Error('Неверный ключ');
     }
@@ -56,6 +61,7 @@ export default function AuthProvider({ children }:AuthProviderProps){
     localStorage.removeItem('userId');
     setToken(null);
     setRole(null);
+    setId(null);
   }, []);
 
     const refreshAccessToken = useCallback(async () => {
@@ -81,7 +87,7 @@ export default function AuthProvider({ children }:AuthProviderProps){
     }, [refreshAccessToken]);
 
   return (
-    <AuthContext.Provider value={{ token, role, loading, login, logout, sendWithAccessCheck }}>
+    <AuthContext.Provider value={{ token, role, loading, id, login, logout, sendWithAccessCheck }}>
       {children}
     </AuthContext.Provider>
   );

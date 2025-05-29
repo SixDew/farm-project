@@ -8,7 +8,7 @@ import SensorsToAddPage from './admin-panels/SensorsToAddPage'
 import MapPage from './admin-panels/map-page/MapPage'
 import { AlarmablePressureSensor, MeasurementsDriftData, FacilityDeepMetaDto, FacilityDto, NotificationData, PressureAlarmDto, PressureMeasurements, PressureSensorDto, ForecastWarningNotificationData, AlarmMeasurementsNotificationData } from './interfaces/DtoInterfaces'
 import { useEffect, useState } from 'react'
-import {getDisabledSensors, getFacilitiesDeppMeta, getFacility, getNotifications, getUncheckedAlarmedMeasurements } from './sensors/api/sensors-api'
+import {getDisabledSensors, getFacilitiesDeepMeta, getFacility, getNotifications, getUncheckedAlarmedMeasurements, getUserFacility } from './sensors/api/sensors-api'
 import connection from "./sensors/api/measurements-hub-connection.js"
 import NavButton from './main-menu/NavButton'
 import { toast } from 'react-toastify';
@@ -105,7 +105,7 @@ export default function App(){
 
     useEffect(()=>{
         facilitiesMetaInit()
-    }, [])
+    }, [authContext.token])
 
     useEffect(()=>{
         console.log('alarmed sensors on mainapp:', alarmedSensors)
@@ -122,8 +122,10 @@ export default function App(){
                 setDisabledSensors(await response.json())
             }
         }
-        getDisSensors()
-    }, [selectedFacility])
+        if(authContext.role == "admin"){
+            getDisSensors()
+        }
+    }, [selectedFacility, authContext.role])
 
     async function onFacilitySelect(e:React.ChangeEvent<HTMLSelectElement>){
         const facilityId = Number(e.target.value)
@@ -165,7 +167,9 @@ export default function App(){
             })
 
             connection.on('ReciveAddSensorNotify', (data:PressureSensorDto)=>{
-                setDisabledSensors(prev=>[...prev, data])
+                if(authContext.role == "admin"){
+                    setDisabledSensors(prev=>[...prev, data])
+                }
             })
 
             connection.on('ReciveAlarmNotify', (data:AlarmMeasurementsNotificationData)=>{
@@ -222,10 +226,14 @@ export default function App(){
         console.log("sensors:", sensors)
     },[sensors])
 
-    async function facilitiesMetaInit() {
-        var response = await authContext.sendWithAccessCheck(getFacilitiesDeppMeta)
-        if(response.ok){
+     async function facilitiesMetaInit() {
+        if(authContext.role == "admin"){
+            var response = await authContext.sendWithAccessCheck(getFacilitiesDeepMeta);
             setFacilitiesMeta(await response.json())
+        }
+        else{
+            var response = await authContext.sendWithAccessCheck(()=>getUserFacility(authContext.id!));
+            setFacilitiesMeta([await response.json()])
         }
     }
 
@@ -250,29 +258,33 @@ export default function App(){
                             <Route path='/sensors/pressure/:imei' element={
                             <PressureSensor sensors={sensors} sensorOnDisalarm={sensorOnDisalarm}
                                 onDisableSensor={async ()=>{
-                                    const response = await authContext.sendWithAccessCheck(getDisabledSensors)
-                                    if(response.ok){
-                                        setDisabledSensors(await response.json())
+                                    if(authContext.role == "admin"){
+                                        const response = await authContext.sendWithAccessCheck(getDisabledSensors)
+                                        if(response.ok){
+                                            setDisabledSensors(await response.json())
+                                        }
                                     }
                                 }}
                             />}/>
-                            <Route path='/users' element={<UsersPage facilitiesMetadata={facilitiesMeta}/>}/>
                             <Route path='/monitor' element={<GroupPage facility={selectedFacility} alarmedSensors={alarmedSensors} sensors={sensors} disabledSensors={disabledSensors} setFacility={setSelectedFacility}/>}/>
-                            <Route path='/sensors-to-add' element={<SensorsToAddPage disabledSensors={disabledSensors} 
-                            facilitiesMetadata={facilitiesMeta}
-                            setDisabledSensors={setDisabledSensors}
-                            onDeleteSensor={(sensor)=>{
-                                if(selectedFacility){
-                                    selectedFacility.sections.forEach(section=>{
-                                        section.sensors = section.sensors.filter(s=>s.imei != sensor.imei)
-                                    })
-                                    selectedFacility.groups.forEach(group=>{
-                                        group.sensors = group.sensors.filter(s=>s.imei != sensor.imei)
-                                    })
-                                    setSelectedFacility({...selectedFacility})
-                                }
-                            }}/>}/>
                             <Route path='/map' element={<MapPage facility={selectedFacility} sensors={sensors} alarmedSenosrs={alarmedSensors}/>}/>
+                            <Route element={<RequireAuth role="admin"/>}>
+                                <Route path='/sensors-to-add' element={<SensorsToAddPage disabledSensors={disabledSensors} 
+                                facilitiesMetadata={facilitiesMeta}
+                                setDisabledSensors={setDisabledSensors}
+                                onDeleteSensor={(sensor)=>{
+                                    if(selectedFacility){
+                                        selectedFacility.sections.forEach(section=>{
+                                            section.sensors = section.sensors.filter(s=>s.imei != sensor.imei)
+                                        })
+                                        selectedFacility.groups.forEach(group=>{
+                                            group.sensors = group.sensors.filter(s=>s.imei != sensor.imei)
+                                        })
+                                        setSelectedFacility({...selectedFacility})
+                                    }
+                                }}/>}/>
+                                <Route path='/users' element={<UsersPage facilitiesMetadata={facilitiesMeta}/>}/>
+                            </Route>
                         </Route>
                     </Routes>
                 </Router>

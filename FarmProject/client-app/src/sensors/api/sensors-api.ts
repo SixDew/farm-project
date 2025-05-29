@@ -252,8 +252,12 @@ export async function setSensorActive(isActive:boolean, imei:string, sectionId?:
     return response
 }
 
-export async function getFacilitiesDeppMeta() {
+export async function getFacilitiesDeepMeta() {
     return await sendRequestWithAuthorize(`${serverUrl}/facilities/metadata`)
+}
+
+export async function getUserFacility(userId:number){
+    return await sendRequestWithAuthorize(`${serverUrl}/user/facility/${userId}`)
 }
 
 export async function getGroupsMetadata(imei) {

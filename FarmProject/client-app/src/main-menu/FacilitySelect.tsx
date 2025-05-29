@@ -14,7 +14,7 @@ export default function FacilitySelect({facilitiesMeta, onSelectEvent, onClick}:
             <select className="bordered-accent accent-select" onClick={(e)=>{
                 onClick && onClick(e)
             }} onChange={onSelectEvent}>
-                <option value={0} selected>-Выбрать предприятие-</option>
+                <option value={undefined} selected>-Выбрать предприятие-</option>
                 {
                     facilitiesMeta.map(f=><option key={f.id} value={f.id}>{f.name}</option>)
                 }

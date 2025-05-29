@@ -63,8 +63,13 @@ export default function AppAuthPagesLayout({facilitiesMeta, onFacilitySelect, lo
                         <div className='main-menu'>
                             <NavButton navPath='/monitor' image={sensorImage}/>
                             <NavButton navPath='/map' image={mapImage}/>
-                            <NavButton navPath='/sensors-to-add' image={disabledSensorImage}/>
-                            <NavButton navPath='/users' image={peopleImage}/>
+                            {
+                                authContext.role == "admin"?
+                                <>
+                                    <NavButton navPath='/sensors-to-add' image={disabledSensorImage}/>
+                                    <NavButton navPath='/users' image={peopleImage}/>
+                                </>: <></>
+                            }
                         </div>
                         <div className='page-window'>
                             <Outlet/>
