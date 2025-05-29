@@ -6,7 +6,7 @@ import UsersPage from './admin-panels/UsersPage'
 import GroupPage from './admin-panels/group-page/GroupPage'
 import SensorsToAddPage from './admin-panels/SensorsToAddPage'
 import MapPage from './admin-panels/map-page/MapPage'
-import { AlarmablePressureSensor, MeasurementsDriftData, FacilityDeepMetaDto, FacilityDto, NotificationData, PressureAlarmDto, PressureMeasurements, PressureSensorDto, ForecastWarningNotificationData, AlarmMeasurementsNotificationData } from './interfaces/DtoInterfaces'
+import { AlarmablePressureSensor, MeasurementsDriftData, FacilityDeepMetaDto, FacilityDto, NotificationData, PressureAlarmDto, PressureMeasurements, PressureSensorDto, ForecastWarningNotificationData, AlarmMeasurementsNotificationData, AddSensorNotificationData } from './interfaces/DtoInterfaces'
 import { useEffect, useState } from 'react'
 import {getDisabledSensors, getFacilitiesDeepMeta, getFacility, getNotifications, getUncheckedAlarmedMeasurements, getUserFacility } from './sensors/api/sensors-api'
 import connection from "./sensors/api/measurements-hub-connection.js"
@@ -166,10 +166,15 @@ export default function App(){
                 setSensors(updateSensors)
             })
 
-            connection.on('ReciveAddSensorNotify', (data:PressureSensorDto)=>{
-                if(authContext.role == "admin"){
-                    setDisabledSensors(prev=>[...prev, data])
-                }
+            connection.on('ReciveAddSensorNotify', (data:AddSensorNotificationData)=>{
+                addNotification(data.notificationData)
+                setDisabledSensors(prev=>[...prev, data.sensorData])
+                toast.warning(
+                <div>
+                    <h3>Новый датчик!</h3>
+                    <p>{data.notificationData.text}</p>
+                    <NavButton navPath={`/sensors-to-add`} title='Перейти'></NavButton>
+                </div>)
             })
 
             connection.on('ReciveAlarmNotify', (data:AlarmMeasurementsNotificationData)=>{
@@ -196,6 +201,14 @@ export default function App(){
             }
         }
     },[sensors])
+
+    useEffect(()=>{
+        async function reconnect() {
+            await connection.stop()
+            await connection.start()
+        }
+        reconnect()
+    }, [authContext])
 
     useEffect(()=>{
         async function setAlarmedSensorsAsync() {

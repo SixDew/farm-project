@@ -5,7 +5,7 @@ namespace FarmProject.dto.pressure_sensor.services
 {
     public class PressureAlarmDtoConvertService
     {
-        public AlarmMeasurementsNotificationToClientDto ConvertToHubAlarmToClientDto(Measurements measurements)
+        public AlarmMeasurementsNotificationData ConvertToHubAlarmToClientDto(Measurements measurements)
         {
             return new()
             {
@@ -18,7 +18,7 @@ namespace FarmProject.dto.pressure_sensor.services
             };
         }
 
-        public AlarmMeasurementsNotificationToClientDto ConvertToHubAlarmToClientDto(AlarmedMeasurements measurements)
+        public AlarmMeasurementsNotificationData ConvertToHubAlarmToClientDto(AlarmedMeasurements measurements)
         {
             return new()
             {

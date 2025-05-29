@@ -12,6 +12,16 @@ namespace FarmProject.db.services.providers
             return await _dbSet.FirstOrDefaultAsync(x => x.Key == key);
         }
 
+        public async Task<List<User>> GetAllAdminsAsync()
+        {
+            return await _dbSet.Where(u => u.Role == UserRoles.ADMIN).ToListAsync();
+        }
+
+        public async Task<List<User>> GetAllAdminsWithNotificationsAsync()
+        {
+            return await _dbSet.Include(u => u.Notifications).Where(u => u.Role == UserRoles.ADMIN).ToListAsync();
+        }
+
         public async Task<User?> GetAdminByKeyAsync(string key)
         {
             return await _dbSet.FirstOrDefaultAsync(x => x.Key == key && x.Role == UserRoles.ADMIN);

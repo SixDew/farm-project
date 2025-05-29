@@ -4,5 +4,5 @@ namespace FarmProject.db.models;
 
 public class AlarmMesurementsNotification : Notification
 {
-    public required AlarmMeasurementsNotificationToClientDto Data { get; set; }
+    public required AlarmMeasurementsNotificationData Data { get; set; }
 }

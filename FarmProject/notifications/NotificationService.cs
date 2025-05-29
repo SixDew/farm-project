@@ -32,6 +32,31 @@ public class NotificationService(IServiceProvider _services, MeasurementsHubServ
         }
     }
 
+    public async Task SendAddSensorNotificatonToAdmins(AddSensorNotificationData data)
+    {
+        using (var scope = _services.CreateScope())
+        {
+            var users = scope.ServiceProvider.GetRequiredService<UserProvider>();
+            var admins = await users.GetAllAdminsWithNotificationsAsync();
+
+            var notification = new AddSensorNotification()
+            {
+                Data = data,
+                Text = $"В систему добавлен датчик с номером {data.Imei}"
+            };
+
+            admins.ForEach(admin =>
+            {
+                admin.Notifications.Add(notification);
+            });
+            await users.SaveChangesAsync();
+            admins.ForEach(async admin =>
+            {
+                await _notifySender.SendAddSensorNotifyAsync(data, _converter.ConvertNotification(notification), admin.Id);
+            });
+        }
+    }
+
     public async Task SendWarningForecastedMeasurementsNotificationToAllAsync(WarningMeasurementsNotificationData notificationData, int facilityId)
     {
         using (var scope = _services.CreateScope())
@@ -55,7 +80,7 @@ public class NotificationService(IServiceProvider _services, MeasurementsHubServ
         }
     }
 
-    public async Task SendAlarmMeasurementsNotificationAsync(AlarmMeasurementsNotificationToClientDto data, int userId)
+    public async Task SendAlarmMeasurementsNotificationAsync(AlarmMeasurementsNotificationData data, int userId)
     {
         using (var scope = _services.CreateScope())
         {
@@ -78,7 +103,7 @@ public class NotificationService(IServiceProvider _services, MeasurementsHubServ
         }
     }
 
-    public async Task SendAlarmMeasurementsNotificationToAllAsync(AlarmMeasurementsNotificationToClientDto data, int facilityId)
+    public async Task SendAlarmMeasurementsNotificationToAllAsync(AlarmMeasurementsNotificationData data, int facilityId)
     {
         using (var scope = _services.CreateScope())
         {

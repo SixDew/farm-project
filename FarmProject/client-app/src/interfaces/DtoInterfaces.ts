@@ -119,3 +119,8 @@ export interface ForecastWarningNotificationData{
     measurementData:MeasurementsDriftData,
     notificationData:NotificationData
 }
+
+export interface AddSensorNotificationData{
+    sensorData:PressureSensorDto,
+    notificationData:NotificationData
+}

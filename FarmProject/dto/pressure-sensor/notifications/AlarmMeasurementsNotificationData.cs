@@ -3,7 +3,7 @@
 namespace FarmProject.dto.pressure_sensor.alarm
 {
     [Owned]
-    public class AlarmMeasurementsNotificationToClientDto
+    public class AlarmMeasurementsNotificationData
     {
         public required int Id { get; set; }
         public double Measurement1 { get; init; }

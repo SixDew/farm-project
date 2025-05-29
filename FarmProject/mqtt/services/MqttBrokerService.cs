@@ -96,13 +96,13 @@ public class MqttBrokerService(IServiceProvider _serviceProvider, MeasurementsHu
 
                             var converter = scope.ServiceProvider.GetRequiredService<PressureSensorDtoConvertService>();
 
-                            var sensor = await sensorProvider.GetByImeiWithMeasurementsAndSettingsAsync(data.IMEI);
+                            var sensor = await sensorProvider.GetByImeiAsync(data.IMEI);
                             if (sensor is null)
                             {
                                 sensor = converter.ConvertToModel(data);
                                 await sensorProvider.AddAsync(sensor);
                                 await sensorProvider.SaveChangesAsync();
-                                await _measurementsHubService.SendAddSensorNotifyAsync(dtoConverter.ConvertToClient(sensor));
+                                await notificationService.SendAddSensorNotificatonToAdmins(dtoConverter.ConvertToNotificationData(sensor));
                             }
                         }
                         catch (JsonException ex)
