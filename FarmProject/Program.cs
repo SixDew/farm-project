@@ -22,7 +22,7 @@ using NetTopologySuite.IO.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<AuthenticationJwtOptions>(builder.Configuration.GetSection("JWT"));
+builder.Services.Configure<AuthenticationTokenOptions>(builder.Configuration.GetSection("JWT"));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -30,8 +30,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidIssuer = AuthenticationJwtOptions.ISSUER,
-        ValidAudience = AuthenticationJwtOptions.AUDIENCE,
+        ValidIssuer = AuthenticationTokenOptions.ISSUER,
+        ValidAudience = AuthenticationTokenOptions.AUDIENCE,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]!)),
@@ -82,6 +82,7 @@ builder.Services.AddScoped<MapZonesProvider>();
 builder.Services.AddTransient<MapZoneConverter>();
 builder.Services.AddTransient<FacilityConverter>();
 builder.Services.AddScoped<FacilityProvider>();
+builder.Services.AddScoped<RefreshTokensProvider>();
 builder.Services.AddScoped<UserAccessService>();
 
 builder.Services.AddSingleton<IPredictService, EwmaPredictService>();
@@ -123,7 +124,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors(builder =>
-    builder.WithOrigins("http://localhost:5173")
+    builder.WithOrigins("https://localhost:5173", "https://myapp.local:5173")
            .AllowAnyMethod()
            .AllowAnyHeader()
            .AllowCredentials());

@@ -9,6 +9,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.HasMany(u => u.Notifications).WithOne().HasForeignKey(n => n.UserId);
+        builder.HasOne(u => u.RefreshToken).WithOne(t => t.User).HasForeignKey<RefreshToken>(t => t.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
         builder.ToTable("Users");
     }
 }

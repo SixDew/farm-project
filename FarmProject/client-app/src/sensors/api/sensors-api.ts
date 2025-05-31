@@ -66,6 +66,7 @@ export async function sendAlarmedMeasurementChecked(id, imei) {
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(`${serverUrl}/sensors/pressure/measurements/alarms/${imei}/check/${id}`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
             'Authorization':AuthorizathionHeader
         }
@@ -81,6 +82,7 @@ export async function updatePressureSettings(imei, settings) {
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(`${serverUrl}/sensors/pressure/settings/${imei}`,{
         method:'PUT',
+        credentials: 'include',
         headers:{
             'Content-Type':'application/json',
             'Authorization':AuthorizathionHeader
@@ -94,6 +96,7 @@ export async function updateAdminPressureSettings(imei, settings) {
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(`${serverUrl}/sensors/pressure/admin/settings/${imei}`,{
         method:'PUT',
+        credentials: 'include',
         headers:{
             'Content-Type':'application/json',
             'Authorization':AuthorizathionHeader
@@ -112,6 +115,7 @@ export async function addGroup(facilityId:number, groupName:string) {
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(`${serverUrl}/groups/${facilityId}`,{
         method:'POST',
+        credentials: 'include',
         headers:{
             'Content-Type':'application/json',
             'Authorization':AuthorizathionHeader
@@ -131,6 +135,7 @@ export async function sendGroupChangeList(id:number, sensorsImei:string[]){
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(`${serverUrl}/groups/change/${id}`,{
         method:'POST',
+        credentials: 'include',
         headers:{
             'Content-Type':'application/json',
             'Authorization':AuthorizathionHeader
@@ -140,6 +145,24 @@ export async function sendGroupChangeList(id:number, sensorsImei:string[]){
         )
     })
     return response
+}
+
+export async function refreshToken() {
+    return await fetch(`${serverUrl}/login/refresh`,{
+        method:'POST',
+        credentials: 'include', 
+    })
+}
+
+export async function removeRefreshToken() {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    return await fetch(`${serverUrl}/login/refresh`,{
+        method:'DELETE',
+        credentials: 'include',
+        headers:{
+            'Authorization':AuthorizathionHeader
+        },
+    })
 }
 
 export async function getFacility(id:number) {
@@ -154,6 +177,7 @@ export async function addSection(name:string, facilityId:number) {
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(`${serverUrl}/sections/add/${facilityId}`,{
         method:'POST',
+        credentials: 'include',
         headers:{
             'Content-Type':'application/json',
             'Authorization':AuthorizathionHeader
@@ -167,6 +191,7 @@ export async function addToGroup(groupId, sensorImei) {
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(`${serverUrl}/groups/add/${groupId}`,{
         method:'POST',
+        credentials: 'include',
         headers:{
             'Content-Type':'application/json',
             'Authorization':AuthorizathionHeader
@@ -336,7 +361,10 @@ export async function deleteSensor(imei:string) {
 }
 
 async function sendRequest(url){
-    const response = await fetch(url)
+    const response = await fetch(url, {
+        method: 'GET',
+        credentials: 'include',
+    })
     if(response.ok){
         return await response.json()
     }
@@ -346,6 +374,7 @@ async function sendRequestWithAuthorize(url) {
     const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
     const response = await fetch(url, {
         method: 'GET',
+        credentials: 'include',
         headers: {
             'Authorization':AuthorizathionHeader
         }

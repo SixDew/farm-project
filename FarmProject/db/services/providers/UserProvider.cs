@@ -9,12 +9,17 @@ namespace FarmProject.db.services.providers
     {
         public async Task<User?> GetByKeyAsync(string key)
         {
-            return await _dbSet.FirstOrDefaultAsync(x => x.Key == key);
+            return await _dbSet.Include(u => u.RefreshToken).FirstOrDefaultAsync(x => x.Key == key);
         }
 
         public async Task<List<User>> GetAllAdminsAsync()
         {
             return await _dbSet.Where(u => u.Role == UserRoles.ADMIN).ToListAsync();
+        }
+
+        public async Task<User?> GetByTokenAsync(Guid token)
+        {
+            return await _dbSet.Include(u => u.RefreshToken).FirstOrDefaultAsync(u => u.RefreshToken != null && u.RefreshToken.Token == token);
         }
 
         public async Task<List<User>> GetAllAdminsWithNotificationsAsync()
@@ -24,7 +29,7 @@ namespace FarmProject.db.services.providers
 
         public async Task<User?> GetAdminByKeyAsync(string key)
         {
-            return await _dbSet.FirstOrDefaultAsync(x => x.Key == key && x.Role == UserRoles.ADMIN);
+            return await _dbSet.Include(u => u.RefreshToken).FirstOrDefaultAsync(x => x.Key == key && x.Role == UserRoles.ADMIN);
         }
 
         public async Task<User?> GetUserByKeyAsync(string key)
@@ -39,7 +44,7 @@ namespace FarmProject.db.services.providers
 
         public async Task<User?> GetByIdAsync(int id)
         {
-            return await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
+            return await _dbSet.Include(u => u.RefreshToken).FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<User?> GetUserByIdAsync(int id)

@@ -1,6 +1,7 @@
 // AuthContext.tsx
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { login as apiLogin, adminLogin as apiAdminLogin } from './sensors/users-api';
+import { refreshToken, removeRefreshToken } from './sensors/api/sensors-api';
 
 export type Role = 'user' | 'admin' | null;
 export interface AuthContextType {
@@ -24,6 +25,15 @@ export default function AuthProvider({ children }:AuthProviderProps){
   const [loading, setLoading] = useState(true);
   const [id, setId] = useState<number|null>(null);
 
+  const updateLoginData = (data:any)=>{
+    localStorage.setItem('userKey', data.key);
+    localStorage.setItem('role', data.role);
+    localStorage.setItem('userId', data.userId);
+    setToken(data.key);
+    setRole(data.role);
+    setId(data.userId);
+  }
+
   useEffect(() => {
     const t = localStorage.getItem('userKey');
     const r = localStorage.getItem('role') as Role;
@@ -42,20 +52,16 @@ export default function AuthProvider({ children }:AuthProviderProps){
       ? await apiAdminLogin(pass)
       : await apiLogin(pass);
     if (resp.ok) {
-      const data = await resp.json();
-      localStorage.setItem('userKey', data.key);
-      localStorage.setItem('role', asAdmin ? 'admin' : 'user');
-      localStorage.setItem('userId', data.userId);
-      setToken(data.key);
-      setRole(asAdmin ? 'admin' : 'user');
-      setId(data.userId);
+      const data = await resp.json()
+      updateLoginData(data)
     } else {
-      throw new Error('Неверный ключ');
+      throw new Error('Неверный ключ')
     }
     setLoading(false);
   }, []);
 
-  const logout = useCallback(()=> {
+  const logout = useCallback(async ()=> {
+    await removeRefreshToken()
     localStorage.removeItem('userKey');
     localStorage.removeItem('role');
     localStorage.removeItem('userId');
@@ -65,11 +71,13 @@ export default function AuthProvider({ children }:AuthProviderProps){
   }, []);
 
     const refreshAccessToken = useCallback(async () => {
-      console.log("REFRESH TOKEN")
-    // const refreshToken = getRefreshToken();
-    // const { data } = await api.post('/auth/refresh', { refreshToken });
-    // saveTokens(data.accessToken, data.refreshToken);
-    // return data.accessToken;
+      console.log("refresh token")
+    const response = await refreshToken();
+    if(response.ok){
+     var data = await response.json()
+     console.log("token data:", data)
+     updateLoginData(data) 
+    }
   }, []);
 
   const sendWithAccessCheck = useCallback( async ( action: () => Promise<Response>) => {

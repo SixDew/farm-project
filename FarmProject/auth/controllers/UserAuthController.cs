@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using FarmProject.auth.claims;
+using FarmProject.db.models;
 using FarmProject.db.services.providers;
 using FarmProject.dto.groups.services;
 using FarmProject.dto.users;
@@ -14,9 +15,9 @@ using Microsoft.IdentityModel.Tokens;
 namespace FarmProject.auth.controllers;
 
 [ApiController]
-public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, UserProvider _users) : ControllerBase
+public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions, UserProvider _users) : ControllerBase
 {
-    private readonly AuthenticationJwtOptions _jwtOptions = jwtOptions.Value;
+    private readonly AuthenticationTokenOptions _jwtOptions = jwtOptions.Value;
 
     [HttpPost("login")]
     public async Task<IActionResult> CreateAccessToken([FromBody] string key)
@@ -29,33 +30,77 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
 
         var claims = GetUserClaim(Roles.USER, key, user.Id);
         var jwt = new JwtSecurityToken(
-                issuer: AuthenticationJwtOptions.ISSUER,
-                audience: AuthenticationJwtOptions.AUDIENCE,
+                issuer: AuthenticationTokenOptions.ISSUER,
+                audience: AuthenticationTokenOptions.AUDIENCE,
                 claims: claims,
-                expires: AuthenticationJwtOptions.EXPIRES,
+                expires: AuthenticationTokenOptions.EXPIRES,
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key)), SecurityAlgorithms.HmacSha256)
             );
-        return Ok(new { userId = user.Id, key = new JwtSecurityTokenHandler().WriteToken(jwt) });
+        var refreshToken = await SetRefreshToken(user);
+        CookiesSetRefreshToken(refreshToken);
+        return Ok(new { userId = user.Id, role = user.Role, key = new JwtSecurityTokenHandler().WriteToken(jwt) });
     }
 
     [HttpPost("/login/admin")]
     public async Task<IActionResult> CreateAdminAccessToken([FromBody] string key)
     {
         var user = await _users.GetAdminByKeyAsync(key);
-        if (user is null)
-        {
-            return Unauthorized();
-        }
+        if (user is null) return Unauthorized();
         var claims = GetUserClaim(Roles.ADMIN, key, user.Id);
         var jwt = new JwtSecurityToken(
-                issuer: AuthenticationJwtOptions.ISSUER,
-                audience: AuthenticationJwtOptions.AUDIENCE,
+                issuer: AuthenticationTokenOptions.ISSUER,
+                audience: AuthenticationTokenOptions.AUDIENCE,
                 claims: claims,
-                expires: AuthenticationJwtOptions.EXPIRES,
+                expires: AuthenticationTokenOptions.EXPIRES,
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key)), SecurityAlgorithms.HmacSha256)
             );
-        return Ok(new { userId = user.Id, key = new JwtSecurityTokenHandler().WriteToken(jwt) });
+
+        var refreshToken = await SetRefreshToken(user);
+        CookiesSetRefreshToken(refreshToken);
+        return Ok(new { userId = user.Id, role = user.Role, key = new JwtSecurityTokenHandler().WriteToken(jwt) });
     }
+
+    [HttpPost("login/refresh")]
+    public async Task<IActionResult> RefreshToken()
+    {
+        if (Request.Cookies.TryGetValue("refreshToken", out var refreshTokenStr))
+        {
+            var user = await _users.GetByTokenAsync(Guid.Parse(refreshTokenStr));
+            if (user is null || user.RefreshToken is null) return Unauthorized();
+            if (DateTime.UtcNow > user.RefreshToken.Expires) return Unauthorized();
+
+            var claims = user.Role switch
+            {
+                UserRoles.ADMIN => GetUserClaim(Roles.ADMIN, user.Key, user.Id),
+                _ => GetUserClaim(Roles.USER, user.Key, user.Id)
+            };
+            var jwt = new JwtSecurityToken(
+                    issuer: AuthenticationTokenOptions.ISSUER,
+                    audience: AuthenticationTokenOptions.AUDIENCE,
+                    claims: claims,
+                    expires: AuthenticationTokenOptions.EXPIRES,
+                    signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key)), SecurityAlgorithms.HmacSha256)
+                );
+
+            var newRefreshToken = await SetRefreshToken(user);
+            CookiesSetRefreshToken(newRefreshToken);
+
+            return Ok(new { userId = user.Id, role = user.Role, key = new JwtSecurityTokenHandler().WriteToken(jwt) });
+        }
+        else return Unauthorized();
+    }
+    [HttpDelete("login/refresh")]
+    [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
+    public async Task<IActionResult> RemoveRefresh([FromServices] RefreshTokensProvider _tokens)
+    {
+        var user = await _users.GetByIdAsync(int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)));
+        if (user is null) return BadRequest();
+
+        _tokens.Delete(user.RefreshToken);
+        await _tokens.SaveChangesAsync();
+        return Ok();
+    }
+
     [HttpGet("admin/users")]
     [Authorize(Roles = UserRoles.ADMIN)]
     public async Task<IActionResult> GetUsers([FromServices] UserDtoConverter converter)
@@ -83,10 +128,7 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
     public async Task<IActionResult> UpdateUser([FromBody] UserFromAdminClientDto userData, [FromServices] UserDtoConverter converter)
     {
         var user = await _users.GetByIdAsync(userData.Id);
-        if (user is null)
-        {
-            return BadRequest("Invalid key");
-        }
+        if (user is null) return BadRequest("Invalid key");
 
         converter.ConvertFromAdminClientDto(userData, user);
         await _users.SaveChangesAsync();
@@ -112,10 +154,7 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
     public async Task<IActionResult> DeleteUser([FromBody] int id)
     {
         var user = await _users.GetByIdAsync(id);
-        if (user is null)
-        {
-            return Ok();
-        }
+        if (user is null) return Ok();
         _users.Delete(user);
         await _users.SaveChangesAsync();
         return Ok(user);
@@ -138,6 +177,43 @@ public class UserAuthController(IOptions<AuthenticationJwtOptions> jwtOptions, U
                     throw new ArgumentException();
                 }
         }
+    }
+
+    private void CookiesSetRefreshToken(RefreshToken token)
+    {
+        Response.Cookies.Append("refreshToken", token.Token.ToString(), new CookieOptions()
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
+            Expires = token.Expires
+        });
+    }
+
+    private async Task<RefreshToken> SetRefreshToken(int userId)
+    {
+        var user = await _users.GetAsync(userId);
+        if (user is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        user.RefreshToken = new RefreshToken() { Expires = AuthenticationTokenOptions.REFRESH_EXPIRES };
+        await _users.SaveChangesAsync();
+        return user.RefreshToken;
+    }
+
+    private async Task<RefreshToken> SetRefreshToken(User user)
+    {
+        var newRefreshToken = new RefreshToken() { Expires = AuthenticationTokenOptions.REFRESH_EXPIRES };
+        if (user.RefreshToken is null) user.RefreshToken = newRefreshToken;
+        else
+        {
+            user.RefreshToken.Token = newRefreshToken.Token;
+            user.RefreshToken.Expires = newRefreshToken.Expires;
+        }
+        await _users.SaveChangesAsync();
+        return user.RefreshToken;
     }
 
     private enum Roles
