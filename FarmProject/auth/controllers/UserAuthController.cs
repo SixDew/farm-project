@@ -8,6 +8,7 @@ using FarmProject.dto.groups.services;
 using FarmProject.dto.users;
 using FarmProject.dto.users.services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -15,20 +16,22 @@ using Microsoft.IdentityModel.Tokens;
 namespace FarmProject.auth.controllers;
 
 [ApiController]
-public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions, UserProvider _users) : ControllerBase
+public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions, UserProvider _users,
+    IPasswordHasher<User> _passwordHasher) : ControllerBase
 {
     private readonly AuthenticationTokenOptions _jwtOptions = jwtOptions.Value;
 
     [HttpPost("login")]
-    public async Task<IActionResult> CreateAccessToken([FromBody] string key)
+    public async Task<IActionResult> CreateAccessToken([FromBody] LoginDto loginData)
     {
-        var user = await _users.GetUserByKeyAsync(key);
-        if (user is null)
+        var user = await _users.GetByNameAsync(loginData.Login);
+        if (user is null) return BadRequest("User is not exist");
+        if (_passwordHasher.VerifyHashedPassword(user, user.Key, loginData.Password) != PasswordVerificationResult.Success)
         {
-            return Unauthorized("Invalid key");
+            return BadRequest("Password is invalid");
         }
 
-        var claims = GetUserClaim(Roles.USER, key, user.Id);
+        var claims = GetUserClaim(Roles.USER, loginData.Password, user.Id);
         var jwt = new JwtSecurityToken(
                 issuer: AuthenticationTokenOptions.ISSUER,
                 audience: AuthenticationTokenOptions.AUDIENCE,
@@ -38,15 +41,20 @@ public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions,
             );
         var refreshToken = await SetRefreshToken(user);
         CookiesSetRefreshToken(refreshToken);
-        return Ok(new { userId = user.Id, role = user.Role, key = new JwtSecurityTokenHandler().WriteToken(jwt) });
+        return Ok(new { role = user.Role, key = new JwtSecurityTokenHandler().WriteToken(jwt) });
     }
 
     [HttpPost("/login/admin")]
-    public async Task<IActionResult> CreateAdminAccessToken([FromBody] string key)
+    public async Task<IActionResult> CreateAdminAccessToken([FromBody] LoginDto loginData)
     {
-        var user = await _users.GetAdminByKeyAsync(key);
-        if (user is null) return Unauthorized();
-        var claims = GetUserClaim(Roles.ADMIN, key, user.Id);
+        var user = await _users.GetByNameAsync(loginData.Login);
+        if (user is null) return BadRequest("User is not exist");
+        if (_passwordHasher.VerifyHashedPassword(user, user.Key, loginData.Password) != PasswordVerificationResult.Success)
+        {
+            return BadRequest("Password is invalid");
+        }
+
+        var claims = GetUserClaim(Roles.ADMIN, loginData.Password, user.Id);
         var jwt = new JwtSecurityToken(
                 issuer: AuthenticationTokenOptions.ISSUER,
                 audience: AuthenticationTokenOptions.AUDIENCE,
@@ -57,7 +65,7 @@ public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions,
 
         var refreshToken = await SetRefreshToken(user);
         CookiesSetRefreshToken(refreshToken);
-        return Ok(new { userId = user.Id, role = user.Role, key = new JwtSecurityTokenHandler().WriteToken(jwt) });
+        return Ok(new { role = user.Role, key = new JwtSecurityTokenHandler().WriteToken(jwt) });
     }
 
     [HttpPost("login/refresh")]
@@ -66,8 +74,8 @@ public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions,
         if (Request.Cookies.TryGetValue("refreshToken", out var refreshTokenStr))
         {
             var user = await _users.GetByTokenAsync(Guid.Parse(refreshTokenStr));
-            if (user is null || user.RefreshToken is null) return Unauthorized();
-            if (DateTime.UtcNow > user.RefreshToken.Expires) return Unauthorized();
+            if (user is null || user.RefreshToken is null || refreshTokenStr != user.RefreshToken.Token.ToString()
+                || DateTime.UtcNow > user.RefreshToken.Expires) return Unauthorized();
 
             var claims = user.Role switch
             {
@@ -85,7 +93,7 @@ public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions,
             var newRefreshToken = await SetRefreshToken(user);
             CookiesSetRefreshToken(newRefreshToken);
 
-            return Ok(new { userId = user.Id, role = user.Role, key = new JwtSecurityTokenHandler().WriteToken(jwt) });
+            return Ok(new { role = user.Role, key = new JwtSecurityTokenHandler().WriteToken(jwt) });
         }
         else return Unauthorized();
     }
@@ -109,16 +117,14 @@ public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions,
         return Ok(userList.Select(converter.ConvertToAdminClientDto));
     }
 
-    [HttpGet("user/facility/{id}")]
+    [HttpGet("user/facility")]
     [Authorize(Roles = $"{UserRoles.USER},{UserRoles.ADMIN}")]
-    public async Task<IActionResult> GetUserFacility([FromRoute] int id, [FromServices] UserAccessService accessService,
+    public async Task<IActionResult> GetUserFacility([FromServices] UserAccessService accessService,
         [FromServices] FacilityConverter converter, [FromServices] FacilityProvider facilities)
     {
         var user = await _users.GetUserByIdAsync(int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!));
         if (user is null) return BadRequest();
-        if (User.FindFirstValue(ClaimTypes.Role) == UserRoles.USER &&
-            !await accessService.CheckFacilityAffiliation(user.Id, id)) return Forbid();
-        var facility = await facilities.GetAsync(id);
+        var facility = await facilities.GetAsync(user.FacilityId);
         if (facility is null) return BadRequest();
         return Ok(converter.ConvertToClientMeta(facility));
     }
@@ -138,7 +144,7 @@ public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions,
     [Authorize(Roles = UserRoles.ADMIN)]
     public async Task<IActionResult> CreateUser([FromBody] UserFromAdminClientDto userData, [FromServices] UserDtoConverter converter)
     {
-        var user = await _users.GetByKeyAsync(userData.Key);
+        var user = await _users.GetByNameAsync(userData.Key);
         if (user is not null)
         {
             return BadRequest("User already exist");

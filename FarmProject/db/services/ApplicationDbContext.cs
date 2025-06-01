@@ -4,14 +4,17 @@ using FarmProject.db.models;
 using FarmProject.group_feature;
 using FarmProject.group_feature.group;
 using FarmProject.group_feature.section;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace FarmProject.db.services;
 
 public class ApplicationDbContext : DbContext
 {
-    public ApplicationDbContext() : base()
+    private readonly IPasswordHasher<User> _passwordHasher;
+    public ApplicationDbContext(IPasswordHasher<User> passwordHasher) : base()
     {
+        _passwordHasher = passwordHasher;
         Database.EnsureCreated();
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -136,10 +139,26 @@ public class ApplicationDbContext : DbContext
                     IMEI = "2"
                 }
             );
-        modelBuilder.Entity<User>().ToTable("Users").HasData(
-            [new User() { Id = 1, Key = "password", Role = UserRoles.USER, Name="Булгаков Алексей Романович", ContactData="+79910876841", FacilityId=1 },
-            new User(){ Id= 2, Key = "admin-password", Role = UserRoles.ADMIN, Name="Парадный Анатолий Сергеевич", ContactData="+79910593465", FacilityId=1}
-        ]
-            );
+        var user1 = new User()
+        {
+            Id = 1,
+            Key = "password",
+            Role = UserRoles.USER,
+            Name = "Булгаков Алексей Романович",
+            ContactData = "+79910876841",
+            FacilityId = 1
+        };
+        user1.Key = _passwordHasher.HashPassword(user1, user1.Key);
+        var admin = new User()
+        {
+            Id = 2,
+            Key = "admin-password",
+            Role = UserRoles.ADMIN,
+            Name = "Парадный Анатолий Сергеевич",
+            ContactData = "+79910593465",
+            FacilityId = 1
+        };
+        admin.Key = _passwordHasher.HashPassword(admin, admin.Key);
+        modelBuilder.Entity<User>().ToTable("Users").HasData([user1, admin]);
     }
 }

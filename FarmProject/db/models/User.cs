@@ -1,7 +1,9 @@
 ﻿using DewLib.db;
+using Microsoft.EntityFrameworkCore;
 
 namespace FarmProject.db.models;
 
+[Index("Name", IsUnique = true)]
 public class User : BaseModel
 {
     public required string Name { get; set; }

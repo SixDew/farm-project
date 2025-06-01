@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using FarmProject.alarm.services;
 using FarmProject.auth;
+using FarmProject.db.models;
 using FarmProject.db.services;
 using FarmProject.db.services.providers;
 using FarmProject.dto.groups.services;
@@ -15,6 +16,7 @@ using FarmProject.notifications;
 using FarmProject.predict;
 using FarmProject.validation.services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using MQTTnet.AspNetCore;
@@ -58,6 +60,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddConnections();
 
 builder.Services.AddMemoryCache();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<SensorsProvider>();
 builder.Services.AddScoped<SensorGroupsProvider>();

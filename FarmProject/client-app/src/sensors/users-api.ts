@@ -1,25 +1,25 @@
 import serverUrl from "../server-url";
 
-export async function login(key){
+export async function login(key:string, login:string){
     const response = await fetch(`${serverUrl}/login`, {
         method: 'POST',
         credentials: 'include',
         headers:{
             'Content-Type':'application/json'
         },
-        body:JSON.stringify(key)
+        body:JSON.stringify({login:login, password:key})
     })
     return response
 }
 
-export async function adminLogin(key) {
+export async function adminLogin(key:string, login:string) {
     const response = await fetch(`${serverUrl}/login/admin`, {
         method: 'POST',
         credentials: 'include',
         headers:{
             'Content-Type':'application/json'
         },
-        body:JSON.stringify(key)
+        body:JSON.stringify({login:login, password:key})
     })
     return response
 }

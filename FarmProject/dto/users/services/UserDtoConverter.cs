@@ -1,8 +1,9 @@
 ﻿using FarmProject.db.models;
+using Microsoft.AspNetCore.Identity;
 
 namespace FarmProject.dto.users.services;
 
-public class UserDtoConverter
+public class UserDtoConverter(IServiceProvider _services)
 {
     public UserToAdminClientDto ConvertToAdminClientDto(User user)
     {
@@ -11,15 +12,25 @@ public class UserDtoConverter
 
     public User ConvertFromAdminClientDto(UserFromAdminClientDto userDto)
     {
-        return new() { Key = userDto.Key, Role = userDto.Role, Name = userDto.Name, ContactData = userDto.ContactData, FacilityId = userDto.FacilityId };
+        using (var scope = _services.CreateScope())
+        {
+            var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<User>>();
+            User user = new User() { Key = userDto.Key, Role = userDto.Role, Name = userDto.Name, ContactData = userDto.ContactData, FacilityId = userDto.FacilityId };
+            user.Key = passwordHasher.HashPassword(user, user.Key);
+            return user;
+        }
     }
     public User ConvertFromAdminClientDto(UserFromAdminClientDto userDto, User updateUser)
     {
-        updateUser.Key = userDto.Key;
-        updateUser.Role = userDto.Role;
-        updateUser.Name = userDto.Name;
-        updateUser.ContactData = userDto.ContactData;
-        return updateUser;
+        using (var scope = _services.CreateScope())
+        {
+            var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<User>>();
+            updateUser.Key = passwordHasher.HashPassword(updateUser, userDto.Key);
+            updateUser.Role = userDto.Role;
+            updateUser.Name = userDto.Name;
+            updateUser.ContactData = userDto.ContactData;
+            return updateUser;
+        }
     }
 
     public NotificationToClientDto ConvertNotification(Notification notification)

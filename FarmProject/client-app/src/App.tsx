@@ -9,13 +9,14 @@ import MapPage from './admin-panels/map-page/MapPage'
 import { AlarmablePressureSensor, MeasurementsDriftData, FacilityDeepMetaDto, FacilityDto, NotificationData, PressureAlarmDto, PressureMeasurements, PressureSensorDto, ForecastWarningNotificationData, AlarmMeasurementsNotificationData, AddSensorNotificationData } from './interfaces/DtoInterfaces'
 import { useEffect, useState } from 'react'
 import {getDisabledSensors, getFacilitiesDeepMeta, getFacility, getNotifications, getUncheckedAlarmedMeasurements, getUserFacility } from './sensors/api/sensors-api'
-import connection from "./sensors/api/measurements-hub-connection.js"
+import createConnection from "./sensors/api/measurements-hub-connection.js"
 import NavButton from './main-menu/NavButton'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from './AuthProvider'
 import RequireAuth from './RequireAuth'
 import AppAuthPagesLayout from './AppAuthPagesLayout'
+import { HubConnection } from '@microsoft/signalr'
 
 function convertSensorsFromServerData(data:PressureSensorDto[] | undefined):AlarmablePressureSensor[]{
     if(data){
@@ -66,6 +67,14 @@ export default function App(){
     const [disabledSensors, setDisabledSensors] = useState<PressureSensorDto[]>([])
 
     const [notifications, setNotifications] = useState<NotificationData[]>([])
+    const [connection, setConnection] = useState<HubConnection | null>(null)
+
+    useEffect(()=>{
+        if(!authContext.token){
+            return
+        }
+        setConnection(createConnection(authContext.token))
+    }, [authContext.token])
 
 
     async function loadNotifications() {
@@ -147,6 +156,10 @@ export default function App(){
 
     useEffect(()=>{
         async function setConnection() {
+            if(!connection){
+                return
+            }
+
             if(connection.state === 'Disconnected'){
                 await connection.start()
                 .then(()=>{console.log("StartConnection")})
@@ -191,6 +204,9 @@ export default function App(){
         setConnection()
 
         return ()=>{
+            if(!connection){
+                return
+            }
             connection.off('ReciveMeasurements')
             connection.off('ReciveAlarmNotify')
             connection.off('ReciveAddSensorNotify')
@@ -200,10 +216,13 @@ export default function App(){
                 connection.invoke("RemoveUserFromUsersGroup").catch((err)=>console.error("remove from users group error", err))
             }
         }
-    },[sensors])
+    },[sensors, connection])
 
     useEffect(()=>{
         async function reconnect() {
+            if(!connection){
+                return
+            }
             await connection.stop()
             await connection.start()
         }
@@ -245,7 +264,7 @@ export default function App(){
             setFacilitiesMeta(await response.json())
         }
         else{
-            var response = await authContext.sendWithAccessCheck(()=>getUserFacility(authContext.id!));
+            var response = await authContext.sendWithAccessCheck(()=>getUserFacility());
             setFacilitiesMeta([await response.json()])
         }
     }

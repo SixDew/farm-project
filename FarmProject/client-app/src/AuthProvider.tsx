@@ -1,4 +1,3 @@
-// AuthContext.tsx
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { login as apiLogin, adminLogin as apiAdminLogin } from './sensors/users-api';
 import { refreshToken, removeRefreshToken } from './sensors/api/sensors-api';
@@ -8,8 +7,7 @@ export interface AuthContextType {
   token: string | null;
   role: Role;
   loading: boolean;
-  id:number|null;
-  login: (pass: string, asAdmin?: boolean) => Promise<void>;
+  login: (pass: string, login:string, asAdmin?: boolean) => Promise<void>;
   logout: () => void;
   sendWithAccessCheck:(action: () => Promise<Response>)=>Promise<Response>;
 }
@@ -23,34 +21,29 @@ export default function AuthProvider({ children }:AuthProviderProps){
   const [token, setToken] = useState<string | null>(null);
   const [role, setRole] = useState<Role>(null);
   const [loading, setLoading] = useState(true);
-  const [id, setId] = useState<number|null>(null);
 
   const updateLoginData = (data:any)=>{
     localStorage.setItem('userKey', data.key);
     localStorage.setItem('role', data.role);
-    localStorage.setItem('userId', data.userId);
     setToken(data.key);
     setRole(data.role);
-    setId(data.userId);
   }
 
   useEffect(() => {
     const t = localStorage.getItem('userKey');
     const r = localStorage.getItem('role') as Role;
-    const id = localStorage.getItem('userId') as number|null;
-    if (t && r && id) {
+    if (t && r) {
       setToken(t);
       setRole(r);
-      setId(id);
     }
     setLoading(false);
   }, []);
 
-  const login = useCallback(async (pass: string, asAdmin = false) => {
+  const login = useCallback(async (pass: string, login:string, asAdmin = false) => {
     setLoading(true);
     const resp = asAdmin
-      ? await apiAdminLogin(pass)
-      : await apiLogin(pass);
+      ? await apiAdminLogin(pass, login)
+      : await apiLogin(pass, login);
     if (resp.ok) {
       const data = await resp.json()
       updateLoginData(data)
@@ -67,7 +60,6 @@ export default function AuthProvider({ children }:AuthProviderProps){
     localStorage.removeItem('userId');
     setToken(null);
     setRole(null);
-    setId(null);
   }, []);
 
     const refreshAccessToken = useCallback(async () => {
@@ -95,7 +87,7 @@ export default function AuthProvider({ children }:AuthProviderProps){
     }, [refreshAccessToken]);
 
   return (
-    <AuthContext.Provider value={{ token, role, loading, id, login, logout, sendWithAccessCheck }}>
+    <AuthContext.Provider value={{ token, role, loading, login, logout, sendWithAccessCheck }}>
       {children}
     </AuthContext.Provider>
   );

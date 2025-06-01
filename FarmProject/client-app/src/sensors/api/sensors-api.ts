@@ -281,8 +281,8 @@ export async function getFacilitiesDeepMeta() {
     return await sendRequestWithAuthorize(`${serverUrl}/facilities/metadata`)
 }
 
-export async function getUserFacility(userId:number){
-    return await sendRequestWithAuthorize(`${serverUrl}/user/facility/${userId}`)
+export async function getUserFacility(){
+    return await sendRequestWithAuthorize(`${serverUrl}/user/facility`)
 }
 
 export async function getGroupsMetadata(imei) {

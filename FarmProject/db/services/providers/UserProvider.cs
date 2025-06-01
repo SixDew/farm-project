@@ -7,9 +7,9 @@ namespace FarmProject.db.services.providers
 {
     public class UserProvider(ApplicationDbContext db) : DbProvider<User>(db)
     {
-        public async Task<User?> GetByKeyAsync(string key)
+        public async Task<User?> GetByNameAsync(string name)
         {
-            return await _dbSet.Include(u => u.RefreshToken).FirstOrDefaultAsync(x => x.Key == key);
+            return await _dbSet.Include(u => u.RefreshToken).FirstOrDefaultAsync(x => x.Name == name);
         }
 
         public async Task<List<User>> GetAllAdminsAsync()
@@ -25,16 +25,6 @@ namespace FarmProject.db.services.providers
         public async Task<List<User>> GetAllAdminsWithNotificationsAsync()
         {
             return await _dbSet.Include(u => u.Notifications).Where(u => u.Role == UserRoles.ADMIN).ToListAsync();
-        }
-
-        public async Task<User?> GetAdminByKeyAsync(string key)
-        {
-            return await _dbSet.Include(u => u.RefreshToken).FirstOrDefaultAsync(x => x.Key == key && x.Role == UserRoles.ADMIN);
-        }
-
-        public async Task<User?> GetUserByKeyAsync(string key)
-        {
-            return await _dbSet.FirstOrDefaultAsync(x => x.Key == key && x.Role == UserRoles.USER);
         }
 
         public async Task<List<User>> GetUsersAsync()
