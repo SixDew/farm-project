@@ -143,6 +143,7 @@ public class ApplicationDbContext : DbContext
         {
             Id = 1,
             Key = "password",
+            Login = "user1",
             Role = UserRoles.USER,
             Name = "Булгаков Алексей Романович",
             ContactData = "+79910876841",
@@ -153,6 +154,7 @@ public class ApplicationDbContext : DbContext
         {
             Id = 2,
             Key = "admin-password",
+            Login = "admin",
             Role = UserRoles.ADMIN,
             Name = "Парадный Анатолий Сергеевич",
             ContactData = "+79910593465",

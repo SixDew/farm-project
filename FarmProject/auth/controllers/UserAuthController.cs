@@ -24,7 +24,7 @@ public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions,
     [HttpPost("login")]
     public async Task<IActionResult> CreateAccessToken([FromBody] LoginDto loginData)
     {
-        var user = await _users.GetByNameAsync(loginData.Login);
+        var user = await _users.GetUserByLoginAsync(loginData.Login);
         if (user is null) return BadRequest("User is not exist");
         if (_passwordHasher.VerifyHashedPassword(user, user.Key, loginData.Password) != PasswordVerificationResult.Success)
         {
@@ -47,7 +47,7 @@ public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions,
     [HttpPost("/login/admin")]
     public async Task<IActionResult> CreateAdminAccessToken([FromBody] LoginDto loginData)
     {
-        var user = await _users.GetByNameAsync(loginData.Login);
+        var user = await _users.GetAdminByLoginAsync(loginData.Login);
         if (user is null) return BadRequest("User is not exist");
         if (_passwordHasher.VerifyHashedPassword(user, user.Key, loginData.Password) != PasswordVerificationResult.Success)
         {
@@ -135,16 +135,19 @@ public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions,
     {
         var user = await _users.GetByIdAsync(userData.Id);
         if (user is null) return BadRequest("Invalid key");
-
         converter.ConvertFromAdminClientDto(userData, user);
-        await _users.SaveChangesAsync();
+        try
+        {
+            await _users.SaveChangesAsync();
+        }
+        catch (Exception ex) { return BadRequest("Login не уникальный"); }
         return Ok(converter.ConvertToAdminClientDto(user));
     }
     [HttpPost("users")]
     [Authorize(Roles = UserRoles.ADMIN)]
     public async Task<IActionResult> CreateUser([FromBody] UserFromAdminClientDto userData, [FromServices] UserDtoConverter converter)
     {
-        var user = await _users.GetByNameAsync(userData.Key);
+        var user = await _users.GetByLoginAsync(userData.Login);
         if (user is not null)
         {
             return BadRequest("User already exist");

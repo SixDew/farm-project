@@ -8,9 +8,10 @@ import cancelImage from './images/white-cancel.png';
 import changeImage from './images/white-change.png';
 import deleteImage from './images/trash.png';
 import saveImage from './images/save.png';
+import { useAuth } from "./AuthProvider"
 
 interface UserElementProps{
-    pass:string,
+    login:string,
     name:string,
     contactData:string,
     role:string,
@@ -19,20 +20,24 @@ interface UserElementProps{
     facilitiesMetadata:FacilityDeepMetaDto[]
 }
 
-export default function UserElement({pass, name, contactData, role, userId, userFacilityId, facilitiesMetadata}:UserElementProps){
+export default function UserElement({login, name, contactData, role, userId, userFacilityId, facilitiesMetadata}:UserElementProps){
     const [isReadonly, setIsReadonly] = useState(true)
-    const [password, setPass] = useState(pass)
+    const [loginData, setLogin] = useState(login)
+    const [password, setPass] = useState("")
     const [userName, setName] = useState(name)
     const [contact, setContact] = useState(contactData)
     const [isDeleted, setIsDeleted] = useState(false)
     const [facilityId, setFacilityId] = useState(userFacilityId)
     const [passwordInputType, setPasswordInputType] = useState("password")
+    const [LoginUpdateError, setLoginUpdateError] = useState(false)
+    const authContext = useAuth()
 
     const [isChanging, setChanging] = useState(false)
 
     function resetValues(){
-        setPass(pass)
+        setPass("")
         setName(name)
+        setLogin(login)
         setContact(contactData)
         setChanging(false)
         setIsReadonly(true)
@@ -41,18 +46,24 @@ export default function UserElement({pass, name, contactData, role, userId, user
     }
 
     async function saveUserData(){
-        const response = await updateUserData({
+        const response = await authContext.sendWithAccessCheck(()=>updateUserData({
             Key:password,
             Name:userName,
+            Login:loginData,
             ContactData:contact,
             Role:role,
             Id:userId,
             FacilityId:facilityId
-        })
+        }))
         if(response.ok){
+            setLoginUpdateError(false)
             setChanging(false)
             setIsReadonly(true)
             setPasswordInputType("password")
+            setPass("")
+        }
+        if(response.status == 400){
+            setLoginUpdateError(true)
         }
     }
 
@@ -82,6 +93,7 @@ export default function UserElement({pass, name, contactData, role, userId, user
                         }
                     </select> : <p className="user-facility-name">{facilitiesMetadata.find(f=>f.id == facilityId)?.name}</p>
                 }</td>
+                <td><UserElementField type="text" value={loginData} isReadonly={isReadonly} onChange={(event)=>setLogin(event.target.value)}/></td>
                 <td><UserElementField type={passwordInputType} value={password} isReadonly={isReadonly} onChange={(event)=>setPass(event.target.value)}/></td>
                 <td>
                     <div className="row-buttons-container">
@@ -97,6 +109,7 @@ export default function UserElement({pass, name, contactData, role, userId, user
                             }}><img src={changeImage} width="32px" height="32px"></img></button>
                             <button className="table-button delete" onClick={deleteUser}><img src={deleteImage} width="32px" height="32px"></img></button>
                         </div>}
+                        {LoginUpdateError && <p className="error-message">Некорректный логин</p>}
                     </div>
                 </td>
             </tr>

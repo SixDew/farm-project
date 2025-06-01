@@ -74,9 +74,9 @@ export interface FacilityDeepMetaDto{
 }
 
 export interface AdminUserDto{
-    key:string,
     role:string,
     name:string,
+    login:string,
     contactData:string,
     id:number,
     facilityId:number

@@ -48,6 +48,7 @@ export default function UsersPage({facilitiesMetadata}:UserPageProps){
                         <th>ФИО</th>
                         <th>Контактные данные</th>
                         <th>Предприятие</th>
+                        <th>Логин</th>
                         <th>Ключ</th>
                         <th></th>
                     </tr>
@@ -55,7 +56,7 @@ export default function UsersPage({facilitiesMetadata}:UserPageProps){
                 <tbody>
                     {users && users.map((user, index)=><UserElement 
                     key={index} 
-                    pass={user.key} 
+                    login={user.login} 
                     name={user.name} 
                     contactData={user.contactData} 
                     role={user.role} 

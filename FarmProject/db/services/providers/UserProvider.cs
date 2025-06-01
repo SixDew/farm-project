@@ -7,9 +7,19 @@ namespace FarmProject.db.services.providers
 {
     public class UserProvider(ApplicationDbContext db) : DbProvider<User>(db)
     {
-        public async Task<User?> GetByNameAsync(string name)
+        public async Task<User?> GetByLoginAsync(string login)
         {
-            return await _dbSet.Include(u => u.RefreshToken).FirstOrDefaultAsync(x => x.Name == name);
+            return await _dbSet.Include(u => u.RefreshToken).FirstOrDefaultAsync(x => x.Login == login);
+        }
+
+        public async Task<User?> GetUserByLoginAsync(string login)
+        {
+            return await _dbSet.Include(u => u.RefreshToken).Where(u => u.Role == UserRoles.USER).FirstOrDefaultAsync(x => x.Login == login);
+        }
+
+        public async Task<User?> GetAdminByLoginAsync(string login)
+        {
+            return await _dbSet.Include(u => u.RefreshToken).Where(u => u.Role == UserRoles.ADMIN).FirstOrDefaultAsync(x => x.Login == login);
         }
 
         public async Task<List<User>> GetAllAdminsAsync()
