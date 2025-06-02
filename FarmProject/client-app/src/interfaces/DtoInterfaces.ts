@@ -75,6 +75,7 @@ export interface FacilityDeepMetaDto{
 
 export interface AdminUserDto{
     role:string,
+    personnelNumber:string,
     name:string,
     login:string,
     contactData:string,
@@ -123,4 +124,27 @@ export interface ForecastWarningNotificationData{
 export interface AddSensorNotificationData{
     sensorData:PressureSensorDto,
     notificationData:NotificationData
+}
+
+export interface FacilityMainData{
+    id:number,
+    name:string,
+    inn:string,
+    ogrn:string,
+    adress:string,
+    registrationDate:string,
+    contactData:string,
+    additionalData:string
+}
+
+export interface CreateFacilityDto{
+    name:string,
+    inn:string,
+    ogrn:string,
+    adress:string,
+    registrationDate:string,
+    contactData:string,
+    additionalData:string,
+    groups:string[],
+    sections:string[]
 }

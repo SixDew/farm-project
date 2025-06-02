@@ -1,0 +1,41 @@
+@import '../../main-style.css';
+
+.create-facility-dialog-container{
+    display: flex;
+    flex-direction: column;
+}
+
+.create-facility-dialog-container *{
+    text-align: center;
+}
+
+.create-facility-dialog-container > *{
+    width: fit-content;
+    margin: 5px auto;
+    padding: 10px;
+}
+
+.list-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.groups-list-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px;
+    width: fit-content;
+    margin: 0 auto;
+
+    border-radius: 10px;
+    border: 2px solid var(--main-border-color);
+}
+
+.groups-list-container > *{
+    margin: 5px;
+}

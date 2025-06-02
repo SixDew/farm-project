@@ -55,7 +55,7 @@ export default function SelectedSectionMenu({selectedSection, sections, groups, 
                                                                     <button className="select-menu-sensor-button" onClick={()=>{
                                                                         onSensorSelect && onSensorSelect(sensor)
                                                                     }}>
-                                                                        Сенсор: {sensor.imei}
+                                                                        Датчик: {sensor.imei}
                                                                     </button>
                                                                 </div>
                                                                 )
@@ -76,7 +76,7 @@ export default function SelectedSectionMenu({selectedSection, sections, groups, 
                                             <button className="select-menu-sensor-button" onClick={()=>{
                                                 onSensorSelect && onSensorSelect(sensor)
                                             }}>
-                                                Сенсор: {sensor.imei}
+                                                Датчик: {sensor.imei}
                                             </button>
                                         </div>
                                     )

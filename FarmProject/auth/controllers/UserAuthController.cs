@@ -127,7 +127,7 @@ public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions,
     {
         var user = await _users.GetUserByIdAsync(int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!));
         if (user is null) return BadRequest();
-        var facility = await facilities.GetAsync(user.FacilityId);
+        var facility = await facilities.GetAsync((int)user.FacilityId);
         if (facility is null) return BadRequest();
         return Ok(converter.ConvertToClientMeta(facility));
     }

@@ -3,6 +3,7 @@
 public class UserFromAdminClientDto
 {
     public string Name { get; set; }
+    public string PersonnelNumber { get; set; }
     public string ContactData { get; set; }
     public string Login { get; set; }
     public string Key { get; set; }

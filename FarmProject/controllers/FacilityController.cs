@@ -1,15 +1,17 @@
 ﻿using System.Security.Claims;
 using FarmProject.auth;
 using FarmProject.db.services.providers;
+using FarmProject.dto.groups;
 using FarmProject.dto.groups.services;
-using FarmProject.group_feature;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace FarmProject.controllers
 {
     [ApiController]
     [Route("/facilities")]
-    public class FacilityController(FacilityProvider _facilityProvider, FacilityConverter _facilityConverter, UserAccessService _accessService) : ControllerBase
+    public class FacilityController(FacilityProvider _facilityProvider, FacilityConverter _facilityConverter,
+        UserAccessService _accessService, SectionsProvider _sections, SensorGroupsProvider _groups, UserProvider _users,
+        SensorsProvider _sensors) : ControllerBase
     {
         [HttpGet]
         [Authorize(Roles = $"{UserRoles.ADMIN}")]
@@ -59,17 +61,77 @@ namespace FarmProject.controllers
             return Ok(_facilityConverter.ConvertToClient(facility));
         }
 
+        [HttpGet("main-data")]
+        [Authorize(Roles = $"{UserRoles.ADMIN}")]
+        public async Task<IActionResult> GetFacilitiesMainData()
+        {
+            var facilities = await _facilityProvider.GetAllMainData();
+            return Ok(facilities.Select(_facilityConverter.ConvertMainDataToClient));
+        }
+
         [HttpPost]
         [Authorize(Roles = $"{UserRoles.ADMIN}")]
-        public async Task<IActionResult> AddFacility([FromBody] string name)
+        public async Task<IActionResult> AddFacility([FromBody] AddFacilityDto data)
         {
-            var facility = new Facility()
+            var facility = _facilityConverter.ConvertFrom(data);
+            if (!(facility.Inn.Length is 10 or 12 && facility.Inn.All(char.IsDigit)) ||
+                !(facility.Ogrn.Length is 13 or 15 && facility.Ogrn.All(char.IsDigit))) return BadRequest();
+            var groups = facility.Groups;
+            var sections = facility.Sections;
+
+            facility.Groups = [];
+            facility.Sections = [];
+
+            try
             {
-                Name = name,
-            };
-            await _facilityProvider.AddAsync(facility);
+                await _facilityProvider.AddAsync(facility);
+                await _facilityProvider.SaveChangesAsync();
+            }
+            catch (Exception ex) { return BadRequest(); }
+
+            groups.ForEach(g => g.FacilityId = facility.Id);
+            sections.ForEach(s => s.FacilityId = facility.Id);
+            facility.Sections = sections;
+            facility.Groups = groups;
             await _facilityProvider.SaveChangesAsync();
+
             return Created($"/facilities/{facility.Id}", _facilityConverter.ConvertToClient(facility));
+        }
+
+        [HttpPut]
+        [Authorize(Roles = $"{UserRoles.ADMIN}")]
+        public async Task<IActionResult> UpdateFacilityData([FromBody] MainDataFacilityDto data)
+        {
+            var facility = await _facilityProvider.GetAsync(data.Id);
+            if (facility is null) return BadRequest();
+            var facilty = _facilityConverter.UpdateFacility(facility, data);
+            if (!(facility.Inn.Length is 10 or 12 && facility.Inn.All(char.IsDigit)) ||
+                !(facility.Ogrn.Length is 13 or 15 && facility.Ogrn.All(char.IsDigit))) return BadRequest();
+
+            try { await _facilityProvider.SaveChangesAsync(); }
+            catch (Exception ex) { return BadRequest(); }
+            return Ok(_facilityConverter.ConvertToClient(facility));
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = $"{UserRoles.ADMIN}")]
+        public async Task<IActionResult> DeleteFacility([FromRoute] int id)
+        {
+            var facility = await _facilityProvider.GetAsync(id);
+            if (facility is not null)
+            {
+                var users = await _users.GetAllFacilityUsersAsync(id);
+                users.ForEach(_users.Delete);
+                await _users.SaveChangesAsync();
+
+                var sensors = await _sensors.GetAllFacilitySensors(id);
+                sensors.ForEach(_sensors.Delete);
+                await _sensors.SaveChangesAsync();
+
+                _facilityProvider.Delete(facility);
+                await _facilityProvider.SaveChangesAsync();
+            }
+            return Ok(_facilityConverter.ConvertToClient(facility));
         }
     }
 }

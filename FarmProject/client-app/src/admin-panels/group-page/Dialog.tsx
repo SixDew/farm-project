@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useRef } from 'react'
 import './EditGroupDialog.css'
+import '../../main-style.css'
 
 interface DialogProps{
     children?:ReactNode
@@ -24,7 +25,7 @@ export default function Dialog({isOpen, children,endButtonTitle , onEnd}:DialogP
     return (
         <dialog ref={addSensorDialog} className="add-sensor-dialog">
             {children}
-            <button onClick={()=>{
+            <button className="standart-button" onClick={()=>{
                 onEnd && onEnd()
             }}>{endButtonTitle}</button>
         </dialog>

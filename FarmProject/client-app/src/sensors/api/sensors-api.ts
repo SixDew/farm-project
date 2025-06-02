@@ -1,3 +1,4 @@
+import { CreateFacilityDto, FacilityMainData } from "../../interfaces/DtoInterfaces"
 import serverUrl from "../../server-url"
 
 export async function getAllPressureSensors(){
@@ -360,6 +361,47 @@ export async function deleteSensor(imei:string) {
     return response
 }
 
+export async function getFacilitiesMainData() {
+    return await sendRequestWithAuthorize(`${serverUrl}/facilities/main-data`)
+}
+
+export async function removeFacility(facilityId:number){
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/facilities/${facilityId}`,{
+        method:'Delete',
+        headers:{
+            'Authorization':AuthorizathionHeader
+        },
+    })
+    return response
+}
+
+export async function updateFacilityData(facilityData:FacilityMainData){
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/facilities/`,{
+        method:'PUT',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+        body:JSON.stringify(facilityData)
+    })
+    return response
+}
+
+export async function createFacility(data:CreateFacilityDto) {
+    const AuthorizathionHeader = `Bearer ${localStorage.getItem('userKey')}`
+    const response = await fetch(`${serverUrl}/facilities/`,{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization':AuthorizathionHeader
+        },
+        body:JSON.stringify(data)
+    })
+    return response
+}
+
 async function sendRequest(url){
     const response = await fetch(url, {
         method: 'GET',
@@ -380,4 +422,5 @@ async function sendRequestWithAuthorize(url) {
         }
     })
     return response
+
 }

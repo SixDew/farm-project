@@ -407,11 +407,6 @@ export default function GroupPage({facility, alarmedSensors, sensors, disabledSe
                                                         }
                                                         setVisibleSections([...visibleSections])
                                                     }}
-                                                    onClick={(e)=>{
-                                                        e.stopPropagation()
-                                                        setShowEditGroupDialog(!showEditGroupDialog)
-                                                        setGroupToEdit(group)
-                                                    }}
                                                 ></GroupAccordingElement>
                                                 )
                                             }

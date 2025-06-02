@@ -8,7 +8,16 @@ public class UserDtoConverter(IServiceProvider _services)
 {
     public UserToAdminClientDto ConvertToAdminClientDto(User user)
     {
-        return new() { Role = user.Role, Name = user.Name, ContactData = user.ContactData, Login = user.Login, Id = user.Id, FacilityId = user.FacilityId };
+        return new()
+        {
+            Role = user.Role,
+            Name = user.Name,
+            ContactData = user.ContactData,
+            Login = user.Login,
+            Id = user.Id,
+            FacilityId = (int)user.FacilityId,
+            PersonnelNumber = user.PersonnelNumber
+        };
     }
 
     public User ConvertFromAdminClientDto(UserFromAdminClientDto userDto)
@@ -16,7 +25,16 @@ public class UserDtoConverter(IServiceProvider _services)
         using (var scope = _services.CreateScope())
         {
             var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<User>>();
-            User user = new User() { Key = userDto.Key, Login = userDto.Login, Role = userDto.Role, Name = userDto.Name, ContactData = userDto.ContactData, FacilityId = userDto.FacilityId };
+            User user = new User()
+            {
+                Key = userDto.Key,
+                Login = userDto.Login,
+                Role = userDto.Role,
+                Name = userDto.Name,
+                ContactData = userDto.ContactData,
+                FacilityId = userDto.FacilityId,
+                PersonnelNumber = userDto.PersonnelNumber
+            };
             user.Key = passwordHasher.HashPassword(user, user.Key);
             return user;
         }
@@ -31,6 +49,7 @@ public class UserDtoConverter(IServiceProvider _services)
             updateUser.Login = userDto.Login;
             updateUser.Name = userDto.Name;
             updateUser.ContactData = userDto.ContactData;
+            updateUser.PersonnelNumber = userDto.PersonnelNumber;
             return updateUser;
         }
     }

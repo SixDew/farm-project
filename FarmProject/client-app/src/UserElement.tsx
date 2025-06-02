@@ -13,6 +13,7 @@ import { toast } from "react-toastify"
 
 interface UserElementProps{
     login:string,
+    tabel:string,
     name:string,
     contactData:string,
     role:string,
@@ -21,9 +22,10 @@ interface UserElementProps{
     facilitiesMetadata:FacilityDeepMetaDto[]
 }
 
-export default function UserElement({login, name, contactData, role, userId, userFacilityId, facilitiesMetadata}:UserElementProps){
+export default function UserElement({login, tabel, name, contactData, role, userId, userFacilityId, facilitiesMetadata}:UserElementProps){
     const [isReadonly, setIsReadonly] = useState(true)
     const [loginData, setLogin] = useState(login)
+    const [tabelData, setTabel] = useState(tabel)
     const [password, setPass] = useState("")
     const [userName, setName] = useState(name)
     const [contact, setContact] = useState(contactData)
@@ -37,6 +39,7 @@ export default function UserElement({login, name, contactData, role, userId, use
     function resetValues(){
         setPass("")
         setName(name)
+        setTabel(tabel)
         setLogin(login)
         setContact(contactData)
         setChanging(false)
@@ -49,6 +52,7 @@ export default function UserElement({login, name, contactData, role, userId, use
         const response = await authContext.sendWithAccessCheck(()=>updateUserData({
             Key:password,
             Name:userName,
+            PersonnelNumber:tabelData,
             Login:loginData,
             ContactData:contact,
             Role:role,
@@ -79,6 +83,7 @@ export default function UserElement({login, name, contactData, role, userId, use
             !isDeleted &&
             <tr className="users-table-row">
                 <td><UserElementField type="text" value={userName} isReadonly={isReadonly} onChange={(event)=>setName(event.target.value)}/></td>
+                <td><UserElementField type="text" value={tabelData} isReadonly={isReadonly} onChange={(event)=>setTabel(event.target.value)}/></td>
                 <td><UserElementField type="text" value={contact} isReadonly={isReadonly} onChange={(event)=>setContact(event.target.value)}/></td>
                 <td>{
                     isChanging ? 

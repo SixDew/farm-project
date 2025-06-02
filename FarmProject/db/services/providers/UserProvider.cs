@@ -87,5 +87,10 @@ namespace FarmProject.db.services.providers
         {
             return await _dbSet.Include(u => u.Notifications.OrderByDescending(n => n.CreatedDate)).Where(u => u.FacilityId == facilityId).ToListAsync();
         }
+
+        public async Task<List<User>> GetAllFacilityUsersAsync(int facilityId)
+        {
+            return await _dbSet.Where(u => u.FacilityId == facilityId).ToListAsync();
+        }
     }
 }

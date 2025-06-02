@@ -80,4 +80,9 @@ public class SensorsProvider(ApplicationDbContext db) : DbProvider<Sensor>(db)
     {
         return await _dbSet.Include(s => s.Measurements).Include(s => s.Settings).Include(s => s.Section).FirstOrDefaultAsync(s => s.IMEI == imei);
     }
+
+    public async Task<List<Sensor>> GetAllFacilitySensors(int facilityId)
+    {
+        return await _dbSet.Include(sensor => sensor.Section).Where(s => s.Section.FacilityId == facilityId).ToListAsync();
+    }
 }

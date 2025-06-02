@@ -17,6 +17,7 @@ import { useAuth } from './AuthProvider'
 import RequireAuth from './RequireAuth'
 import AppAuthPagesLayout from './AppAuthPagesLayout'
 import { HubConnection } from '@microsoft/signalr'
+import FacilitiesPage from './admin-panels/facilities-page/FacilitiesPage'
 
 function convertSensorsFromServerData(data:PressureSensorDto[] | undefined):AlarmablePressureSensor[]{
     if(data){
@@ -309,6 +310,7 @@ export default function App(){
                                     }
                                 }}/>}/>
                                 <Route path='/users' element={<UsersPage facilitiesMetadata={facilitiesMeta}/>}/>
+                                <Route path='/facilities' element={<FacilitiesPage/>}/>
                             </Route>
                         </Route>
                     </Routes>

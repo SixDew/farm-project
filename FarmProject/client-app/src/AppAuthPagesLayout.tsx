@@ -12,6 +12,7 @@ import peopleImage from './images/white-people.png'
 import sensorImage from './images/white-sensor.png'
 import disabledSensorImage from './images/white-disabled2.png'
 import exitImage from './images/exit.png'
+import facilityImage from './images/facility.png'
 import { FacilityDeepMetaDto, FacilityDto, NotificationData } from "./interfaces/DtoInterfaces"
 import { useAuth } from "./AuthProvider"
 
@@ -73,6 +74,7 @@ export default function AppAuthPagesLayout({facilitiesMeta, onFacilitySelect, lo
                                 <>
                                     <NavButton navPath='/sensors-to-add' image={disabledSensorImage}/>
                                     <NavButton navPath='/users' image={peopleImage}/>
+                                    <NavButton navPath='/facilities' image={facilityImage}/>
                                 </>: <></>
                             }
                         </div>

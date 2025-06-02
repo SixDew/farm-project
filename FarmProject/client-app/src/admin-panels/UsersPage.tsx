@@ -14,7 +14,7 @@ interface UserPageProps{
 }
 
 export default function UsersPage({facilitiesMetadata}:UserPageProps){
-    const [users, setUsers] = useState<AdminUserDto[]>()
+    const [users, setUsers] = useState<AdminUserDto[]>([])
     const [addMode, setAddMode] = useState<boolean>(false)
     const authContext = useAuth()
     
@@ -46,6 +46,7 @@ export default function UsersPage({facilitiesMetadata}:UserPageProps){
                 <thead>
                     <tr className="table-head">
                         <th>ФИО</th>
+                        <th>Табель</th>
                         <th>Контактные данные</th>
                         <th>Предприятие</th>
                         <th>Логин</th>
@@ -54,8 +55,9 @@ export default function UsersPage({facilitiesMetadata}:UserPageProps){
                     </tr>
                 </thead>
                 <tbody>
-                    {users && users.map((user, index)=><UserElement 
-                    key={index} 
+                    {users.map((user, index)=><UserElement 
+                    key={index}
+                    tabel={user.personnelNumber} 
                     login={user.login} 
                     name={user.name} 
                     contactData={user.contactData} 

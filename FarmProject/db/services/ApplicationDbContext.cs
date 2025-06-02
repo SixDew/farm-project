@@ -98,7 +98,13 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Facility>().HasData(new Facility()
         {
             Id = 1,
-            Name = "Мое предприятие"
+            Name = "Мое предприятие",
+            Adress = "г. Ростов-на-Дону, проспект Стачки, д.75",
+            ContactData = "myf@gmail.com",
+            Inn = "123456789123",
+            Ogrn = "1234567890123",
+            RegistrationDate = DateTime.UtcNow,
+            AdditionalData = "Характер скверный"
         });
 
         modelBuilder.Entity<Section>().HasData([new Section()
@@ -142,6 +148,7 @@ public class ApplicationDbContext : DbContext
         var user1 = new User()
         {
             Id = 1,
+            PersonnelNumber = "123123",
             Key = "password",
             Login = "user1",
             Role = UserRoles.USER,
@@ -153,12 +160,12 @@ public class ApplicationDbContext : DbContext
         var admin = new User()
         {
             Id = 2,
+            PersonnelNumber = "321321",
             Key = "admin-password",
             Login = "admin",
             Role = UserRoles.ADMIN,
             Name = "Парадный Анатолий Сергеевич",
             ContactData = "+79910593465",
-            FacilityId = 1
         };
         admin.Key = _passwordHasher.HashPassword(admin, admin.Key);
         modelBuilder.Entity<User>().ToTable("Users").HasData([user1, admin]);
