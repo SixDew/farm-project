@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net;
+using System.Text;
 using FarmProject.alarm.services;
 using FarmProject.auth;
 using FarmProject.db.models;
@@ -117,6 +118,16 @@ builder.WebHost.ConfigureKestrel(options =>
     {
         op.UseHttps();
     });
+
+    options.Listen(IPAddress.Parse("192.168.0.15"), 7061, op =>
+    {
+        op.UseHttps("dev-ip.pfx", "1234");
+    });
+
+    options.Listen(IPAddress.Parse("192.168.0.15"), 1883, op =>
+    {
+        op.UseMqtt();
+    });
 });
 
 
@@ -127,7 +138,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors(builder =>
-    builder.WithOrigins("https://localhost:5173", "https://myapp.local:5173")
+    builder.WithOrigins("https://localhost:5173", "https://myapp.local:5173", "https://192.168.0.15:5173")
+           .AllowCredentials()
            .AllowAnyMethod()
            .AllowAnyHeader()
            .AllowCredentials());

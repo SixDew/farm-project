@@ -104,8 +104,11 @@ public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions,
         var user = await _users.GetByIdAsync(int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)));
         if (user is null) return BadRequest();
 
-        _tokens.Delete(user.RefreshToken);
-        await _tokens.SaveChangesAsync();
+        if (user.RefreshToken is not null)
+        {
+            _tokens.Delete(user.RefreshToken);
+            await _tokens.SaveChangesAsync();
+        }
         return Ok();
     }
 
@@ -134,7 +137,7 @@ public class UserAuthController(IOptions<AuthenticationTokenOptions> jwtOptions,
     public async Task<IActionResult> UpdateUser([FromBody] UserFromAdminClientDto userData, [FromServices] UserDtoConverter converter)
     {
         var user = await _users.GetByIdAsync(userData.Id);
-        if (user is null) return BadRequest("Invalid key");
+        if (user is null) return BadRequest("Invalid id");
         converter.ConvertFromAdminClientDto(userData, user);
         try
         {

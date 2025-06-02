@@ -9,6 +9,7 @@ import changeImage from './images/white-change.png';
 import deleteImage from './images/trash.png';
 import saveImage from './images/save.png';
 import { useAuth } from "./AuthProvider"
+import { toast } from "react-toastify"
 
 interface UserElementProps{
     login:string,
@@ -29,7 +30,6 @@ export default function UserElement({login, name, contactData, role, userId, use
     const [isDeleted, setIsDeleted] = useState(false)
     const [facilityId, setFacilityId] = useState(userFacilityId)
     const [passwordInputType, setPasswordInputType] = useState("password")
-    const [LoginUpdateError, setLoginUpdateError] = useState(false)
     const authContext = useAuth()
 
     const [isChanging, setChanging] = useState(false)
@@ -56,14 +56,13 @@ export default function UserElement({login, name, contactData, role, userId, use
             FacilityId:facilityId
         }))
         if(response.ok){
-            setLoginUpdateError(false)
             setChanging(false)
             setIsReadonly(true)
             setPasswordInputType("password")
             setPass("")
         }
         if(response.status == 400){
-            setLoginUpdateError(true)
+            toast.error(<div><h3>Ошибка при сохранении изменений</h3><p>Пользователь с таким логином уже существует</p></div>)
         }
     }
 
@@ -109,7 +108,6 @@ export default function UserElement({login, name, contactData, role, userId, use
                             }}><img src={changeImage} width="32px" height="32px"></img></button>
                             <button className="table-button delete" onClick={deleteUser}><img src={deleteImage} width="32px" height="32px"></img></button>
                         </div>}
-                        {LoginUpdateError && <p className="error-message">Некорректный логин</p>}
                     </div>
                 </td>
             </tr>

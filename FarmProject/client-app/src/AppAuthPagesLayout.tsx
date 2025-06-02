@@ -12,7 +12,7 @@ import peopleImage from './images/white-people.png'
 import sensorImage from './images/white-sensor.png'
 import disabledSensorImage from './images/white-disabled2.png'
 import exitImage from './images/exit.png'
-import { FacilityDeepMetaDto, NotificationData } from "./interfaces/DtoInterfaces"
+import { FacilityDeepMetaDto, FacilityDto, NotificationData } from "./interfaces/DtoInterfaces"
 import { useAuth } from "./AuthProvider"
 
 interface AppAuthPagesLayoutProps{
@@ -20,10 +20,12 @@ interface AppAuthPagesLayoutProps{
     onFacilitySelect: (e:React.ChangeEvent<HTMLSelectElement>) => void;
     loadNotifications: ()=>void;
     notifications: NotificationData[];
-    facilitiesMetaInit:()=>void
+    facilitiesMetaInit:()=>void;
+    setSelectedFacility: React.Dispatch<React.SetStateAction<FacilityDto | undefined>>
 }
 
-export default function AppAuthPagesLayout({facilitiesMeta, onFacilitySelect, loadNotifications, notifications, facilitiesMetaInit}:AppAuthPagesLayoutProps){
+export default function AppAuthPagesLayout({facilitiesMeta, onFacilitySelect, loadNotifications, notifications, facilitiesMetaInit,
+     setSelectedFacility}:AppAuthPagesLayoutProps){
     const authContext = useAuth()
     return (
         <>
@@ -55,7 +57,10 @@ export default function AppAuthPagesLayout({facilitiesMeta, onFacilitySelect, lo
                                 </div>
                             </Popup>
                             <button className='bordered-accent standart-button exit-button'
-                            onClick={()=>authContext.logout()}>
+                            onClick={()=>{
+                                setSelectedFacility(undefined)
+                                authContext.logout()
+                            }}>
                                 <img src={exitImage} width="32px" height="32px"></img>
                             </button>
                     </div>

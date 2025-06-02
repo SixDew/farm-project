@@ -117,14 +117,6 @@ export default function App(){
     }, [authContext.token])
 
     useEffect(()=>{
-        console.log('alarmed sensors on mainapp:', alarmedSensors)
-    }, [alarmedSensors])
-
-    useEffect(()=>{
-        console.log('update sensors on mainapp', sensors)
-    }, [sensors])
-
-    useEffect(()=>{
         async function getDisSensors() {
             const response = await authContext.sendWithAccessCheck(getDisabledSensors)
             if(response.ok){
@@ -286,6 +278,7 @@ export default function App(){
                             loadNotifications={loadNotifications}
                             notifications={notifications}
                             onFacilitySelect={onFacilitySelect}
+                            setSelectedFacility={setSelectedFacility}
                             /></RequireAuth>}>
                             <Route path='/sensors/pressure/:imei' element={
                             <PressureSensor sensors={sensors} sensorOnDisalarm={sensorOnDisalarm}

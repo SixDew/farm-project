@@ -36,4 +36,10 @@
     <Folder Include="client-app\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="dev-ip.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

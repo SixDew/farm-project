@@ -6,10 +6,10 @@ import fs from 'fs'
 export default defineConfig({
   plugins: [react()],
    server: {
-    host: 'myapp.local',
+    host: '192.168.0.15',
     https: {
-      key: fs.readFileSync('./localhost-key.pem'),
-      cert: fs.readFileSync('./localhost.pem')
+      key: fs.readFileSync('./192.168.0.15-key.pem'),
+      cert: fs.readFileSync('./192.168.0.15.pem')
     },
     port: 5173
   }
