@@ -66,7 +66,7 @@ export default function UserElement({login, tabel, name, contactData, role, user
             setPass("")
         }
         if(response.status == 400){
-            toast.error(<div><h3>Ошибка при сохранении изменений</h3><p>Пользователь с таким логином уже существует</p></div>)
+            toast.error(<div><h3>Ошибка при сохранении изменений</h3><p>Проверьте корректность данных</p></div>)
         }
     }
 

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FarmProject.db.models;
 
 [Index("Login", IsUnique = true)]
+[Index("PersonnelNumber", IsUnique = true)]
 public class User : BaseModel
 {
     public required string Name { get; set; }
