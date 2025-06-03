@@ -1,7 +1,8 @@
 import { ReactElement } from "react"
 import { GroupAccordingElementProps } from "./GroupAccordingElement"
-import eyeimg from './images/eye.png';
-import hidden from './images/hidden.png'
+import eyeimg from './images/eye-white.png';
+import hidden from './images/hidden-white.png'
+import '../../main-style.css'
 
 interface SectionAccordingElementProps{
     className?:string
@@ -30,7 +31,7 @@ export default function SectionAccordingElement({className, children, sectionNam
             </span>
             <div>{sectionName}</div>
             <div>{children}</div>
-            <button onClick={(e)=>{
+            <button className='bordered-accent visible-button' onClick={(e)=>{
                 e.stopPropagation()
                 onChangeVisible && onChangeVisible(e)
             }}>{isVisible ? <><img src={eyeimg} width={'10px'} height={'10px'}></img></> : <img src={hidden} width={'10px'} height={'10px'}></img>}</button>

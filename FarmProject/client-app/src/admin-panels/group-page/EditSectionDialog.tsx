@@ -5,6 +5,7 @@ import './EditSectionDialog.css'
 import SensorInfoElement from './SensorInfoElement'
 import { changeSectionMetadata, deleteSection } from '../../sensors/api/sensors-api'
 import { useAuth } from '../../AuthProvider'
+import '../../main-style.css'
 
 interface EditSectionDialogProps{
     isOpen:boolean,
@@ -69,14 +70,14 @@ export default function EditSectionDialog({isOpen, section, onEnd, onSectionChan
                         onChange={(e)=>setSectionName(e.target.value)}
                         onKeyDown={keyDawnHandler}
                     ></input>
-                    <button
+                    <button className='standart-button'
                         onClick={()=>setNameChangeMod(false)}
                     >Ок</button>
                     </> : <>
                         <h3
                             onClick={()=>setNameChangeMod(true)}
                         >{sectionName}</h3>
-                        <button className='dialog-section-delete-button' onClick={()=>{
+                        <button className='dialog-section-delete-button standart-button' onClick={()=>{
                             sectionDelete()
                             onEnd && onEnd()
                         }}>Удалить

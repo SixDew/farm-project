@@ -5,6 +5,7 @@
 }
 .create-section-dialog-container *{
     margin: 10px;
+    text-align: center;
 }
 
 .section-name-input{

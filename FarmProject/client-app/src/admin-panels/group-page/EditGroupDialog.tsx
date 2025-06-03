@@ -5,6 +5,7 @@ import SensorInfoElement from './SensorInfoElement'
 import { changeGroupMetadata, deleteGroup, sendGroupChangeList } from '../../sensors/api/sensors-api'
 import Dialog from './Dialog'
 import { useAuth } from '../../AuthProvider'
+import '../../main-style.css'
 
 interface EditGroupDialogProps{
     isOpen:boolean
@@ -85,14 +86,14 @@ export default function EditGroupDialog({isOpen, onEnd, group, sensors, disabled
                             onChange={(e)=>setGroupName(e.target.value)}
                             onKeyDown={keyDawnHandler}
                         ></input>
-                        <button
+                        <button className='standart-button'
                             onClick={()=>setNameChangeMod(false)}
                         >Ок</button>
                         </> : <>
                             <h3
                                 onClick={()=>setNameChangeMod(true)}
                             >{groupName}</h3>
-                            <button className='dialog-group-delete-button' onClick={()=>{
+                            <button className='dialog-group-delete-button standart-button' onClick={()=>{
                                 deleteGroupAsync()
                                 onEnd && onEnd()
                             }}>Удалить

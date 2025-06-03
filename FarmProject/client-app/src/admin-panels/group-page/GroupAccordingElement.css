@@ -35,3 +35,20 @@
     margin-left: auto;
     margin-right: auto;
 }
+
+.visible-button{
+    background-color: var(--main-accent-color);
+    border: 0;
+    color: var(--text-accent-color);
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;  
+}
+
+.visible-button:hover{
+    background-color: var(--second-accent-color);
+}
+
+.visible-button:active{
+    background-color: var(--accent-active-color);
+}

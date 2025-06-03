@@ -35,7 +35,7 @@ export default function CreateSectionDialog({isOpen, facilityId, onEnd, onSectio
                 onEnd && onEnd()
             }}
         >
-            <div className="create-secion-dialog-container">
+            <div className="create-section-dialog-container">
                 <h4>Название</h4>
                 <input className="section-name-input" ref={sectionNameInput} type="text"></input>
             </div>

@@ -2,9 +2,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 .create-group-dialog-container *{
     margin: 10px;
+    text-align: center;
 }
 
 .group-name-input{
