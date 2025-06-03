@@ -5,7 +5,6 @@ using FarmProject.dto.pressure_sensor.services;
 using FarmProject.dto.pressure_sensor.settings;
 using FarmProject.dto.servisces;
 using FarmProject.mqtt.services;
-using FarmProject.validation.services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -200,7 +199,8 @@ public class SensorsController(SensorsProvider sensorProvider,
     public async Task<IActionResult> SetActive([FromQuery] bool isActive,
         [FromQuery] int? sectionId,
         [FromRoute] string imei,
-        [FromServices] SectionsProvider sections)
+        [FromServices] SectionsProvider sections,
+        [FromServices] PressureSensorDtoConvertService converter)
     {
         if (sectionId is null && isActive)
         {
@@ -224,6 +224,6 @@ public class SensorsController(SensorsProvider sensorProvider,
 
         sensor.IsActive = isActive;
         await sensorProvider.SaveChangesAsync();
-        return Ok();
+        return Ok(converter.ConvertToClient(sensor));
     }
 }

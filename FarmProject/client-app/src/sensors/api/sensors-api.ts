@@ -38,8 +38,8 @@ export async function getUncheckedNotifications(userId:number) {
     return await sendRequestWithAuthorize(`${serverUrl}/notifications/unchecked/${userId}`)
 }
 
-export async function getNotifications(userId:number, offset?:number, limit?:number) {
-    return await sendRequestWithAuthorize(`${serverUrl}/notifications/${userId}?offset=${offset}&limit=${limit}`)
+export async function getNotifications(offset?:number, limit?:number) {
+    return await sendRequestWithAuthorize(`${serverUrl}/notifications?offset=${offset}&limit=${limit}`)
 }
 
 export async function getAlarmedMeasurements(imei) {

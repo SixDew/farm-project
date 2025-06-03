@@ -79,9 +79,8 @@ export default function App(){
 
 
     async function loadNotifications() {
-        var userIdString:string | null = localStorage.getItem("userId")
-        if(userIdString){
-            var response = await authContext.sendWithAccessCheck(()=>getNotifications(Number.parseInt(userIdString!), notifications.length, notificationsLimit))
+        var response = await authContext.sendWithAccessCheck(()=>getNotifications(notifications.length, notificationsLimit))
+        if(response.ok){
             var notificationsData = await response.json()
             setNotifications(prev=>[...prev, ...notificationsData])
         }

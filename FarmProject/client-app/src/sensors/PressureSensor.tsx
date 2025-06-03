@@ -37,7 +37,8 @@ export default function PressureSensor({sensors, sensorOnDisalarm, onDisableSens
         async function getSensorData() {
             var response = await authContext.sendWithAccessCheck(()=>getPressureSensorData(imei))
             if(response.ok){
-                setLegacyMeasurements((await response.json() as PressureSensorDto).measurements)
+                var measurements = (await response.json() as PressureSensorDto).measurements
+                setLegacyMeasurements(measurements)
             }
         }
         getSensorData()

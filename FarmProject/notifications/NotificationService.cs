@@ -62,6 +62,7 @@ public class NotificationService(IServiceProvider _services, MeasurementsHubServ
         using (var scope = _services.CreateScope())
         {
             var users = scope.ServiceProvider.GetRequiredService<UserProvider>();
+            var admins = await users.GetAllAdminsWithNotificationsAsync();
 
             var usersWithNotifications = await users.GetAllFacilityUsersWithNotificationsAsync(facilityId);
 
@@ -72,8 +73,14 @@ public class NotificationService(IServiceProvider _services, MeasurementsHubServ
             };
 
             usersWithNotifications.ForEach(u => u.Notifications.Add(notification));
+            admins.ForEach(u => u.Notifications.Add(notification));
             await users.SaveChangesAsync();
+
             usersWithNotifications.ForEach(async u => await _notifySender.SendForecastWarningNotifyAsync(
+                notification.Data,
+                _converter.ConvertNotification(notification),
+                u.Id));
+            admins.ForEach(async u => await _notifySender.SendForecastWarningNotifyAsync(
                 notification.Data,
                 _converter.ConvertNotification(notification),
                 u.Id));
@@ -109,6 +116,7 @@ public class NotificationService(IServiceProvider _services, MeasurementsHubServ
         {
             var users = scope.ServiceProvider.GetRequiredService<UserProvider>();
             var usersWithNotifications = await users.GetAllFacilityUsersWithNotificationsAsync(facilityId);
+            var admins = await users.GetAllAdminsWithNotificationsAsync();
 
             var notification = new AlarmMesurementsNotification()
             {
@@ -117,8 +125,14 @@ public class NotificationService(IServiceProvider _services, MeasurementsHubServ
             };
 
             usersWithNotifications.ForEach(u => u.Notifications.Add(notification));
+            admins.ForEach(u => u.Notifications.Add(notification));
             await users.SaveChangesAsync();
+
             usersWithNotifications.ForEach(async u => await _notifySender.SendAlarmNotifyAsync(
+                notification.Data,
+                _converter.ConvertNotification(notification),
+                u.Id));
+            admins.ForEach(async u => await _notifySender.SendAlarmNotifyAsync(
                 notification.Data,
                 _converter.ConvertNotification(notification),
                 u.Id));

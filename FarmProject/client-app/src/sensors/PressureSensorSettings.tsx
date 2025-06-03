@@ -203,7 +203,19 @@ export default function PressureSensorSettings({imei, role, onDisableSensor}:Pre
                         )
                     }
                     </>
-                ) : (<p>Loading</p>)
+                ) : (<>
+                        <p>Loading</p>
+                        <button className='standart-button delete' onClick={async ()=>{
+                                            const response = await authContext.sendWithAccessCheck(()=>setSensorActive(false, imei))
+                                            if(response.ok){
+                                                onDisableSensor && onDisableSensor()
+                                                if(authContext.role == 'admin'){
+                                                    nav('/sensors-to-add')
+                                                }
+                                            }
+                                        }}><img src={disableImage} width="32px" height="32px"></img></button>
+                    </>
+                )
             }
         </div>
     )

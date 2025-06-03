@@ -13,7 +13,7 @@ public class SensorsProvider(ApplicationDbContext db) : DbProvider<Sensor>(db)
     }
     public async Task<List<Measurements>?> GetMeasurmentsByImeiAync(string imei)
     {
-        var sensor = await _dbSet.Include(s => s.Measurements).FirstOrDefaultAsync(s => s.IMEI == imei);
+        var sensor = await _dbSet.Include(s => s.Measurements.OrderBy(m => m.Id)).FirstOrDefaultAsync(s => s.IMEI == imei);
         return sensor?.Measurements;
     }
     public async Task<List<Measurements>?> GetLastMeasurmentsByImeiAync(string imei, int num)
@@ -28,7 +28,7 @@ public class SensorsProvider(ApplicationDbContext db) : DbProvider<Sensor>(db)
     }
     public async Task<Sensor?> GetByImeiWithMeasurementsAndSettingsAsync(string imei)
     {
-        return await _dbSet.Include(s => s.Measurements).Include(s => s.Settings).FirstOrDefaultAsync(s => s.IMEI == imei);
+        return await _dbSet.Include(s => s.Measurements.OrderBy(m => m.Id)).Include(s => s.Settings).FirstOrDefaultAsync(s => s.IMEI == imei);
     }
 
     public async Task<List<Sensor>?> GetAllAsync()
@@ -43,7 +43,7 @@ public class SensorsProvider(ApplicationDbContext db) : DbProvider<Sensor>(db)
 
     public async Task<List<AlarmedMeasurements>?> GetAlarmedMeasurementsAsync(string imei)
     {
-        var sensor = await _dbSet.Include(s => s.AlarmedMeasurements).ThenInclude(am => am.Measurements).FirstOrDefaultAsync(x => x.IMEI == imei);
+        var sensor = await _dbSet.Include(s => s.AlarmedMeasurements.OrderBy(m => m.Id)).ThenInclude(am => am.Measurements).FirstOrDefaultAsync(x => x.IMEI == imei);
         return sensor?.AlarmedMeasurements;
     }
 
@@ -59,14 +59,14 @@ public class SensorsProvider(ApplicationDbContext db) : DbProvider<Sensor>(db)
 
     public async Task<List<AlarmedMeasurements>?> GetCheckedAlarmedMeasurementsAsync(string imei)
     {
-        var sensor = await _dbSet.Include(s => s.AlarmedMeasurements.Where(am => am.isChecked)).ThenInclude(am => am.Measurements)
+        var sensor = await _dbSet.Include(s => s.AlarmedMeasurements.Where(am => am.isChecked).OrderBy(m => m.Id)).ThenInclude(am => am.Measurements)
             .FirstOrDefaultAsync(s => s.IMEI == imei);
         return sensor?.AlarmedMeasurements;
     }
 
     public async Task<List<AlarmedMeasurements>?> GetUncheckedAlarmedMeasurementsAsync(string imei)
     {
-        var sensor = await _dbSet.Include(s => s.AlarmedMeasurements.Where(am => !am.isChecked)).ThenInclude(am => am.Measurements)
+        var sensor = await _dbSet.Include(s => s.AlarmedMeasurements.Where(am => !am.isChecked).OrderBy(m => m.Id)).ThenInclude(am => am.Measurements)
             .FirstOrDefaultAsync(s => s.IMEI == imei);
         return sensor?.AlarmedMeasurements;
     }
@@ -78,7 +78,7 @@ public class SensorsProvider(ApplicationDbContext db) : DbProvider<Sensor>(db)
 
     public async Task<Sensor?> GetWithAllInnerDataAsync(string imei)
     {
-        return await _dbSet.Include(s => s.Measurements).Include(s => s.Settings).Include(s => s.Section).FirstOrDefaultAsync(s => s.IMEI == imei);
+        return await _dbSet.Include(s => s.Measurements.OrderBy(m => m.Id)).Include(s => s.Settings).Include(s => s.Section).FirstOrDefaultAsync(s => s.IMEI == imei);
     }
 
     public async Task<List<Sensor>> GetAllFacilitySensors(int facilityId)

@@ -15,7 +15,7 @@
         {
             get
             {
-                return DateTime.UtcNow.AddMinutes(1);
+                return DateTime.UtcNow.AddMinutes(180);
             }
         }
         public string Key { get; set; }
